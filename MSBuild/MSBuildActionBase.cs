@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Diagnostics;
 using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.Diagnostics;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
@@ -19,8 +21,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// Expression used for matching installed .NET framework versions.
         /// </summary>
         private static readonly Regex VersionMatcher = new Regex(@"^v\d+\.\d+(\.\d+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-        private Action<string> logOutputData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MSBuildActionBase"/> class.
@@ -99,69 +99,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <returns>MSBuild exit code.</returns>
         protected int InvokeMSBuild(string arguments, string workingDirectory)
         {
-            try
-            {
-                var consoleOutput = new List<string>();
-                this.logOutputData = d => consoleOutput.Add(d);
-                bool useConsoleOutput = false;
+            var loggerPath = Path.Combine(
+                    this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
+                    @"ExtTemp\WindowsSdk\Resources\XmlBuildLogger.dll"
+            );
+            var allArgs = string.Format("/logger:\"{0}\" /noconsolelogger", loggerPath) + arguments;
 
-                string loggerPath;
-                string logFile;
-                string allArgs;
-
-                try
-                {
-                    loggerPath = this.UnpackLogger();
-                    logFile = Path.Combine(this.Context.TempDirectory, Guid.NewGuid().ToString("N"));
-
-                    allArgs = string.Format("/logger:\"{0}\";\"{1}\" ", loggerPath, logFile) + arguments;
-                }
-                catch (Exception ex)
-                {
-                    allArgs = arguments;
-                    useConsoleOutput = true;
-                    logFile = null;
-                    this.LogWarning("Unable to set up custom build logging (Error: {0}); falling back on msbuild console output.", ex.Message);
-                }
-
-                int exitCode = this.ExecuteCommandLine(this.GetMSBuildPath(), allArgs, workingDirectory);
-
-                if (!useConsoleOutput)
-                {
-                    try
-                    {
-                        // Read the log messages
-                        var logDoc = new XmlDocument();
-                        logDoc.Load(logFile);
-
-                        var nodes = logDoc.SelectNodes("/buildLog/event");
-                        foreach (XmlElement node in nodes)
-                        {
-                            var level = (MessageLevel)Enum.Parse(typeof(MessageLevel), node.GetAttribute("level"));
-                            var message = node.GetAttribute("message");
-
-                            this.Log(level, message);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.LogWarning("Unable to access custom build log file (Error: {0}); falling back on msbuild console output.", ex.Message);
-                        useConsoleOutput = true;
-                    }
-                }
-
-                if (useConsoleOutput)
-                {
-                    foreach (var line in consoleOutput)
-                        this.LogDebug(line);
-                }
-
-                return exitCode;
-            }
-            finally
-            {
-                this.logOutputData = null;
-            }
+            return this.ExecuteCommandLine(this.GetMSBuildPath(), allArgs, workingDirectory);
         }
 
         /// <summary>
@@ -170,14 +114,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <param name="data">Data written to Standard Out.</param>
         protected override void LogProcessOutputData(string data)
         {
-            if (this.logOutputData != null)
+            if (!string.IsNullOrEmpty(data))
             {
-                if (!string.IsNullOrEmpty(data))
-                    this.logOutputData(data);
-            }
-            else
-            {
-                base.LogProcessOutputData(data);
+                if (data.StartsWith("!<BM>Info|"))
+                    this.LogInformation(data.Substring("!<BM>Info|".Length));
+                else if (data.StartsWith("!<BM>Warning|"))
+                    this.LogWarning(data.Substring("!<BM>Warning|".Length));
+                else
+                    this.LogDebug(data);
             }
         }
 
@@ -199,27 +143,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             versions.Sort();
             return versions;
-        }
-        /// <summary>
-        /// Extracts the MSBuild custom logger assembly to a temp path.
-        /// </summary>
-        /// <returns>The path of the custom logger assembly.</returns>
-        private string UnpackLogger()
-        {
-            var assemblyPath = Path.Combine(this.Context.TempDirectory, "XmlBuildLogger.dll");
-            using (var input = typeof(MSBuildActionBase).Assembly.GetManifestResourceStream("Inedo.BuildMasterExtensions.DotNet2.XmlBuildLogger.dll"))
-            using (var output = File.Create(assemblyPath))
-            {
-                var buffer = new byte[4096];
-                int len = input.Read(buffer, 0, buffer.Length);
-                while (len > 0)
-                {
-                    output.Write(buffer, 0, len);
-                    len = input.Read(buffer, 0, buffer.Length);
-                }
-            }
-
-            return assemblyPath;
         }
     }
 }
