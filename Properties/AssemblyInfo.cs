@@ -5,7 +5,7 @@ using Inedo.BuildMaster.Extensibility;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
 using Inedo.BuildMasterExtensions.WindowsSdk;
 
-[assembly: AssemblyTitle(".NET")]
+[assembly: AssemblyTitle("Windows SDK")]
 [assembly: AssemblyDescription("Contains actions to build software targeting Windows or .NET platforms, including Build Project, MSBuild, Click Once, etc.")]
 
 [assembly: ComVisible(false)]
