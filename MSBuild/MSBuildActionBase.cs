@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
 using System.Text.RegularExpressions;
-using System.Xml;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Diagnostics;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
-using Inedo.Diagnostics;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
@@ -101,7 +97,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         {
             var loggerPath = Path.Combine(
                     this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
-                    @"ExtTemp\WindowsSdk\Resources\XmlBuildLogger.dll"
+                    @"ExtTemp\WindowsSdk\Resources\BmBuildLogger.dll"
             );
             var allArgs = string.Format("/logger:\"{0}\" /noconsolelogger", loggerPath) + arguments;
 

@@ -80,8 +80,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             if (!string.IsNullOrEmpty(this.ContentUrl))
                 args.AppendFormat(" /du \"{0}\"", this.ContentUrl);
 
-
-            args.AppendFormat("\"{0}\"", this.SignExePath);
+            args.AppendFormat(" \"{0}\"", this.SignExePath);
 
             var configurer = (WindowsSdkExtensionConfigurer)this.GetExtensionConfigurer();
             var signExePath = Util.Path2.Combine(configurer.WindowsSdkPath, "bin\\signtool.exe");
