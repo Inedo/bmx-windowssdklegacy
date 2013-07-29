@@ -101,7 +101,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             );
             var allArgs = string.Format("/logger:\"{0}\" /noconsolelogger", loggerPath) + arguments;
 
-            return this.ExecuteCommandLine(this.GetMSBuildPath(), arguments, workingDirectory);
+            return this.ExecuteCommandLine(this.GetMSBuildPath(), allArgs, workingDirectory);
         }
 
         /// <summary>
