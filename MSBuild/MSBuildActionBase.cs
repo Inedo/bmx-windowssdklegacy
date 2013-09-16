@@ -95,13 +95,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <returns>MSBuild exit code.</returns>
         protected int InvokeMSBuild(string arguments, string workingDirectory)
         {
-            var loggerPath = Path.Combine(
-                    this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
-                    @"ExtTemp\WindowsSdk\Resources\BmBuildLogger.dll"
+            var msbuildProxyPath = Path.Combine(
+                this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
+                @"ExtTemp\WindowsSdk\BmBuildLogger.exe"
             );
-            var allArgs = string.Format("/logger:\"{0}\" /noconsolelogger", loggerPath) + arguments;
 
-            return this.ExecuteCommandLine(this.GetMSBuildPath(), allArgs, workingDirectory);
+            var allArgs = string.Format("\"{0}\"", this.GetMSBuildPath()) + arguments;
+
+            return this.ExecuteCommandLine(msbuildProxyPath, allArgs, workingDirectory);
         }
 
         /// <summary>

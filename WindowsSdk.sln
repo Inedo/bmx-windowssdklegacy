@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsSdk", "WindowsSdk.csproj", "{B4EE9927-63B2-4CB3-9718-F5D7A632F589}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BmBuildLogger", "BmBuildLogger\BmBuildLogger.csproj", "{888F489A-F599-4CC9-854B-59FC8D9ECD0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{B4EE9927-63B2-4CB3-9718-F5D7A632F589}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4EE9927-63B2-4CB3-9718-F5D7A632F589}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4EE9927-63B2-4CB3-9718-F5D7A632F589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{888F489A-F599-4CC9-854B-59FC8D9ECD0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{888F489A-F599-4CC9-854B-59FC8D9ECD0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{888F489A-F599-4CC9-854B-59FC8D9ECD0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{888F489A-F599-4CC9-854B-59FC8D9ECD0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

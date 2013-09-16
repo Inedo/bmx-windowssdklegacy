@@ -96,35 +96,32 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void Execute()
         {
-            string retVal = string.Empty;
+            var retVal = string.Empty;
 
-            LogDebug("Building Application");
-            retVal = ExecuteRemoteCommand("Build");
+            this.LogDebug("Building Application");
+            retVal = this.ExecuteRemoteCommand("Build");
             if (retVal != "0")
             {
-                throw new Exception(string.Format(
-                    "Step Failed (msbuild returned code {0})",
-                    retVal));
+                this.LogError("Step failed (msbuild returned code {0})", retVal);
+                return;
             }
 
             if (this.IsWebProject)
             {
-                LogDebug("Copying Web Files");
-                retVal = ExecuteRemoteCommand("CopyWeb");
+                this.LogDebug("Copying Web Files");
+                retVal = this.ExecuteRemoteCommand("CopyWeb");
                 if (retVal != "0")
                 {
-                    throw new Exception(string.Format(
-                        "Step Failed (msbuild returned code {0})",
-                        retVal));
+                    this.LogError("Step failed (msbuild returned code {0})", retVal);
+                    return;
                 }
 
-                LogDebug("Copying References");
-                retVal = ExecuteRemoteCommand("CopyRef");
+                this.LogDebug("Copying References");
+                retVal = this.ExecuteRemoteCommand("CopyRef");
                 if (retVal != "0")
                 {
-                    throw new Exception(string.Format(
-                        "Step Failed (msbuild returned code {0})",
-                        retVal));
+                    this.LogError("Step failed (msbuild returned code {0})", retVal);
+                    return;
                 }
             }
 
@@ -132,7 +129,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override string ProcessRemoteCommand(string name, string[] args)
         {
-            string projectFullPath = Path.Combine(this.Context.SourceDirectory, this.ProjectPath);
+            var projectFullPath = Path.Combine(this.Context.SourceDirectory, this.ProjectPath);
 
             var buildProperties =
                 string.Join(
