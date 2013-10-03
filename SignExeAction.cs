@@ -60,7 +60,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             else
                 path = this.SignExePath;
 
-            return string.Format("Sign {0} using the the {1} certificate", path, this.SubjectName);
+            return string.Format("Sign {0} using the {1} certificate", path, this.SubjectName);
         }
 
         /// <summary>
