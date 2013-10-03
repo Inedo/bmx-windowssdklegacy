@@ -35,7 +35,7 @@ namespace Inedo.BmBuildLogger
         /// <param name="eventSource">The events available to loggers.</param>
         public void Initialize(IEventSource eventSource)
         {
-            var pipeStream = new NamedPipeClientStream(".", this.Parameters, PipeDirection.Out);
+            var pipeStream = new NamedPipeClientStream(".", this.Parameters, PipeDirection.Out, PipeOptions.Asynchronous);
             pipeStream.Connect();
             this.writer = new BinaryWriter(pipeStream, Encoding.UTF8);
 

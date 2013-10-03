@@ -87,7 +87,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             var buildAction = (PrecompileAspNetSiteAction)e.Extension;
             if (!buildAction.ApplicationVirtualPath.StartsWith("/"))
             {
-                e.ValidLevel = ValidationLevels.Warning;
+                e.ValidLevel = ValidationLevel.Warning;
                 e.Message =
                     "Application Virtual Paths should start with \"/\", for example \"/MyApp\". This " +
                     "will likely cause a build error.";

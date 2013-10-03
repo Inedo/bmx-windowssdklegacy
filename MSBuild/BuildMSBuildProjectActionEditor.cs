@@ -265,7 +265,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         {
             if (string.IsNullOrEmpty(this.txtProjectPath.Text))
             {
-                e.ValidLevel = ValidationLevels.Warning;
+                e.ValidLevel = ValidationLevel.Warning;
                 e.Message = "Project path is not set. This may result in build errors.";
             }
         }
