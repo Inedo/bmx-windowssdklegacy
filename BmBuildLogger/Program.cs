@@ -36,6 +36,8 @@ namespace Inedo.BmBuildLogger
                 var stdOutBuffer = new StringBuilder();
                 var stdErrBuffer = new StringBuilder();
 
+                var waitForConnectionTask = Task.Factory.FromAsync(pipeStream.BeginWaitForConnection, pipeStream.EndWaitForConnection, null);
+
                 process.Start();
                 var processTask = Task.Factory.StartNew(
                     () =>
@@ -45,8 +47,6 @@ namespace Inedo.BmBuildLogger
                     },
                     TaskCreationOptions.LongRunning
                 );
-
-                var waitForConnectionTask = Task.Factory.FromAsync(pipeStream.BeginWaitForConnection, pipeStream.EndWaitForConnection, null);
 
                 int index = Task.WaitAny(new[] { processTask, waitForConnectionTask }, 5000);
                 if (index == 0)
