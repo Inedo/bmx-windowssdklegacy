@@ -24,31 +24,31 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             WriteAllTargets(
                 @"MSBuild\Microsoft\VisualStudio\v8.0\WebApplications\",
-                 "Inedo.BuildMasterExtensions.DotNet2.Targets.Microsoft.WebApplication.targets",
+                 "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication.targets",
                  "Microsoft.WebApplication.targets"
                 );
 
             WriteAllTargets(
                 @"MSBuild\Microsoft\VisualStudio\v8.0\WebApplications\",
-                 "Inedo.BuildMasterExtensions.DotNet2.Targets.Microsoft.ReportingServices.targets",
+                 "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.ReportingServices.targets",
                  "Microsoft.ReportingServices.targets"
                 );
 
             WriteAllTargets(
                 @"MSBuild\Microsoft\VisualStudio\v9.0\WebApplications\",
-                 "Inedo.BuildMasterExtensions.DotNet2.Targets.Microsoft.WebApplication35.targets",
+                 "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication35.targets",
                  "Microsoft.WebApplication.targets"
                 );
 
             WriteAllTargets(
                 @"MSBuild\Microsoft\VisualStudio\v10.0\WebApplications\",
-                "Inedo.BuildMasterExtensions.DotNet2.Targets.Microsoft.WebApplication40.targets",
+                "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication40.targets",
                  "Microsoft.WebApplication.targets"
                 );
 
             WriteAllTargets(
                 @"MSBuild\Microsoft\VisualStudio\v10.0\WebApplications\",
-                 "Inedo.BuildMasterExtensions.DotNet2.Targets.Microsoft.WebApplication40.Build.Tasks.Dll",
+                 "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication40.Build.Tasks.Dll",
                  "Microsoft.WebApplication.Build.Tasks.Dll"
                 );
         }
