@@ -139,7 +139,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 new FormFieldGroup("Project or Solution File Path",
                     "The path to an msbuild project file or solution file, typically: .csproj, .vbproj, .vcxproj, or .sln. <br /><br />This path may be absolute or relative to the default directory.",
                     false,
-                    new StandardFormField("Source Path:", this.txtProjectPath, this.chkWebProject)
+                    new StandardFormField("Source Path:", this.txtProjectPath, new LiteralControl("<br />"), this.chkWebProject)
                 ),
                 new FormFieldGroup("Build Output Directory",
                     "The directory of the build output. The \\bin\\{config} option is recommended when building a solution file. If \"This is a Web Application project\" is selected, an output directory must be specified.",
