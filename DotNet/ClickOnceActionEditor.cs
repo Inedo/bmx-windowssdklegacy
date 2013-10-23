@@ -103,6 +103,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 ProviderUrl = this.txtProviderUrl.Text,
                 CertificatePath = this.txtCertificatePath.Text,
                 CertificateHash = this.txtCertificateHash.Text,
+                CertificatePassword = this.txtCertificatePassword.Text,
                 Version = this.txtVersion.Text,
                 MapFileExtensions = this.chkMapFileExtensions.Checked,
                 InstallApplication = this.chkInstallApplication.Checked
