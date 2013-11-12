@@ -51,6 +51,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                  "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication40.Build.Tasks.Dll",
                  "Microsoft.WebApplication.Build.Tasks.Dll"
                 );
+
+            WriteAllTargets(
+                @"MSBuild\Microsoft\VisualStudio\v11.0\WebApplications\",
+                "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication.VS11.targets",
+                 "Microsoft.WebApplication.targets"
+                );
+
+            WriteAllTargets(
+                @"MSBuild\Microsoft\VisualStudio\v11.0\WebApplications\",
+                 "Inedo.BuildMasterExtensions.WindowsSdk.Targets.Microsoft.WebApplication.VS11.Build.Tasks.Dll",
+                 "Microsoft.WebApplication.Build.Tasks.Dll"
+                );
         }
 
         /// <summary>

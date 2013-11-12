@@ -126,6 +126,7 @@
     <EmbeddedResource Include="Targets\Microsoft.WebApplication.targets" />
     <EmbeddedResource Include="Targets\Microsoft.WebApplication35.targets" />
     <EmbeddedResource Include="Targets\Microsoft.WebApplication40.targets" />
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.targets" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -141,6 +142,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Targets\Microsoft.WebApplication40.Build.Tasks.Dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.Build.Tasks.Dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
