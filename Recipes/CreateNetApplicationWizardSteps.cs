@@ -16,9 +16,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 return new[] 
                 { 
-                    this.SpecifyApplicationProperties, this.SpecifyWorkflowOrder, this.SelectProviderAndFile, 
-                    this.SelectProjectsInSolution, this.SelectConfigFiles, this.SelectDeploymentPaths, 
-                    this.Confirmation 
+                    this.SpecifyApplicationProperties,  this.SelectProviderAndFile, this.SelectProjectsInSolution,
+                    this.SelectConfigFiles, this.SpecifyWorkflowOrder, this.SelectDeploymentPaths, this.Confirmation 
                 };
             }
         }
