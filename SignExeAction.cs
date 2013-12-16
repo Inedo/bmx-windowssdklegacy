@@ -9,8 +9,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
     /// </summary>
     [ActionProperties(
         "Sign Executable",
-        "Signs an executable file with a certificate.",
-        "Windows")]
+        "Signs an executable file with a certificate.")]
+    [Tag(Tags.Windows)]
     public sealed class SignExeAction : AgentBasedActionBase
     {
         /// <summary>

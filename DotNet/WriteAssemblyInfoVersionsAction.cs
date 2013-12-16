@@ -12,8 +12,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [ActionProperties(
         "Write Assembly Versions",
-        "Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).",
-        ".NET")]
+        "Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
+    [Tag(Tags.DotNet)]
     [CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
     [RequiresInterface(typeof(IFileOperationsExecuter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase

@@ -11,7 +11,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     /// <summary>
     /// Action which generates a licenses.licx file and adds to project files.
     /// </summary>
-    [ActionProperties("Add Component License", "Generates a licenses.licx file and adds it to project files.", ".NET")]
+    [ActionProperties(
+        "Add Component License",
+        "Generates a licenses.licx file and adds it to project files.")]
+    [Tag(Tags.DotNet)]
     [CustomEditor(typeof(AddComponentLicenseActionEditor))]
     public sealed class AddComponentLicenseAction : RemoteActionBase
     {

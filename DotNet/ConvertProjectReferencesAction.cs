@@ -13,7 +13,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     /// <summary>
     /// Defines an action for converting .NET project references to file references.
     /// </summary>
-    [ActionProperties("Convert Project References", "Converts project references in .NET projects to file references.", ".NET")]
+    [ActionProperties(
+        "Convert Project References",
+        "Converts project references in .NET projects to file references.")]
+    [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
     public sealed class ConvertProjectReferencesAction : RemoteActionBase
     {

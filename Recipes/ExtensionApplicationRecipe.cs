@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Data;
 using Inedo.BuildMaster.Extensibility.Recipes;
 using Inedo.BuildMaster.Web;
-using System.Linq;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
 
@@ -16,7 +16,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
     [RecipeProperties(
         "Custom Extension Application",
         "An example application that builds an example BuildMaster extension and deploys it to this installation once it has been downloaded and put into your source control provider of choice.",
-        RecipeScopes.NewApplication)]
+        RecipeScopes.System)]
     [CustomEditor(typeof(ExtensionApplicationRecipeEditor))]
     public sealed class ExtensionApplicationRecipe : RecipeBase
     {
@@ -57,21 +57,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Get Extension Source",
                 "Actions in this group will first tag/label code files in source control, then retrieve them to the default working directory. The AssemblyInfo.cs file will then be edited to use the current Build/Release number."
             );
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.ApplyLabelAction", new
                 {
                     SourcePath = this.SolutionPath,
                     UserDefinedLabel = "%RELNO%.%BLDNO%",
                     ProviderId = this.ScmProviderId
                 }));
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.GetLabeledAction", new
                 {
                     SourcePath = this.SolutionPath,
                     UserDefinedLabel = "%RELNO%.%BLDNO%",
                     ProviderId = this.ScmProviderId
                 }));
-            Util.Recipes.AddAction(planId, new WriteAssemblyInfoVersionsAction
+            Util.Recipes.AddAction(planId, 1, new WriteAssemblyInfoVersionsAction
             {
                 FileMasks = new[] { @"*\AssemblyInfo.cs" },
                 Version = "%RELNO%.%BLDNO%",
@@ -85,18 +85,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Build Extension",
                 "The extension is compiled and then zipped into a .bmx file (the convention for BuildMaster extensions), and then packaged into an artifact."
             );
-            Util.Recipes.AddAction(planId, new BuildMSBuildProjectAction
+            Util.Recipes.AddAction(planId, 1, new BuildMSBuildProjectAction
             {
                 ProjectPath = this.Project.FileSystemPath,
                 ProjectBuildConfiguration = "Debug",
                 IsWebProject = false
             });
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.Files.CreateZipFileAction", new
                 {
                     FileName = extensionName + ".bmx"
                 }));
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.Artifacts.CreateArtifactAction", new
                 {
                     ArtifactName = "Extension"
@@ -109,7 +109,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Deploy Extension",
                 "BuildMaster artifacts are deployed to the local server in the extensions directory."
             );
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                    "Inedo.BuildMaster.Extensibility.Actions.Artifacts.DeployArtifactAction", new
                    {
                        ArtifactName = "Extension",
@@ -123,7 +123,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Restart BuildMaster",
                 "Both the Web Application and Service must be restarted for the extension to be deployed. This is a bit tricky, but this hack will do the trick... most of the time."
             );
-            Util.Recipes.AddAction(planId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.Files.CreateFileAction", new
                 {
                     OverriddenSourceDirectory = GetBinPath(),

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster;
@@ -8,7 +9,6 @@ using Inedo.BuildMaster.Extensibility.Providers.SourceControl;
 using Inedo.BuildMaster.Extensibility.Recipes;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
-using System.Linq;
 using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes

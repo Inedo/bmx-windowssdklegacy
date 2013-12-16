@@ -11,8 +11,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     /// </summary>
     [ActionProperties(
         "Execute MSBuild Script",
-        "Executes an .msbuild script file.",
-        ".NET")]
+        "Executes an .msbuild script file.")]
+    [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
     public sealed class ExecuteMSBuildScriptAction : MSBuildActionBase
     {

@@ -81,6 +81,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 using (var izip = new ZipFile(inputStream))
                 using (var ozip = new ZipOutputStream(outputStream))
                 {
+                    izip.IsStreamOwner = false;
+                    ozip.IsStreamOwner = false;
+
                     foreach (ZipEntry ze in izip)
                     {
                         byte[] zeBytes;

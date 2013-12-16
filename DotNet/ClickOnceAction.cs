@@ -12,8 +12,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     /// </summary>
     [ActionProperties(
         "Prepare ClickOnce Application",
-        "Prepares a ClickOnce application for deployment.",
-        ".NET")]
+        "Prepares a ClickOnce application for deployment.")]
+    [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ClickOnceActionEditor))]
     public sealed class ClickOnceAction : RemoteActionBase
     {
