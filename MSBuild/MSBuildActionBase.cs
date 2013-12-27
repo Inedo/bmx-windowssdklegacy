@@ -100,7 +100,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 @"ExtTemp\WindowsSdk\BmBuildLogger.exe"
             );
 
-            var allArgs = string.Format("\"{0}\"", this.GetMSBuildPath()) + arguments;
+            var allArgs = string.Format("\"{0}\" {1}", this.GetMSBuildPath(), arguments);
 
             return this.ExecuteCommandLine(msbuildProxyPath, allArgs, workingDirectory);
         }
