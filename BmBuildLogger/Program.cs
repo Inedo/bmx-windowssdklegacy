@@ -21,12 +21,14 @@ namespace Inedo.BmBuildLogger
             var pipeName = Guid.NewGuid().ToString("N");
             using (var pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
             {
+                string arguments = string.Join(" ", args.Skip(1).Select(EscapeArgument)) + " \"/logger:" + typeof(Program).Assembly.Location + ";" + pipeName + "\"";
+
                 var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = args[0],
-                        Arguments = string.Join(" ", args.Skip(1).Select(EscapeArgument)) + " \"/logger:" + typeof(Program).Assembly.Location + ";" + pipeName + "\"",
+                        Arguments = arguments,
                         UseShellExecute = false,
                         RedirectStandardError = true,
                         RedirectStandardOutput = true
@@ -37,6 +39,8 @@ namespace Inedo.BmBuildLogger
                 var stdErrBuffer = new StringBuilder();
 
                 var waitForConnectionTask = Task.Factory.FromAsync(pipeStream.BeginWaitForConnection, pipeStream.EndWaitForConnection, null);
+
+                Console.WriteLine("Starting process: {0} {1}", args[0], arguments);
 
                 process.Start();
                 var processTask = Task.Factory.StartNew(
