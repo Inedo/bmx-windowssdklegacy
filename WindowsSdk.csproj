@@ -55,6 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MSBuild\BuildAspNetProjectAction.cs" />
+    <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\AddComponentLicenseAction.cs" />
     <Compile Include="DotNet\AddComponentLicenseActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -118,6 +122,10 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WindowsSdkExtensionConfigurer.cs" />
+    <Compile Include="XdtTransformAction.cs" />
+    <Compile Include="XdtTransformActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -146,10 +154,16 @@
   <ItemGroup>
     <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.Build.Tasks.Dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\ctt.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist $(SolutionDir) cmd /c "del $(SolutionDir)..\..\BuildMaster\ExtensionLib\$(TargetName).bmx"
-if exist $(SolutionDir) $(SolutionDir)..\zip -j $(SolutionDir)..\..\BuildMaster\ExtensionLib\$(TargetName).bmx *.*</PostBuildEvent>
+
+if exist $(SolutionDir) $(SolutionDir)..\zip -r $(SolutionDir)..\..\BuildMaster\ExtensionLib\$(TargetName).bmx *.*</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
