@@ -11,7 +11,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     /// Represents an action that prepares a ClickOnce application for deployment
     /// </summary>
     [ActionProperties(
-        "Prepare ClickOnce Application",
+        "Prepare ClickOnce Application N",
         "Prepares a ClickOnce application for deployment.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ClickOnceActionEditor))]
@@ -58,6 +58,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         public string Version { get; set; }
 
         /// <summary>
+        /// Gets or sets the the minimum version of the application that can run on the client. 
+        /// Must be of the form "0.0.0.0".   If InstallApplication is false it will be ignored.
+        /// </summary>
+        [Persistent]
+        public string MinVersion { get; set; }
+
+
+        /// <summary>
         /// Determines whether files in the deployment will have a .deploy extension. 
         /// ClickOnce will strip this extension off these files as soon as it downloads them 
         /// from the Web server. This parameter allows all the files within a ClickOnce deployment 
@@ -76,8 +84,32 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool InstallApplication { get; set; }
 
+        /// <summary>
+        /// Gets or sets the option to create a desktop Icon for applications being installed onto the local machine
+        /// along with the presence in the Windows Start menu.
+        /// </summary>
+        [Persistent]
+        public bool CreateDesktopIcon { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full path to an .ICO icon file to be used for the application Icon. This icon appears 
+        /// beside your application name in the start menu, on the desktop if CreateDesktopIcon is set to true, 
+        /// and in its Add-or-Remove Programs entry. If no icon is provided and CreateDesktopIcon is true, a default icon is used.
+        /// </summary>
+        [Persistent]
+        public string IconFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether or not installed applications should check for updates before it runs.
+        /// If an update is found the application will be updated and then opened.
+        /// </summary>
+        [Persistent]
+        public bool StartupUpdateCheck { get; set; }
+
+
         protected override void Execute()
         {
+            
             LogDebug("Creating Application Manifest File...");
             ExecuteRemoteCommand("CreateApplication");
             LogInformation("Application Manifest File created.");
@@ -114,16 +146,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             if (name == "CreateApplication")
             {
-                //%_MAGE% -New Application -ToFile %_PRJNME%.exe.manifest -Version %1 -FromDirectory .
+                //%_MAGE% -New Application -ToFile %_PRJNME%.exe.manifest -Version %1 -FromDirectory 
+
+                string icon = String.IsNullOrEmpty(IconFile) ? String.Empty : String.Format("-IconFile \"{0}\" ", IconFile);
+                
                 return ExecuteCommandLine(
                     GetMagePath(),
                     string.Format(
-                        "-New Application "
-                        + "-ToFile \"{0}\" "
-                        + "-Version {1} "
-                        + "-FromDirectory .",
-                        appManifest,
-                        Version),
+                    "-New Application "
+                    + "-ToFile \"{0}\" "
+                    + "-Version {1} "
+                    + "-FromDirectory . "
+                    + "{2}",
+                    appManifest,
+                    Version,
+                    icon),
                     Context.SourceDirectory).ToString();
             }
             else if (name == "SignApplication")
@@ -138,7 +175,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     Context.SourceDirectory).ToString();
             }
             else if (name == "CreateDeployment")
-            { 
+            {
                 //%_MAGE% -New Deployment -ToFile %_PRJNME%.application -Version %1 -AppManifest %_PRJNME%.exe.manifest -providerUrl %_PROVURL%/%_PRJNME%.application
                 ExecuteCommandLine(
                     GetMagePath(),
@@ -148,7 +185,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         + "-Version {1} "
                         + "-AppManifest \"{2}\" "
                         + "-providerUrl \"{3}/{4}.application\" "
-                        +" -Install {5} ",
+                        + " -Install {5} ",
                         deployManifest,
                         Version,
                         appManifest,
@@ -157,27 +194,23 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         InstallApplication.ToString().ToLower()),
                     Context.SourceDirectory).ToString();
 
-                if (MapFileExtensions)
+               
+                if (InstallApplication && !String.IsNullOrEmpty(MinVersion))
                 {
-                    LogDebug("Adding mapFileExtensions attribute...");
-
-                    // Load the deployment Manifest
-                    var deployXml = new XmlDocument();
-                    deployXml.Load(deployManifest);
-
-                    // Find the /assembly/deployment node
-                    XmlElement deploymentElement = null;
-                    foreach (XmlNode child in deployXml.DocumentElement.ChildNodes)
-                        if (child.Name == "deployment") deploymentElement = (XmlElement)child;
-                    if (deploymentElement == null) { LogError("deployment element not found"); return null; }
-                    deploymentElement.SetAttribute("mapFileExtensions", "true");
-
-                    deployXml.Save(deployManifest);
-
-
-                    LogInformation("Attribute mapFileExtensions added.");
+                    ExecuteCommandLine(
+                        GetMagePath(),
+                        string.Format(
+                            "-Update "
+                            + "\"{0}\" "
+                            + "-MinVersion {1} ",
+                            deployManifest,
+                            MinVersion),
+                        Context.SourceDirectory).ToString();
                 }
 
+                //Moved existing MapFileExtensions functionality to the function UpdateApplicationFile
+
+                UpdateApplicationFile(deployManifest);
                 return null;
             }
             else if (name == "SignDeployment")
@@ -266,6 +299,59 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             if (File.Exists(magePath40)) return magePath40;
 
             return Path.Combine(sdkPath, @"bin\mage.exe");
+        }
+
+        private void UpdateApplicationFile(string deployManifest)
+        {
+            //ClickOnce Deployment Manifest Reference: http://msdn.microsoft.com/en-us/library/k26e96zf.aspx
+            XmlDocument doc = new XmlDocument();
+            doc.Load(deployManifest);
+
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace(String.Empty, "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
+            nsmgr.AddNamespace("asmv2", "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("co.v1", "urn:schemas-microsoft-com:clickonce.v1");
+            nsmgr.AddNamespace("co.v2", "urn:schemas-microsoft-com:clickonce.v2");
+
+            XmlNode deploymentNode = doc.SelectSingleNode("asmv1:assembly/asmv2:deployment", nsmgr);
+            if (deploymentNode != null)
+            {
+                if (InstallApplication && CreateDesktopIcon)
+                {
+                    LogDebug("Adding CreateDesktopShortcut attribute...");
+                    ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");                    
+                }
+
+                if (StartupUpdateCheck)
+                {
+                    XmlNode updateNode = deploymentNode.SelectSingleNode("asmv2:subscription/asmv2:update", nsmgr);
+                    if (updateNode != null)
+                    {
+
+                        XmlNode ExpirationNode = updateNode.SelectSingleNode("asmv2:expiration", nsmgr);
+                        if (ExpirationNode != null)
+                            updateNode.RemoveChild(ExpirationNode);
+
+
+                        //Force app to check for new version everytime at startup
+                        LogDebug("Adding beforeApplicationStartup Element...");
+                        XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");                        
+                        updateNode.AppendChild(newNode);                        
+                    }
+                }
+                if (MapFileExtensions)
+                {
+                    LogDebug("Adding mapFileExtensions attribute...");
+                    ((XmlElement)deploymentNode).SetAttribute("mapFileExtensions", "true");
+                }
+            }
+            else
+            {
+                LogError("deployment element not found in manifest");
+            }
+
+            doc.Save(deployManifest);
         }
     }
 }
