@@ -11,7 +11,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     /// Represents an action that prepares a ClickOnce application for deployment
     /// </summary>
     [ActionProperties(
-        "Prepare ClickOnce Application N",
+        "Prepare ClickOnce Application",
         "Prepares a ClickOnce application for deployment.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ClickOnceActionEditor))]
