@@ -34,8 +34,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.txtMinVersion = new ValidatingTextBox { Required = false, Width = 300 };
             this.chkMapFileExtensions = new CheckBox { Text = "Rename files to .deploy" };
             this.chkInstallApplication = new CheckBox { Text = "Install application onto local machine" };
-            this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon." };
-            this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup." };
+            this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon" };
+            this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup" };
 
             this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
             this.Controls.Add(
