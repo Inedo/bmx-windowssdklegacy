@@ -4,6 +4,7 @@ using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
+using System.Reflection;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -106,10 +107,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool StartupUpdateCheck { get; set; }
 
+        [Persistent]
+        public string EntryPointFile { get; set; }
 
         protected override void Execute()
         {
-            
+
             LogDebug("Creating Application Manifest File...");
             ExecuteRemoteCommand("CreateApplication");
             LogInformation("Application Manifest File created.");
@@ -130,7 +133,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             ExecuteRemoteCommand("CopyAppFiles");
             LogInformation(
                 "Application files copied "
-                + (MapFileExtensions ? "and mapped to .deploy" :"")
+                + (MapFileExtensions ? "and mapped to .deploy" : "")
                 + ".");
         }
 
@@ -149,8 +152,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 //%_MAGE% -New Application -ToFile %_PRJNME%.exe.manifest -Version %1 -FromDirectory 
 
                 string icon = String.IsNullOrEmpty(IconFile) ? String.Empty : String.Format("-IconFile \"{0}\" ", IconFile);
-                
-                return ExecuteCommandLine(
+
+                ExecuteCommandLine(
                     GetMagePath(),
                     string.Format(
                     "-New Application "
@@ -162,6 +165,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     Version,
                     icon),
                     Context.SourceDirectory).ToString();
+
+                UpdateApplicationManifest(appManifest);
+                return null;
             }
             else if (name == "SignApplication")
             {
@@ -194,7 +200,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         InstallApplication.ToString().ToLower()),
                     Context.SourceDirectory).ToString();
 
-               
+
                 if (InstallApplication && !String.IsNullOrEmpty(MinVersion))
                 {
                     ExecuteCommandLine(
@@ -235,7 +241,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             else
             {
                 throw new ArgumentOutOfRangeException("name");
-            }           
+            }
 
         }
 
@@ -249,7 +255,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", this.CertificatePath, this.CertificatePassword);
         }
-        
+
         // A riff on Util.Files.CopyFiles, with the rename included
         //   Copy/Pasting code generally isn't a good idea, but this is a pretty rare function
         //   and recursing directories to copy is pretty straight forward
@@ -283,10 +289,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             return string.Format(
                 "Create ClickOnce Application ({0}) in {1}.",
-                ApplicationName,  
-		        (String.IsNullOrEmpty(OverriddenSourceDirectory)
-			        ? "default directory"
-			        : OverriddenSourceDirectory)
+                ApplicationName,
+                (String.IsNullOrEmpty(OverriddenSourceDirectory)
+                    ? "default directory"
+                    : OverriddenSourceDirectory)
             );
         }
 
@@ -301,18 +307,40 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             return Path.Combine(sdkPath, @"bin\mage.exe");
         }
 
+        private void UpdateApplicationManifest(string applicationManifest)
+        {
+            if (String.IsNullOrWhiteSpace(this.EntryPointFile)) return;
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(applicationManifest);
+
+            XmlNamespaceManager nsmgr = CreateNamespaceManager(doc);
+
+            XmlNode entryPointNode = doc.SelectSingleNode("asmv1:assembly/asmv2:entryPoint", nsmgr);
+
+            var assemblyName = AssemblyName.GetAssemblyName(Path.Combine(this.Context.SourceDirectory, this.EntryPointFile));
+
+            XmlElement assemblyIdentityNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:assemblyIdentity", nsmgr);
+            assemblyIdentityNode.SetAttribute("name", assemblyName.Name);
+            assemblyIdentityNode.SetAttribute("version", assemblyName.Version.ToString());
+            assemblyIdentityNode.SetAttribute("publicKeyToken", BitConverter.ToString(assemblyName.GetPublicKeyToken()).Replace("-", string.Empty).ToUpper());
+            assemblyIdentityNode.SetAttribute("language", assemblyName.CultureInfo.ToString());
+            assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
+
+
+            XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
+            commandLineNode.SetAttribute("file", this.EntryPointFile);
+
+            doc.Save(applicationManifest);
+        }
+
         private void UpdateApplicationFile(string deployManifest)
         {
             //ClickOnce Deployment Manifest Reference: http://msdn.microsoft.com/en-us/library/k26e96zf.aspx
             XmlDocument doc = new XmlDocument();
             doc.Load(deployManifest);
 
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
-            nsmgr.AddNamespace(String.Empty, "urn:schemas-microsoft-com:asm.v2");
-            nsmgr.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
-            nsmgr.AddNamespace("asmv2", "urn:schemas-microsoft-com:asm.v2");
-            nsmgr.AddNamespace("co.v1", "urn:schemas-microsoft-com:clickonce.v1");
-            nsmgr.AddNamespace("co.v2", "urn:schemas-microsoft-com:clickonce.v2");
+            XmlNamespaceManager nsmgr = CreateNamespaceManager(doc);
 
             XmlNode deploymentNode = doc.SelectSingleNode("asmv1:assembly/asmv2:deployment", nsmgr);
             if (deploymentNode != null)
@@ -320,7 +348,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 if (InstallApplication && CreateDesktopIcon)
                 {
                     LogDebug("Adding CreateDesktopShortcut attribute...");
-                    ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");                    
+                    ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");
                 }
 
                 if (StartupUpdateCheck)
@@ -336,8 +364,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
                         //Force app to check for new version everytime at startup
                         LogDebug("Adding beforeApplicationStartup Element...");
-                        XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");                        
-                        updateNode.AppendChild(newNode);                        
+                        XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");
+                        updateNode.AppendChild(newNode);
                     }
                 }
                 if (MapFileExtensions)
@@ -352,6 +380,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
 
             doc.Save(deployManifest);
+        }
+
+        private static XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
+        {
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace(String.Empty, "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
+            nsmgr.AddNamespace("asmv2", "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("co.v1", "urn:schemas-microsoft-com:clickonce.v1");
+            nsmgr.AddNamespace("co.v2", "urn:schemas-microsoft-com:clickonce.v2");
+            return nsmgr;
         }
     }
 }

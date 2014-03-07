@@ -15,6 +15,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox txtCertificateHash;
         private ValidatingTextBox txtVersion;
         private ValidatingTextBox txtMinVersion;
+        private ValidatingTextBox txtEntryPointFile;
         private CheckBox chkMapFileExtensions;
         private CheckBox chkInstallApplication;
         private ValidatingTextBox txtIconFile;
@@ -36,6 +37,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkInstallApplication = new CheckBox { Text = "Install application onto local machine" };
             this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon" };
             this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup" };
+            this.txtEntryPointFile = new ValidatingTextBox { Width = 300 };
 
             this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
             this.Controls.Add(
@@ -57,7 +59,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     new StandardFormField(
                         "Provider URL:",
                         this.txtProviderUrl),
-                        new StandardFormField("Icon File:", this.txtIconFile)
+                        new StandardFormField("Icon File:", this.txtIconFile),
+                    new StandardFormField(
+                        "Entry Point File:",
+                        this.txtEntryPointFile)
                     ),
                 new FormFieldGroup(
                     "File Extension Mapping",
@@ -111,6 +116,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkCreateDesktopIcon.Checked = c1action.CreateDesktopIcon;
             this.chkStartupCheckForUpdate.Checked = c1action.StartupUpdateCheck;
             this.txtMinVersion.Text = c1action.MinVersion;
+            this.txtEntryPointFile.Text = c1action.EntryPointFile;
         }
 
         public override ActionBase CreateFromForm()
@@ -128,7 +134,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 IconFile = this.txtIconFile.Text,
                 CreateDesktopIcon = this.chkCreateDesktopIcon.Checked,
                 StartupUpdateCheck = this.chkStartupCheckForUpdate.Checked,
-                MinVersion = this.txtMinVersion.Text
+                MinVersion = this.txtMinVersion.Text,
+                EntryPointFile = this.txtEntryPointFile.Text
             };
         }
     }
