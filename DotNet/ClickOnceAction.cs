@@ -5,6 +5,7 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using System.Reflection;
+using System.Data.Common;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -320,12 +321,30 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             var assemblyName = AssemblyName.GetAssemblyName(Path.Combine(this.Context.SourceDirectory, this.EntryPointFile));
 
+            //var connectionStringBuilder = new DbConnectionStringBuilder();
+            //connectionStringBuilder.ConnectionString = assemblyName.FullName;
+
+            
             XmlElement assemblyIdentityNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:assemblyIdentity", nsmgr);
             assemblyIdentityNode.SetAttribute("name", assemblyName.Name);
             assemblyIdentityNode.SetAttribute("version", assemblyName.Version.ToString());
-            assemblyIdentityNode.SetAttribute("publicKeyToken", BitConverter.ToString(assemblyName.GetPublicKeyToken()).Replace("-", string.Empty).ToUpper());
-            assemblyIdentityNode.SetAttribute("language", assemblyName.CultureInfo.ToString());
+
+            var publicKeyToken = assemblyName.GetPublicKeyToken();
+
+            const string publicKeyTokenAttributeName = "publicKeyToken";
+            if (publicKeyToken.Length > 0)
+            {
+                assemblyIdentityNode.SetAttribute(publicKeyTokenAttributeName, BitConverter.ToString(publicKeyToken).Replace("-", string.Empty).ToUpper());
+            }
+            else if (assemblyIdentityNode.HasAttribute(publicKeyTokenAttributeName))
+            {
+                assemblyIdentityNode.RemoveAttribute(publicKeyTokenAttributeName);
+            }
+            var culture = assemblyName.CultureInfo.Name;
+            assemblyIdentityNode.SetAttribute("language", String.IsNullOrWhiteSpace(culture) ? "neutral" : culture);
             assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
+
+            
 
 
             XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
