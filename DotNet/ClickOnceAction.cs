@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using System.Reflection;
 using System.Data.Common;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -248,13 +250,33 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         private string GetCertificateArguments()
         {
+            var certificatePath = this.CertificatePath;
+            var certificatePassword = this.CertificatePassword;
             if (!string.IsNullOrEmpty(this.CertificateHash))
-                return string.Format("-CertHash \"{0}\" ", this.CertificateHash);
+            {
+                var certificateHash = this.CertificateHash;
+                certificateHash = certificateHash.Replace(" ", "").ToUpper();
+                var certStore = new X509Store(StoreLocation.LocalMachine);
+                certStore.Open(OpenFlags.ReadOnly);
+                var certs = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, false);
+                if (certs.Count > 0)
+                {
+                    var cert = certs[0];
+                    certificatePath = Path.Combine(this.Context.TempDirectory, "Cert.pfx");
+                    certificatePassword = System.Web.Security.Membership.GeneratePassword(25, 10);
+                    var certData = cert.Export(X509ContentType.Pfx, certificatePassword);
+                    File.WriteAllBytes(certificatePath, certData);
+                }
+                else
+                {
+                    LogWarning("Cert with thumbprint {0} not found.", certificateHash);
+                }
+            }
 
-            if (string.IsNullOrEmpty(this.CertificatePassword))
-                return string.Format("-CertFile \"{0}\" ", this.CertificatePath);
+            if (string.IsNullOrEmpty(certificatePassword))
+                return string.Format("-CertFile \"{0}\" ", certificatePath);
 
-            return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", this.CertificatePath, this.CertificatePassword);
+            return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
         }
 
         // A riff on Util.Files.CopyFiles, with the rename included
@@ -321,10 +343,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             var assemblyName = AssemblyName.GetAssemblyName(Path.Combine(this.Context.SourceDirectory, this.EntryPointFile));
 
-            //var connectionStringBuilder = new DbConnectionStringBuilder();
-            //connectionStringBuilder.ConnectionString = assemblyName.FullName;
 
-            
             XmlElement assemblyIdentityNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:assemblyIdentity", nsmgr);
             assemblyIdentityNode.SetAttribute("name", assemblyName.Name);
             assemblyIdentityNode.SetAttribute("version", assemblyName.Version.ToString());
@@ -344,7 +363,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             assemblyIdentityNode.SetAttribute("language", String.IsNullOrWhiteSpace(culture) ? "neutral" : culture);
             assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
 
-            
+
 
 
             XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
