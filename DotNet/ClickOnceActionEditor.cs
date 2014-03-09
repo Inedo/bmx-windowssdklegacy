@@ -3,6 +3,8 @@ using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
+using System;
+using System.Linq;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -19,6 +21,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private CheckBox chkMapFileExtensions;
         private CheckBox chkInstallApplication;
         private ValidatingTextBox txtIconFile;
+        private ValidatingTextBox txtFilesExcludedFromManifest;
         private CheckBox chkCreateDesktopIcon;
         private CheckBox chkStartupCheckForUpdate;
 
@@ -38,8 +41,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon" };
             this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup" };
             this.txtEntryPointFile = new ValidatingTextBox { Width = 300 };
-
+            this.txtFilesExcludedFromManifest = new ValidatingTextBox { Width = 300, TextMode = TextBoxMode.MultiLine };
             this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
+
             this.Controls.Add(
                 new FormFieldGroup(
                     "Application Settings",
@@ -62,7 +66,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         new StandardFormField("Icon File:", this.txtIconFile),
                     new StandardFormField(
                         "Entry Point File:",
-                        this.txtEntryPointFile)
+                        this.txtEntryPointFile),
+                    new StandardFormField("Files to exclude from manifest:",
+                        this.txtFilesExcludedFromManifest)
                     ),
                 new FormFieldGroup(
                     "File Extension Mapping",
@@ -117,6 +123,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkStartupCheckForUpdate.Checked = c1action.StartupUpdateCheck;
             this.txtMinVersion.Text = c1action.MinVersion;
             this.txtEntryPointFile.Text = c1action.EntryPointFile;
+            this.txtFilesExcludedFromManifest.Text = String.Join(Environment.NewLine, c1action.FilesExcludedFromManifest);
         }
 
         public override ActionBase CreateFromForm()
@@ -135,7 +142,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 CreateDesktopIcon = this.chkCreateDesktopIcon.Checked,
                 StartupUpdateCheck = this.chkStartupCheckForUpdate.Checked,
                 MinVersion = this.txtMinVersion.Text,
-                EntryPointFile = this.txtEntryPointFile.Text
+                EntryPointFile = this.txtEntryPointFile.Text,
+                FilesExcludedFromManifest = this.txtFilesExcludedFromManifest.Text.Split('\n').Select(x => x.Trim()).ToArray()
             };
         }
     }

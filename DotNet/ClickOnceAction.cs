@@ -8,6 +8,7 @@ using Inedo.BuildMaster.Web;
 using System.Reflection;
 using System.Data.Common;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -113,6 +114,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public string EntryPointFile { get; set; }
 
+        [Persistent]
+        public string[] FilesExcludedFromManifest { get; set; }
+
+        public ClickOnceAction()
+        {
+            this.FilesExcludedFromManifest = new string[0];
+        }
+
         protected override void Execute()
         {
 
@@ -169,7 +178,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     icon),
                     Context.SourceDirectory).ToString();
 
-                UpdateApplicationManifest(appManifest);
+                UpdateApplicationManifest(appManifest, this.FilesExcludedFromManifest);
                 return null;
             }
             else if (name == "SignApplication")
@@ -219,7 +228,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
                 //Moved existing MapFileExtensions functionality to the function UpdateApplicationFile
 
-                UpdateApplicationFile(deployManifest);
+                UpdateDeploymentManifest(deployManifest);
                 return null;
             }
             else if (name == "SignDeployment")
@@ -330,9 +339,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             return Path.Combine(sdkPath, @"bin\mage.exe");
         }
 
-        private void UpdateApplicationManifest(string applicationManifest)
+        private void UpdateApplicationManifest(string applicationManifest, IEnumerable<string> excludedFiles)
         {
             if (String.IsNullOrWhiteSpace(this.EntryPointFile)) return;
+
+            excludedFiles = excludedFiles.ToList();
 
             XmlDocument doc = new XmlDocument();
             doc.Load(applicationManifest);
@@ -362,21 +373,29 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             var culture = assemblyName.CultureInfo.Name;
             assemblyIdentityNode.SetAttribute("language", String.IsNullOrWhiteSpace(culture) ? "neutral" : culture);
             assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
-
-
-
-
+            
             XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
             commandLineNode.SetAttribute("file", this.EntryPointFile);
+            
+            foreach (XmlNode fileNode in doc.SelectNodes("asmv1:assembly/asmv2:file", nsmgr))
+            {
+                var element = (XmlElement)fileNode;
+                var fileName = element.GetAttribute("name");
+                if (excludedFiles.Any(x => fileName.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    LogInformation("File {0} excluded from deployment manifest.", fileName);
+                    fileNode.ParentNode.RemoveChild(fileNode);
+                }
+            }
 
             doc.Save(applicationManifest);
         }
 
-        private void UpdateApplicationFile(string deployManifest)
+        private void UpdateDeploymentManifest(string deploymentManifest)
         {
             //ClickOnce Deployment Manifest Reference: http://msdn.microsoft.com/en-us/library/k26e96zf.aspx
             XmlDocument doc = new XmlDocument();
-            doc.Load(deployManifest);
+            doc.Load(deploymentManifest);
 
             XmlNamespaceManager nsmgr = CreateNamespaceManager(doc);
 
@@ -417,7 +436,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 LogError("deployment element not found in manifest");
             }
 
-            doc.Save(deployManifest);
+            doc.Save(deploymentManifest);
         }
 
         private static XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
