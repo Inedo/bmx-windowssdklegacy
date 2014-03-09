@@ -272,8 +272,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 {
                     var cert = certs[0];
                     certificatePath = Path.Combine(this.Context.TempDirectory, "Cert.pfx");
-                    certificatePassword = System.Web.Security.Membership.GeneratePassword(25, 10);
-                    var certData = cert.Export(X509ContentType.Pfx, certificatePassword);
+                    var certData = cert.Export(X509ContentType.Pfx);
                     File.WriteAllBytes(certificatePath, certData);
                 }
                 else
