@@ -117,6 +117,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public string[] FilesExcludedFromManifest { get; set; }
 
+        [Persistent]
+        public string AppCodeBaseDirectory { get; set; }
+
+        [Persistent]
+        public bool TrustUrlParameters { get; set; }
+
         public ClickOnceAction()
         {
             this.FilesExcludedFromManifest = new string[0];
@@ -203,13 +209,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         + "-Version {1} "
                         + "-AppManifest \"{2}\" "
                         + "-providerUrl \"{3}/{4}.application\" "
-                        + " -Install {5} ",
+                        + "-Install {5} "
+                        + (String.IsNullOrWhiteSpace(this.AppCodeBaseDirectory) ? String.Empty: "-AppCodeBase \"{6}\" "),
                         deployManifest,
                         Version,
                         appManifest,
                         ProviderUrl,
                         ApplicationName,
-                        InstallApplication.ToString().ToLower()),
+                        InstallApplication.ToString().ToLower(),
+                        Path.Combine(this.AppCodeBaseDirectory, Path.GetFileName(appManifest))),
                     Context.SourceDirectory).ToString();
 
 
@@ -372,10 +380,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             var culture = assemblyName.CultureInfo.Name;
             assemblyIdentityNode.SetAttribute("language", String.IsNullOrWhiteSpace(culture) ? "neutral" : culture);
             assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
-            
+
             XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
             commandLineNode.SetAttribute("file", this.EntryPointFile);
-            
+
             foreach (XmlNode fileNode in doc.SelectNodes("asmv1:assembly/asmv2:file", nsmgr))
             {
                 var element = (XmlElement)fileNode;
@@ -405,6 +413,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 {
                     LogDebug("Adding CreateDesktopShortcut attribute...");
                     ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");
+                }
+
+                if (this.TrustUrlParameters)
+                {
+                    LogDebug("Adding TrustUrlParameters attribute...");
+                    ((XmlElement)deploymentNode).SetAttribute("trustURLParameters", "true");
                 }
 
                 if (StartupUpdateCheck)

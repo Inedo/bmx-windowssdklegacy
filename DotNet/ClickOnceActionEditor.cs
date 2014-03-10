@@ -22,8 +22,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private CheckBox chkInstallApplication;
         private ValidatingTextBox txtIconFile;
         private ValidatingTextBox txtFilesExcludedFromManifest;
+        private ValidatingTextBox txtAppCodeBaseDirectory;
         private CheckBox chkCreateDesktopIcon;
         private CheckBox chkStartupCheckForUpdate;
+        private CheckBox chkTrustUrlParameters;
 
         public override bool DisplaySourceDirectory { get { return true; } }
 
@@ -43,6 +45,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.txtEntryPointFile = new ValidatingTextBox { Width = 300 };
             this.txtFilesExcludedFromManifest = new ValidatingTextBox { Width = 300, TextMode = TextBoxMode.MultiLine };
             this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
+            this.txtAppCodeBaseDirectory = new ValidatingTextBox { Width = 300 };
+            this.chkTrustUrlParameters = new CheckBox { Text = "Trust URL Parameters" };
 
             this.Controls.Add(
                 new FormFieldGroup(
@@ -63,12 +67,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     new StandardFormField(
                         "Provider URL:",
                         this.txtProviderUrl),
-                        new StandardFormField("Icon File:", this.txtIconFile),
+                    new StandardFormField("Icon File:", this.txtIconFile),
+                    new StandardFormField("Application Code Base Directory:", this.txtAppCodeBaseDirectory),
                     new StandardFormField(
                         "Entry Point File:",
                         this.txtEntryPointFile),
                     new StandardFormField("Files to exclude from manifest:",
-                        this.txtFilesExcludedFromManifest)
+                        this.txtFilesExcludedFromManifest),
+                    new StandardFormField(String.Empty, this.chkTrustUrlParameters)
                     ),
                 new FormFieldGroup(
                     "File Extension Mapping",
@@ -124,6 +130,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.txtMinVersion.Text = c1action.MinVersion;
             this.txtEntryPointFile.Text = c1action.EntryPointFile;
             this.txtFilesExcludedFromManifest.Text = String.Join(Environment.NewLine, c1action.FilesExcludedFromManifest);
+            this.txtAppCodeBaseDirectory.Text = c1action.AppCodeBaseDirectory;
+            this.chkTrustUrlParameters.Checked = c1action.TrustUrlParameters;
         }
 
         public override ActionBase CreateFromForm()
@@ -143,7 +151,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 StartupUpdateCheck = this.chkStartupCheckForUpdate.Checked,
                 MinVersion = this.txtMinVersion.Text,
                 EntryPointFile = this.txtEntryPointFile.Text,
-                FilesExcludedFromManifest = this.txtFilesExcludedFromManifest.Text.Split('\n').Select(x => x.Trim()).ToArray()
+                FilesExcludedFromManifest = this.txtFilesExcludedFromManifest.Text.Split('\n').Select(x => x.Trim()).ToArray(),
+                AppCodeBaseDirectory = this.txtAppCodeBaseDirectory.Text,
+                TrustUrlParameters = this.chkTrustUrlParameters.Checked
             };
         }
     }
