@@ -22,6 +22,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [CustomEditor(typeof(ClickOnceActionEditor))]
     public sealed class ClickOnceAction : RemoteActionBase
     {
+        [Serializable]
+        public class FileAssociation
+        {
+            public string Extension { get; set; }
+            public string Description { get; set; }
+            public string ProgId { get; set; }
+            public string DefaultIcon { get; set; }
+        }
+
         /// <summary>
         /// Gets or sets the name of the application whose manifest is being generated or updated. E.g. MyWpfApplication.
         /// </summary>
@@ -123,9 +132,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool TrustUrlParameters { get; set; }
 
+        [Persistent]
+        public FileAssociation[] FileAssociations { get; set; }
+
         public ClickOnceAction()
         {
             this.FilesExcludedFromManifest = new string[0];
+            this.FileAssociations = new FileAssociation[0];
         }
 
         protected override void Execute()
@@ -210,7 +223,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         + "-AppManifest \"{2}\" "
                         + "-providerUrl \"{3}/{4}.application\" "
                         + "-Install {5} "
-                        + (String.IsNullOrWhiteSpace(this.AppCodeBaseDirectory) ? String.Empty: "-AppCodeBase \"{6}\" "),
+                        + (String.IsNullOrWhiteSpace(this.AppCodeBaseDirectory) ? String.Empty : "-AppCodeBase \"{6}\" "),
                         deployManifest,
                         Version,
                         appManifest,
@@ -395,6 +408,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 }
             }
 
+            var assemblyNode = doc.SelectSingleNode("asmv1:assembly", nsmgr);
+            foreach (var fileAssociation in this.FileAssociations)
+            {
+                var fileAssociationNode = CreateFileAssociationNode(doc, fileAssociation);
+                assemblyNode.AppendChild(fileAssociationNode);
+            }
+
             doc.Save(applicationManifest);
         }
 
@@ -435,6 +455,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         //Force app to check for new version everytime at startup
                         LogDebug("Adding beforeApplicationStartup Element...");
                         XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");
+
                         updateNode.AppendChild(newNode);
                     }
                 }
@@ -450,6 +471,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
 
             doc.Save(deploymentManifest);
+        }
+
+        private XmlNode CreateFileAssociationNode(XmlDocument doc, FileAssociation fileAssociation)
+        {
+            var xmlElement = doc.CreateElement("fileAssociation", "urn:schemas-microsoft-com:clickonce.v1");
+
+            xmlElement.SetAttribute("defaultIcon", fileAssociation.DefaultIcon);
+            xmlElement.SetAttribute("description", fileAssociation.Description);
+            xmlElement.SetAttribute("extension", fileAssociation.Extension);
+            xmlElement.SetAttribute("progid", fileAssociation.ProgId);
+
+            return xmlElement;
         }
 
         private static XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
