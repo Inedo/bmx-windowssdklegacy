@@ -52,7 +52,7 @@ namespace Inedo.BmBuildLogger
                     TaskCreationOptions.LongRunning
                 );
 
-                int index = Task.WaitAny(new[] { processTask, waitForConnectionTask }, 5000);
+                int index = Task.WaitAny(new[] { processTask, waitForConnectionTask }, 30000);
                 if (index == 0)
                 {
                     // process terminated before pipe connection
