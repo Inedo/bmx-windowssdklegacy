@@ -39,18 +39,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void CreateChildControls()
         {
-            this.ddlVersion = new DropDownList()
-            {
-                Items = 
-                { 
-                    new ListItem("(auto detect)", ""),
-                    new ListItem("2.0", "2.0.50727"),
-                    new ListItem("3.5", "3.5"),
-                    new ListItem("4.0", "4.0.30319")
-                }
-            };
-
-            this.ddlProjectBuildConfiguration = new DropDownList()
+            this.ddlProjectBuildConfiguration = new DropDownList
             {
                 Items =
                 {
@@ -60,9 +49,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 }
             };
 
-            this.txtOtherConfig = new TextBox() { Width = 150 };
+            this.txtOtherConfig = new TextBox { Width = 150 };
 
-            this.ddlProjectBuildTargetPlatform = new DropDownList()
+            this.ddlProjectBuildTargetPlatform = new DropDownList
             {
                 Items =
                 {
@@ -74,11 +63,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 }
             };
 
-            this.txtOtherPlatform = new TextBox() { Width = 150 };
+            this.txtOtherPlatform = new TextBox { Width = 150 };
 
-            this.txtProjectPath = new TextBox() { Width = 325 };
+            this.txtProjectPath = new TextBox { Width = 325 };
 
-            this.chkWebProject = new CheckBox()
+            this.chkWebProject = new CheckBox
             {
                 Text = "This is a Web Application project."
             };
@@ -94,7 +83,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             this.txtTargetDir = new SourceControlFileFolderPicker()
             {
-                ServerId = this.ServerId,
                 DefaultText = "default",
                 Width = 270
             };

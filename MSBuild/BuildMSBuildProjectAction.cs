@@ -69,29 +69,50 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public bool BuildToProjectConfigSubdirectories { get; set; }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            var sourceDir = Util.CoalesceStr(this.OverriddenSourceDirectory, "default directory");
-            var targetDir = this.BuildToProjectConfigSubdirectories
-                ? string.Format("the \\bin\\{{config}} subdirectory of {0}", this.ProjectPath.EndsWith(".sln") ? "each project in the solution" : "the project")
-                : Util.CoalesceStr(this.OverriddenTargetDirectory, "default directory");
-            
-            var fileName = Path.GetFileName(this.ProjectPath);
+            var projectPath = this.ProjectPath ?? string.Empty;
 
             var config = this.ProjectBuildConfiguration;
-            if(!string.IsNullOrEmpty(this.ProjectTargetPlatform))
+            if (!string.IsNullOrEmpty(this.ProjectTargetPlatform))
                 config += "; " + this.ProjectTargetPlatform;
 
-            if (string.IsNullOrEmpty(this.DotNetVersion))
-                return string.Format("Build ({0}) {1} from {2} to {3}", config, fileName, sourceDir, targetDir);
+            DirectoryHilite targetHilite;
+            if (this.BuildToProjectConfigSubdirectories)
+            {
+                if (projectPath.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
+                {
+                    targetHilite = new DirectoryHilite(
+                        this.OverriddenSourceDirectory,
+                        Util.Path2.Combine(Util.Path2.GetDirectoryName(projectPath), @"{Project}\bin\" + this.ProjectBuildConfiguration)
+                    );
+                }
+                else
+                {
+                    targetHilite = new DirectoryHilite(
+                        this.OverriddenSourceDirectory,
+                        Util.Path2.Combine(Util.Path2.GetDirectoryName(projectPath), @"bin\" + this.ProjectBuildConfiguration)
+                    );
+                }
+            }
             else
-                return string.Format("Build ({0}) {1} using .NET {2} from {3} to {4}", config, fileName, this.DotNetVersion, sourceDir, targetDir);
+            {
+                targetHilite = new DirectoryHilite(this.OverriddenTargetDirectory);
+            }
+
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Build ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, projectPath),
+                    " (",
+                    new Hilite(config),
+                    ")"
+                ),
+                new LongActionDescription(
+                    "to ",
+                    targetHilite
+                )
+            );
         }
 
         protected override void Execute()

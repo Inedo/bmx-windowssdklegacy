@@ -77,7 +77,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 (s, e) =>
                 {
                     ctlProjectPath.SourceControlProviderId = int.Parse(ddlProvider.SelectedValue);
-                    this.ProviderId = ctlProjectPath.SourceControlProviderId;
+                    this.ProviderId = ctlProjectPath.SourceControlProviderId ?? 0;
                     ffProjectPath.Visible = ctlProjectPath.SourceControlProviderId > 0;
                 };
 
@@ -141,7 +141,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 if (e.CurrentStep != this.wizardSteps.SelectProviderAndFile)
                     return;
-                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlProjectPath.SourceControlProviderId))
+                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlProjectPath.SourceControlProviderId ?? 0))
                 {
                     var fileBytes = scm.GetFileContents(ctlProjectPath.Text);
                     if (ctlProjectPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))

@@ -187,11 +187,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     this.ApplicationId,
                     null,
                     null,
-                    null,
                     Domains.YN.Yes,
                     planName,
                     planDesc,
-                    null,
                     null);
             proc.ExecuteNonQuery();
             return proc.ActionGroup_Id.Value;

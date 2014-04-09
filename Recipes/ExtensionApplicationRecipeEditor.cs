@@ -113,7 +113,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             ddlProvider.SelectedIndexChanged += (s, e) =>
             {
                 ctlSolutionPath.SourceControlProviderId = int.Parse(ddlProvider.SelectedValue);
-                this.ProviderId = ctlSolutionPath.SourceControlProviderId;
+                this.ProviderId = ctlSolutionPath.SourceControlProviderId ?? 0;
                 ffSolutionPath.Visible = ctlSolutionPath.SourceControlProviderId > 0;
             };
 
@@ -148,7 +148,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 if (e.CurrentStep != this.wizardSteps.SelectProviderAndSolution)
                     return;
-                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlSolutionPath.SourceControlProviderId))
+                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlSolutionPath.SourceControlProviderId ?? 0))
                 {
                     var fileBytes = scm.GetFileContents(ctlSolutionPath.Text);
                     if (ctlSolutionPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
