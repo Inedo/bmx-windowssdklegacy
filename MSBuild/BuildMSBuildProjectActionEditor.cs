@@ -6,7 +6,9 @@ using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.Web.ClientResources;
 using Inedo.Web.Controls;
+using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
@@ -21,7 +23,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         private TextBox txtProjectPath;
         private CheckBox chkWebProject;
         private DropDownList ddlBuildOutputDir;
-        private DropDownList ddlVersion;
         private DropDownList ddlProjectBuildTargetPlatform;
         private TextBox txtOtherPlatform;
         private HtmlGenericControl divPlatform;
@@ -41,6 +42,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         {
             this.ddlProjectBuildConfiguration = new DropDownList
             {
+                ID = "ddlProjectBuildConfiguration",
                 Items =
                 {
                     new ListItem("Debug", "Debug"),
@@ -53,6 +55,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             this.ddlProjectBuildTargetPlatform = new DropDownList
             {
+                ID = "ddlProjectBuildTargetPlatform",
                 Items =
                 {
                     new ListItem("(Default)", string.Empty),
@@ -69,11 +72,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             this.chkWebProject = new CheckBox
             {
-                Text = "This is a Web Application project."
+                ID = "chkWebProject",
+                Text = "This is a Web Application project"
             };
 
-            this.ddlBuildOutputDir = new DropDownList()
+            this.ddlBuildOutputDir = new DropDownList
             {
+                ID = "ddlBuildOutputDir",
                 Items =
                 {
                     new ListItem("Specify output directory...", "target"),
@@ -81,26 +86,16 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 }
             };
 
-            this.txtTargetDir = new SourceControlFileFolderPicker()
+            this.txtTargetDir = new SourceControlFileFolderPicker
             {
-                DefaultText = "default",
-                Width = 270
+                DefaultText = "default"
             };
 
             this.txtAdditionalProperties = new TextBox
             {
-                Width = 300,
                 TextMode = TextBoxMode.MultiLine,
                 Rows = 5
             };
-
-            this.Controls.Add(
-                new FormFieldGroup(".NET Framework Version",
-                    "The version of the .NET Framework to use when building this project.",
-                    false,
-                    new StandardFormField("Version:", this.ddlVersion)
-                )
-            );
 
             this.divConfig = new HtmlGenericControl("div") { ID = "divConfig" };
             this.divConfig.Style.Value = "display:none;";
@@ -118,40 +113,56 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             this.divTargetDir.Controls.Add(this.txtTargetDir);
 
             this.Controls.Add(
-                new FormFieldGroup("Project Build Configuration",
-                    "The build configuration and platform for your project (usually either Debug or Release).",
-                    false,
-                    new StandardFormField("Project Build Configuration:", this.ddlProjectBuildConfiguration, this.divConfig),
-                    new StandardFormField("Target Platform:", this.ddlProjectBuildTargetPlatform, this.divPlatform)
-                ),
-                new FormFieldGroup("Project or Solution File Path",
-                    "The path to an msbuild project file or solution file, typically: .csproj, .vbproj, .vcxproj, or .sln. <br /><br />This path may be absolute or relative to the default directory.",
-                    false,
-                    new StandardFormField("Source Path:", this.txtProjectPath, new LiteralControl("<br />"), this.chkWebProject)
-                ),
-                new FormFieldGroup("Build Output Directory",
-                    "The directory of the build output. The \\bin\\{config} option is recommended when building a solution file. If \"This is a Web Application project\" is selected, an output directory must be specified.",
-                    false,
-                    new StandardFormField("Build Output Directory:", this.ddlBuildOutputDir, this.divTargetDir)
-                ),
-                new FormFieldGroup("MSBuild Properties",
-                    "Additional properties, separated by newlines.  Example:<br />WarningLevel=2<br />Optimize=false",
-                    true,
-                    new StandardFormField("MSBuild Properties:", this.txtAdditionalProperties)
+                new SlimFormField("Project/solution file:", this.txtProjectPath, new Div(this.chkWebProject)),
+                new SlimFormField("Configuration:", this.ddlProjectBuildConfiguration, this.divConfig),
+                new SlimFormField("Platform:", this.ddlProjectBuildTargetPlatform, this.divPlatform),
+                new SlimFormField("Output directory:", this.ddlBuildOutputDir, this.divTargetDir)
+                {
+                    HelpText = "The directory of the build output. The \\bin\\{config} option is recommended when building a solution file. If \"This is a Web Application project\" is selected, an output directory must be specified."
+                },
+                new SlimFormField("MSBuild properties:", this.txtAdditionalProperties)
+                {
+                    HelpText = HelpText.FromHtml("Additional properties, separated by newlines. Example:<br />WarningLevel=2<br />Optimize=false")
+                },
+                new RenderJQueryDocReadyDelegator(
+                    w =>
+                    {
+                        w.Write("BmExecuteMSBuildScriptActionEditor(");
+                        InedoLib.Util.JavaScript.WriteJson(
+                            w,
+                            new
+                            {
+                                ddlConfigId = "#" + ddlProjectBuildConfiguration.ClientID,
+                                divConfigId = "#" + divConfig.ClientID,
+                                ddlPlatformId = "#" + ddlProjectBuildTargetPlatform.ClientID,
+                                divPlatformId = "#" + divPlatform.ClientID,
+                                ddlTargetDirId = "#" + ddlBuildOutputDir.ClientID,
+                                divTargetDirId = "#" + divTargetDir.ClientID,
+                                chkWebProjectId = "#" + chkWebProject.ClientID
+                            }
+                        );
+                        w.Write(");");
+                    }
                 )
             );
         }
 
         protected override void OnPreRender(EventArgs e)
         {
-            this.Controls.Add(GetClientSideScript(this.ddlProjectBuildConfiguration.ClientID, this.divConfig.ClientID, this.ddlProjectBuildTargetPlatform.ClientID, this.divPlatform.ClientID, this.chkWebProject.ClientID, this.ddlBuildOutputDir.ClientID, this.divTargetDir.ClientID));
+            this.IncludeClientResourceInPage(
+                new JavascriptResource
+                {
+                    ResourcePath = "~/extension-resources/windowssdk/msbuild/executemsbuildscriptactioneditor.js?" + typeof(BuildMSBuildProjectActionEditor).Assembly.GetName().Version,
+                    CompatibleVersions = { InedoLibCR.Versions.jq152, InedoLibCR.Versions.jq161, InedoLibCR.Versions.jq171 }
+                }
+            );
 
             base.OnPreRender(e);
         }
 
         public override void BindToForm(ActionBase extension)
         {
-            EnsureChildControls();
+            this.EnsureChildControls();
 
             var buildAction = (BuildMSBuildProjectAction)extension;
 
@@ -178,7 +189,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             this.txtProjectPath.Text = Path.Combine(buildAction.OverriddenSourceDirectory ?? "", buildAction.ProjectPath);
             this.chkWebProject.Checked = buildAction.IsWebProject;
-            this.ddlVersion.SelectedValue = buildAction.DotNetVersion ?? "";
             this.txtAdditionalProperties.Text = buildAction.MSBuildProperties ?? "";
             if (buildAction.BuildToProjectConfigSubdirectories)
             {
@@ -193,7 +203,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         public override ActionBase CreateFromForm()
         {
-            EnsureChildControls();
+            this.EnsureChildControls();
 
             var buildAction = new BuildMSBuildProjectAction();
 
@@ -218,7 +228,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             }
 
             buildAction.IsWebProject = this.chkWebProject.Checked;
-            buildAction.DotNetVersion = this.ddlVersion.SelectedValue;
             buildAction.MSBuildProperties = this.txtAdditionalProperties.Text;
 
             if (this.ddlBuildOutputDir.SelectedValue == "bin" && !this.chkWebProject.Checked)

@@ -152,6 +152,9 @@
     <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.Build.Tasks.Dll" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MSBuild\ExecuteMSBuildScriptActionEditor.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\ctt.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
