@@ -27,22 +27,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(
-                "Precompile ASP.NET site in {0} to {1} with virtual path {2}",
-                Util.CoalesceStr(this.OverriddenSourceDirectory, "default source directory"),
-                Util.CoalesceStr(this.OverriddenTargetDirectory, "default target directory"),
-                Util.CoalesceStr(this.ApplicationVirtualPath, "/")
-            );
-        }
-
-        /// <summary>
         /// Gets or sets the virtual path of the application to be compiled (e.g. "/MyApp"). 
         /// </summary>
         [Persistent]
@@ -59,6 +43,22 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         /// </summary>
         [Persistent]
         public bool FixedNames { get; set; }
+
+        public override ActionDescription GetActionDescription()
+        {
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Precompile site in ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory)
+                ),
+                new LongActionDescription(
+                    "to ",
+                    new DirectoryHilite(this.OverriddenTargetDirectory),
+                    " with virtual path ",
+                    new Hilite(Util.CoalesceStr(this.ApplicationVirtualPath, "/"))
+                )
+            );
+        }
 
         /// <summary>
         /// This method is called to execute the Action.

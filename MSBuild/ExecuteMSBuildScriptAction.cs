@@ -25,25 +25,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(
-                "Build {0} Target:{1} Properties:{2}",
-                Path.GetFileName(this.MSBuildPath),
-                this.ProjectBuildTarget,
-                Util.CoalesceStr(string.Join(
-                    ";",
-                    this.MSBuildProperties.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                ), "(none)")
-            );
-        }
-
-        /// <summary>
         /// Gets or sets the project's target for the msbuild script
         /// </summary>
         [Persistent]
@@ -60,6 +41,22 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// </summary>
         [Persistent]
         public string MSBuildProperties { get; set; }
+
+        public override ActionDescription GetActionDescription()
+        {
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "MSBuild ",
+                    new Hilite(this.ProjectBuildTarget),
+                    " ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.MSBuildPath)
+                ),
+                new LongActionDescription(
+                    "with properties ",
+                    new ListHilite((this.MSBuildProperties ?? string.Empty).Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                )
+            );
+        }
 
         protected override void Execute()
         {

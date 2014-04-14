@@ -116,8 +116,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                                 new SourceControlFileFolderPicker
                                 {
                                     ID = "ctlDeployTarget" + i,
-                                    DisplayMode = SourceControlBrowser.DisplayModes.Folders,
-                                    ServerId = 1
+                                    DisplayMode = SourceControlBrowser.DisplayModes.Folders
                                 }
                             )
                         );
@@ -141,17 +140,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 if (e.CurrentStep != this.wizardSteps.SelectProviderAndFile)
                     return;
-                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlProjectPath.SourceControlProviderId ?? 0))
+
+                using (var proxy = Util.Proxy.CreateProviderProxy(ctlProjectPath.SourceControlProviderId ?? 0))
                 {
-                    var fileBytes = scm.GetFileContents(ctlProjectPath.Text);
+                    var scm = proxy.TryGetService<SourceControlProviderBase>();
+                    var fileBytes = (byte[])scm.GetFileContents(ctlProjectPath.Text);
+
                     if (ctlProjectPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
                     {
-                        var solution = Solution.Load(new MemoryStream(fileBytes));
+                        var solution = Solution.Load(new MemoryStream(fileBytes, false));
                         ctlProjectsInSolution.Items.AddRange(
                             solution.Projects
                                 .OrderBy(p => p.Name)
                                 .Select(p => new ListItem(p.Name, p.ProjectPath))
-                                .ToArray()
                         );
 
                         this.SolutionPath = new ProjectInfo(scm.DirectorySeparator, ctlProjectPath.Text).ScmDirectoryName;

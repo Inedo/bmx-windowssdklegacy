@@ -12,7 +12,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     /// <summary>
     /// Custom editor for the <see cref="BuildAspNetProjectAction"/> action.
     /// </summary>
-    public sealed class BuildAspNetProjectActionEditor : ActionEditorBase
+    internal sealed class BuildAspNetProjectActionEditor : ActionEditorBase
     {
         private DropDownList ddlProjectBuildConfiguration;
         private Div divConfig;

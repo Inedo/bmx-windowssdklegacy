@@ -45,23 +45,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         [Persistent]
         public bool Verbose { get; set; }
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        /// <remarks>
-        /// This should return a user-friendly string describing what the Action does
-        /// and the state of its important persistent properties.
-        /// </remarks>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            return string.Format(
-                "Perform XDT transform on {0} into {1} using the transform file {2}.",
-                this.SourceFile,
-                this.DestinationFile,
-                this.TransformFile
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "XDT transform ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.SourceFile)
+                ),
+                new LongActionDescription(
+                    "to ",
+                    new DirectoryHilite(this.OverriddenTargetDirectory, this.DestinationFile),
+                    " using ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.TransformFile)
+                )
             );
         }
 

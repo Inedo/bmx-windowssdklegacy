@@ -49,11 +49,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             this.txtTimestampServer = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
             this.txtContentDescription = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
             this.txtContentUrl = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
-            this.ctlSignExe = new SourceControlFileFolderPicker
-            {
-                ServerId = this.ServerId,
-                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles
-            };
+            this.ctlSignExe = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles };
 
             this.Controls.Add(
                 new FormFieldGroup(

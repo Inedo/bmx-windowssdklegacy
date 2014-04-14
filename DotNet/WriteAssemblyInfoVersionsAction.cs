@@ -36,13 +36,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public string Version { get; set; }
 
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            return string.Format(
-                "Set Assembly Version Attributes in files matching ({0}) in {1} to {2}",
-                string.Join(", ", this.FileMasks ?? new string[0]),
-                Util.CoalesceStr(this.OverriddenSourceDirectory, "(default directory)"),
-                this.Version
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Set AssemblyVersion Attributes to ",
+                    new Hilite(this.Version)
+                ),
+                new LongActionDescription(
+                    "in ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory),
+                    " matching ",
+                    new ListHilite(this.FileMasks)
+                )
             );
         }
 

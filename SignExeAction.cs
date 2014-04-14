@@ -47,20 +47,24 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         public string SignExePath { get; set; }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a description of the current configuration of the action.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// Description of the action's current configuration.
         /// </returns>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            string path;
-            if (!string.IsNullOrEmpty(this.OverriddenSourceDirectory))
-                path = Util.Path2.Combine(this.OverriddenSourceDirectory, this.SignExePath);
-            else
-                path = this.SignExePath;
-
-            return string.Format("Sign {0} using the {1} certificate", path, this.SubjectName);
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Sign ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.SignExePath)
+                ),
+                new LongActionDescription(
+                    "using the ",
+                    new Hilite(this.SubjectName),
+                    " certificate"
+                )
+            );
         }
 
         /// <summary>

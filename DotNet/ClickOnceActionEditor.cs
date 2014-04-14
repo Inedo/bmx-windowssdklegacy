@@ -27,7 +27,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             this.txtApplicationName = new ValidatingTextBox { Required = true, Width = 300 };
             this.txtProviderUrl = new ValidatingTextBox { Required = true, Width = 300 };
-            this.txtCertificatePath = new SourceControlFileFolderPicker { ServerId = this.ServerId };
+            this.txtCertificatePath = new SourceControlFileFolderPicker();
             this.txtCertificatePassword = new PasswordTextBox { Width = 250 };
             this.txtCertificateHash = new ValidatingTextBox { Width = 300 };
             this.txtVersion = new ValidatingTextBox { Required = true, Width = 300 };

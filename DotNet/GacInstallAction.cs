@@ -1,4 +1,3 @@
-using System;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
@@ -16,21 +15,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     public sealed class GacInstallAction : RemoteActionBase
     {
         /// <summary>
-        /// See <see cref="object.ToString()"/>
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return String.Format("Install {0} from {1} into the GAC{2}", 
-                String.Join(", ", FileMasks),
-                (String.IsNullOrEmpty(OverriddenSourceDirectory)
-                    ? "default directory."
-                    : OverriddenSourceDirectory),
-                (this.ForceRefresh) ? " (force refresh)" : ""
-            );
-        }
-
-        /// <summary>
         /// Gets or sets an array of files to install to the GAC.
         /// </summary>
         [Persistent]
@@ -45,6 +29,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         /// </remarks>
         [Persistent]
         public bool ForceRefresh { get; set; }
+
+        public override ActionDescription GetActionDescription()
+        {
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Install ",
+                    new ListHilite(this.FileMasks),
+                    " into the GAC"
+                ),
+                new LongActionDescription(
+                    "from ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory)
+                )
+            );
+        }
 
         public override bool HasConfigurerSettings()
         {

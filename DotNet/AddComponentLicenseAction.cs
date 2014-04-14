@@ -58,22 +58,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             return false;
         }
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            var masks = this.SearchMasks ?? new string[0];
-            var components = this.LicenesedComponents ?? new string[0];
 
-            return string.Format(
-                "Add licenses ({0}) to projects matching ({1}) in {2}",
-                string.Join("; ", components),
-                string.Join("; ", masks),
-                Util.CoalesceStr(this.OverriddenSourceDirectory, "(default directory)"));
+        public override ActionDescription GetActionDescription()
+        {
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Add Licenses to Projects in ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory)
+                ),
+                new LongActionDescription(
+                    "for ",
+                    new ListHilite(this.LicenesedComponents)
+                )
+            );
         }
 
         protected override void Execute()

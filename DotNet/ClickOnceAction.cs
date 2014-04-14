@@ -279,14 +279,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
         }
 
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            return string.Format(
-                "Create ClickOnce Application ({0}) in {1}.",
-                ApplicationName,  
-		        (String.IsNullOrEmpty(OverriddenSourceDirectory)
-			        ? "default directory"
-			        : OverriddenSourceDirectory)
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Create ",
+                    new Hilite(this.ApplicationName),
+                    " ClickOnce Application from ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory)
+                ),
+                new LongActionDescription(
+                    "in ",
+                    new DirectoryHilite(this.OverriddenTargetDirectory)
+                )
             );
         }
 

@@ -15,7 +15,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     /// <summary>
     /// Implements common UI elements for building .NET application actions.
     /// </summary>
-    public class BuildMSBuildProjectActionEditor : ActionEditorBase
+    internal sealed class BuildMSBuildProjectActionEditor : ActionEditorBase
     {
         private DropDownList ddlProjectBuildConfiguration;
         private HtmlGenericControl divConfig;

@@ -50,13 +50,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool Recursive { get; set; }
 
-        /// <summary>
-        /// Returns a string representation of the action.
-        /// </summary>
-        /// <returns>String representation of the action.</returns>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            return string.Format("Convert project files matching '{0}' to reference assemblies in '{1}'", string.Join(", ", this.SearchMasks), this.LibraryPath);
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Change Project References to Assembly References"
+                ),
+                new LongActionDescription(
+                    "in ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory),
+                    " and matching ",
+                    new ListHilite(this.SearchMasks),
+                    " with library path ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.LibraryPath)
+                )
+            );
         }
 
         public override bool HasConfigurerSettings()

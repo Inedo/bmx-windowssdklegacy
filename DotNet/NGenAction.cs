@@ -56,35 +56,36 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             set { this.Mode = (NGenMode)Enum.Parse(typeof(NGenMode), value); }
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            var message = string.Empty;
-
             switch (this.Mode)
             {
                 case NGenMode.Install:
-                    message = string.Format("Install {0} to the native image cache", this.TargetAssembly);
-                    break;
+                    return new ActionDescription(
+                        new ShortActionDescription(
+                            "Generate Native Image for ",
+                            new DirectoryHilite(this.OverriddenSourceDirectory, this.TargetAssembly)
+                        )
+                    );
 
                 case NGenMode.Uninstall:
-                    message = string.Format("Uninstall {0} from the native image cache", this.TargetAssembly);
-                    break;
+                    return new ActionDescription(
+                        new ShortActionDescription(
+                            "Uninstall Native Images for ",
+                            new DirectoryHilite(this.OverriddenSourceDirectory, this.TargetAssembly)
+                        )
+                    );
 
                 case NGenMode.Update:
-                    message = "Update the native image cache";
-                    break;
+                    return new ActionDescription(
+                        new ShortActionDescription(
+                            "Update the Native Image Cache"
+                        )
+                    );
+
+                default:
+                    return new ActionDescription(new ShortActionDescription());
             }
-
-            if (this.UseQueue)
-                message += " (queued)";
-
-            return message;
         }
 
         /// <summary>

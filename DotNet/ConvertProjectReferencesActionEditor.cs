@@ -24,7 +24,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void CreateChildControls()
         {
-            this.libPath = new SourceControlFileFolderPicker() { Required = true, DisplayMode = SourceControlBrowser.DisplayModes.Folders, ServerId = this.ServerId };
+            this.libPath = new SourceControlFileFolderPicker { Required = true, DisplayMode = SourceControlBrowser.DisplayModes.Folders };
             this.searchMask = new ValidatingTextBox() { Required = true, Text = "*.csproj", TextMode = TextBoxMode.MultiLine,  Rows = 4, Columns = 30, Width = 300 };
             this.recursive = new CheckBox() { Text = "Recursive" };
 

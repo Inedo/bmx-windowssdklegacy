@@ -32,24 +32,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public string AdditionalArguments { get; set; }
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        /// <remarks>
-        /// This should return a user-friendly string describing what the Action does
-        /// and the state of its important persistent properties.
-        /// </remarks>
-        public override string ToString()
+        public override ActionDescription GetActionDescription()
         {
-            var sourceDir = Util.CoalesceStr(this.OverriddenSourceDirectory, "the default directory");
-            var targetDir = Util.CoalesceStr(this.OverriddenTargetDirectory, "the default directory");
-            var fileName = Path.GetFileName(this.ProjectPath);
-            var config = this.ProjectBuildConfiguration;
-
-            return string.Format("Build MVC Project {0} ({1}) from {2} to {3}", fileName, config, sourceDir, targetDir);
+            return new ActionDescription(
+                new ShortActionDescription(
+                    "Build MVC Project ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.ProjectPath),
+                    " (",
+                    new Hilite(this.ProjectBuildConfiguration),
+                    ")"
+                ),
+                new LongActionDescription(
+                    "to ",
+                    new DirectoryHilite(this.OverriddenTargetDirectory)
+                )
+            );
         }
 
         protected override void Execute()
