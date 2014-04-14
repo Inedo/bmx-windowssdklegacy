@@ -79,14 +79,16 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 configIds[i] = new int[this.Projects[i].ConfigFiles.Count];
                 if (configIds[i].Length > 0)
                 {
-                    using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(this.ScmProviderId))
+                    using (var proxy = Util.Proxy.CreateProviderProxy(this.ScmProviderId))
                     {
+                        var scm = proxy.TryGetService<SourceControlProviderBase>();
+
                         for (int j = 0; j < this.Projects[i].ConfigFiles.Count; j++)
                         {
                             var createConfigFile = StoredProcs.ConfigurationFiles_CreateConfigurationFile(
                                 null,
                                 deployableIds[i],
-                                this.Projects[i].ConfigFiles[j].Replace(scm.DirectorySeparator, '\\')
+                                this.Projects[i].ConfigFiles[j].Replace((char)scm.DirectorySeparator, '\\')
                             );
                             createConfigFile.ExecuteNonQuery();
                             configIds[i][j] = (int)createConfigFile.ConfigurationFile_Id;
@@ -102,7 +104,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                                 ).ExecuteNonQuery();
                             }
 
-                            var configFileBytes = scm.GetFileContents(this.SolutionPath + scm.DirectorySeparator + this.Projects[i].ScmDirectoryName + scm.DirectorySeparator + this.Projects[i].ConfigFiles[j]);
+                            var configFileBytes = (byte[])scm.GetFileContents(this.SolutionPath + scm.DirectorySeparator + this.Projects[i].ScmDirectoryName + scm.DirectorySeparator + this.Projects[i].ConfigFiles[j]);
                             AddConfigurationFile(configIds[i][j], "0.0", this.WorkflowSteps.Select(s => environmentNames[s]), configFileBytes);
                         }
                     }
