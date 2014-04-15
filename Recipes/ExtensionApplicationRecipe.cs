@@ -27,7 +27,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         public int ScmProviderId { get; set; }
         internal ProjectInfo Project { get; set; }
 
-        public override string RedirectUrl { get { return string.Format("/Applications/{0}/Overview.aspx", this.applicationId); } }
+        public override string RedirectUrl
+        {
+            get { return string.Format("/applications/{0}/", this.applicationId); }
+        }
 
         public override void Execute()
         {
@@ -61,20 +64,20 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.ApplyLabelAction", new
                 {
                     SourcePath = this.SolutionPath,
-                    UserDefinedLabel = "%RELNO%.%BLDNO%",
+                    UserDefinedLabel = "$ReleaseNumber.$BuildNumber",
                     ProviderId = this.ScmProviderId
                 }));
             Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.GetLabeledAction", new
                 {
                     SourcePath = this.SolutionPath,
-                    UserDefinedLabel = "%RELNO%.%BLDNO%",
+                    UserDefinedLabel = "$ReleaseNumber.$BuildNumber",
                     ProviderId = this.ScmProviderId
                 }));
             Util.Recipes.AddAction(planId, 1, new WriteAssemblyInfoVersionsAction
             {
                 FileMasks = new[] { @"*\AssemblyInfo.cs" },
-                Version = "%RELNO%.%BLDNO%",
+                Version = "$ReleaseNumber.$BuildNumber",
                 Recursive = true
             });
 
@@ -128,7 +131,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 {
                     OverriddenSourceDirectory = GetBinPath(),
                     FileName = "reset",
-                    Contents = "kick-service:%DATE:G%"
+                    Contents = "kick-service:$Date"
                 }));
 
             Util.Recipes.CreateRelease(

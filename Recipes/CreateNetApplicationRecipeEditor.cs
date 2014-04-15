@@ -11,6 +11,7 @@ using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using System.Linq;
 using Inedo.Web.Controls;
+using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 {
@@ -50,40 +51,33 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
         protected override void CreateChildControls()
         {
-            var ddlProvider = new DropDownList { AutoPostBack = true };
-            ddlProvider.Items.Add(new ListItem("", "0"));
-            var providerItems = StoredProcs.Providers_GetProviders(
-                    Domains.ProviderTypes.SourceControl,
-                    null,
-                    null
-                ).Execute()
-                .Select(p => new ListItem(p.Provider_Name, p.Provider_Id.ToString()))
-                .ToArray();
-            ddlProvider.Items.AddRange(providerItems);
-            ddlProvider.Visible = providerItems.Any();
+            var hasProviders = StoredProcs.Providers_GetProviders(Domains.ProviderTypes.SourceControl).Execute().Any();
 
-            var ctlNoProviders = new InfoBox()
+            var ddlProvider = new ActionProviderPicker
+            {
+                AllowNameEntry = false,
+                Visible = hasProviders,
+                ProviderTypeCode = Domains.ProviderTypes.SourceControl
+            };
+
+            var ctlNoProviders = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Error,
                 Controls = { new LiteralControl("There are no source control providers set up in BuildMaster. Visit the <a href=\"/Administration/Providers/Overview.aspx?providerTypeCode=S\">Source Control Providers page</a> to add one.") },
-                Visible = !providerItems.Any()
+                Visible = !hasProviders
             };
 
-            var ctlProjectPath = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles };
+            var ctlProjectPath = new SourceControlFileFolderPicker
+            {
+                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles,
+                BindToActionSourceControlProvider = true
+            };
 
-            var ffProjectPath = new StandardFormField("Path of solution or project:", ctlProjectPath) { Visible = false };
-
-            ddlProvider.SelectedIndexChanged +=
-                (s, e) =>
-                {
-                    ctlProjectPath.SourceControlProviderId = int.Parse(ddlProvider.SelectedValue);
-                    this.ProviderId = ctlProjectPath.SourceControlProviderId ?? 0;
-                    ffProjectPath.Visible = ctlProjectPath.SourceControlProviderId > 0;
-                };
+            var ffProjectPath = new StandardFormField("Path of solution or project:", ctlProjectPath);
 
             var ctlProjectsInSolution = new CheckBoxList();
 
-            var ctlOneProject = new InfoBox()
+            var ctlOneProject = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Success,
                 Controls = { new LiteralControl("You have selected a project file, you may click Next to select a configuration file.") },
@@ -92,7 +86,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             var ctlConfigFiles = new CheckBoxList();
 
-            var ctlNoConfigFiles = new InfoBox()
+            var ctlNoConfigFiles = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Warning,
                 Controls = { new LiteralControl("There are no files with .config extension in any of the selected projects, therefore configuration files for this project/solution will have to be created manually.") },
@@ -108,7 +102,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             this.Load +=
                 (s, e) =>
                 {
-                    for(int i = 0; i < this.Projects.Length; i++)
+                    for (int i = 0; i < this.Projects.Length; i++)
                     {
                         ffgTargets.FormFields.Add(
                             new StandardFormField(
@@ -131,7 +125,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     new StandardFormField(
                         "Source Control Provider:",
                         ddlProvider,
-                        ctlNoProviders
+                        ctlNoProviders,
+                        new Div(
+                            new ActionServerPicker { ID = "bm-action-server-id" }
+                        ) { Style = "display: none;" }
                     ),
                     ffProjectPath
                 )
@@ -141,7 +138,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 if (e.CurrentStep != this.wizardSteps.SelectProviderAndFile)
                     return;
 
-                using (var proxy = Util.Proxy.CreateProviderProxy(ctlProjectPath.SourceControlProviderId ?? 0))
+                this.ProviderId = (int)ddlProvider.ProviderId;
+
+                using (var proxy = Util.Proxy.CreateProviderProxy((int)ddlProvider.ProviderId))
                 {
                     var scm = proxy.TryGetService<SourceControlProviderBase>();
                     var fileBytes = (byte[])scm.GetFileContents(ctlProjectPath.Text);
@@ -182,9 +181,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 if (e.CurrentStep != this.wizardSteps.SelectProjectsInSolution)
                     return;
-                using(var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(this.ProviderId))
+
+                using (var proxy = Util.Proxy.CreateProviderProxy((int)ddlProvider.ProviderId))
                 {
-                    var dirSeparator = scm.DirectorySeparator;
+                    var scm = proxy.TryGetService<SourceControlProviderBase>();
+                    char dirSeparator = scm.DirectorySeparator;
 
                     if (ctlProjectPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
                     {
@@ -225,7 +226,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 foreach (var cfg in configFiles)
                     dict[cfg.Key].ConfigFiles.AddRange(cfg.Select(c => c.Name));
             };
-            
+
             this.wizardSteps.SelectDeploymentPaths.Controls.Add(ffgTargets);
             this.WizardStepChange += (s, e) =>
             {
@@ -254,13 +255,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             base.CreateChildControls();
         }
 
-        private void ParseProjects(CheckBoxList ctlConfigFiles, InfoBox ctlNoConfigFiles, SourceControlProviderBase provider)
+        private void ParseProjects(CheckBoxList ctlConfigFiles, InfoBox ctlNoConfigFiles, dynamic provider)
         {
             var parsedProjects = this.Projects
-                .Select(p => ReadProject(provider, this.SolutionPath + provider.DirectorySeparator + p.ScmPath))
+                .Select(p => (MSBuildProject)ReadProject(provider, this.SolutionPath + provider.DirectorySeparator + p.ScmPath))
                 .ToArray();
 
-            if (parsedProjects.SelectMany(p => GetConfigFiles(p)).Any())
+            if (parsedProjects.SelectMany(GetConfigFiles).Any())
             {
                 for (int i = 0; i < this.Projects.Length; i++)
                 {
@@ -282,10 +283,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 .Select(p => p.Name);
         }
 
-        private static MSBuildProject ReadProject(SourceControlProviderBase provider, string path)
+        private static MSBuildProject ReadProject(dynamic provider, string path)
         {
-            var fileBytes = provider.GetFileContents(path);
-            return MSBuildProject.Load(new MemoryStream(fileBytes));
+            byte[] fileBytes = provider.GetFileContents(path);
+            return MSBuildProject.Load(new MemoryStream(fileBytes, false));
         }
 
         private static string GetProjectPath(SourceControlProviderBase provider, string solutionPath, string relativeProjectPath)

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Data;
 using Inedo.BuildMaster.Extensibility.Providers.SourceControl;
@@ -16,7 +15,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
     internal sealed class ExtensionApplicationRecipeEditor : RecipeEditorBase
     {
         private ExtensionApplicationWizardSteps wizardSteps = new ExtensionApplicationWizardSteps();
-
         private ValidatingTextBox txtOrganizationName;
 
         private int ProviderId
@@ -35,12 +33,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             set { this.ViewState["Project"] = value; }
         }
 
-        public override string ExecuteRecipeButtonText { get { return "Create Application"; } }
-
-        public override bool DisplayAsWizard { get { return true; } }
-
-        public ExtensionApplicationRecipeEditor()
+        public override string ExecuteRecipeButtonText
         {
+            get { return "Create Application"; }
+        }
+        public override bool DisplayAsWizard
+        {
+            get { return true; }
         }
 
         public override RecipeWizardSteps GetWizardStepsControl()
@@ -63,58 +62,56 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         {
             base.CreateChildControls();
 
-            this.txtOrganizationName = new ValidatingTextBox()
+            this.txtOrganizationName = new ValidatingTextBox
             {
                 Required = true,
                 Width = 300
             };
-            this.txtOrganizationName.ServerValidate += (s, e) =>
-            {
-                var applications = StoredProcs.Applications_GetApplications(null).Execute();
-                if (applications.Any(app => app.Application_Name.Equals(this.txtOrganizationName.Text.Replace(" ", "") + "Extension", StringComparison.OrdinalIgnoreCase)))
-                    e.IsValid = false;
-            };
-           
-            var ddlProvider = new DropDownList { AutoPostBack = true };
-            ddlProvider.Items.Add(new ListItem("", "0"));
-            var providerItems = StoredProcs.Providers_GetProviders(
-                    Domains.ProviderTypes.SourceControl,
-                    null,
-                    null
-                ).Execute()
-                .Select(p => new ListItem(p.Provider_Name, p.Provider_Id.ToString()))
-                .ToArray();
-            ddlProvider.Items.AddRange(providerItems);
-            ddlProvider.Visible = providerItems.Any();
 
-            var ctlNoProviders = new InfoBox()
+            this.txtOrganizationName.ServerValidate +=
+                (s, e) =>
+                {
+                    var applications = StoredProcs.Applications_GetApplications(null).Execute();
+                    if (applications.Any(app => app.Application_Name.Equals(this.txtOrganizationName.Text.Replace(" ", "") + "Extension", StringComparison.OrdinalIgnoreCase)))
+                        e.IsValid = false;
+                };
+
+            bool hasProviders = StoredProcs.Providers_GetProviders(Domains.ProviderTypes.SourceControl).Execute().Any();
+            var ddlProvider = new ActionProviderPicker
+            {
+                AllowNameEntry = false,
+                ProviderTypeCode = Domains.ProviderTypes.SourceControl,
+                Visible = hasProviders
+            };
+
+            var ctlNoProviders = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Error,
                 Controls = { new LiteralControl("There are no source control providers set up in BuildMaster. Visit the <a href=\"/Administration/Providers/Overview.aspx?providerTypeCode=S\">Source Control Providers page</a> to add one.") },
-                Visible = !providerItems.Any()
+                Visible = !hasProviders
             };
 
-            var ctlMoreThanOneProject = new InfoBox()
+            var ctlMoreThanOneProject = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Error,
                 Controls = { new LiteralControl("There was more than one project in this solution. This application recipe only supports single-project solutions. Please go back to the previous step and select an extension solution with only one project.") },
                 Visible = false
             };
-            var ctlOneProject = new InfoBox()
+
+            var ctlOneProject = new InfoBox
             {
                 BoxType = InfoBox.InfoBoxTypes.Success,
                 Controls = { new LiteralControl("There solution contains a single project. You may advance to the summary step.") }
             };
 
-            var ctlSolutionPath = new SourceControlFileFolderPicker() { DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles };
-
-            var ffSolutionPath = new StandardFormField("Path of solution:", ctlSolutionPath) { Visible = false };
-            
-            ddlProvider.SelectedIndexChanged += (s, e) =>
+            var ctlSolutionPath = new SourceControlFileFolderPicker
             {
-                ctlSolutionPath.SourceControlProviderId = int.Parse(ddlProvider.SelectedValue);
-                this.ProviderId = ctlSolutionPath.SourceControlProviderId ?? 0;
-                ffSolutionPath.Visible = ctlSolutionPath.SourceControlProviderId > 0;
+                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles
+            };
+
+            var ffSolutionPath = new StandardFormField("Path of solution:", ctlSolutionPath)
+            {
+                Visible = false
             };
 
             this.wizardSteps.SelectOrganizationName.Controls.Add(
@@ -129,7 +126,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 )
             );
 
-            txtOrganizationName.Load += (S,E) => this.wizardSteps.DownloadInstructions.OrganizationName = txtOrganizationName.Text;
+            txtOrganizationName.Load += (s, e) => this.wizardSteps.DownloadInstructions.OrganizationName = txtOrganizationName.Text;
 
             this.wizardSteps.SelectProviderAndSolution.Controls.Add(
                 new FormFieldGroup(
@@ -144,28 +141,34 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     ffSolutionPath
                 )
             );
-            this.WizardStepChange += (s, e) =>
-            {
-                if (e.CurrentStep != this.wizardSteps.SelectProviderAndSolution)
-                    return;
-                using (var scm = Util.Providers.CreateProviderFromId<SourceControlProviderBase>(ctlSolutionPath.SourceControlProviderId ?? 0))
+            this.WizardStepChange +=
+                (s, e) =>
                 {
-                    var fileBytes = scm.GetFileContents(ctlSolutionPath.Text);
-                    if (ctlSolutionPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
+                    if (e.CurrentStep != this.wizardSteps.SelectProviderAndSolution)
+                        return;
+
+                    this.ProviderId = (int)ddlProvider.ProviderId;
+
+                    using (var proxy = Util.Proxy.CreateProviderProxy(this.ProviderId))
                     {
-                        var solution = Solution.Load(new MemoryStream(fileBytes));
+                        var scm = proxy.TryGetService<SourceControlProviderBase>();
+                        byte[] fileBytes = scm.GetFileContents(ctlSolutionPath.Text);
 
-                        if (solution.Projects.Count > 1)
+                        if (ctlSolutionPath.Text.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
                         {
-                            ctlMoreThanOneProject.Visible = true;
-                            ctlOneProject.Visible = false;
-                        }
+                            var solution = Solution.Load(new MemoryStream(fileBytes));
 
-                        this.SolutionPath = new ProjectInfo(scm.DirectorySeparator, ctlSolutionPath.Text).ScmDirectoryName;
-                        this.Project = new ProjectInfo(scm.DirectorySeparator, new ProjectInfo(scm.DirectorySeparator, ctlSolutionPath.Text).ProjectFileName);
+                            if (solution.Projects.Count > 1)
+                            {
+                                ctlMoreThanOneProject.Visible = true;
+                                ctlOneProject.Visible = false;
+                            }
+
+                            this.SolutionPath = new ProjectInfo(scm.DirectorySeparator, ctlSolutionPath.Text).ScmDirectoryName;
+                            this.Project = new ProjectInfo(scm.DirectorySeparator, new ProjectInfo(scm.DirectorySeparator, ctlSolutionPath.Text).ProjectFileName);
+                        }
                     }
-                }
-            };
+                };
 
             this.wizardSteps.OneProjectVerification.Controls.Add(
                 new FormFieldGroup(
@@ -191,7 +194,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     )
                 )
             );
-
         }
 
         private sealed class Summary : Control

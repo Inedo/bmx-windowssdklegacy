@@ -21,13 +21,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
     [CustomEditor(typeof(CreateNetApplicationRecipeEditor))]
     public sealed class CreateNetApplicationRecipe : RecipeBase, IApplicationCreatingRecipe, IWorkflowCreatingRecipe
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CreateNetApplicationRecipe"/> class.
-        /// </summary>
-        public CreateNetApplicationRecipe()
-        {
-        }
-
         public string ApplicationGroup { get; set; }
         public string ApplicationName { get; set; }
         public int ApplicationId { get; set; }
@@ -68,9 +61,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 deployableIds[i] = Util.Recipes.CreateDeployable(this.ApplicationId, this.Projects[i].Name);
 
             Util.Recipes.CreateSetupRelease(
-                this.ApplicationId, 
-                Domains.ReleaseNumberSchemes.MajorMinor, 
-                this.WorkflowId, 
+                this.ApplicationId,
+                Domains.ReleaseNumberSchemes.MajorMinor,
+                this.WorkflowId,
                 deployableIds
             );
 
@@ -116,14 +109,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.ApplyLabelAction", new
                 {
                     SourcePath = this.SolutionPath,
-                    UserDefinedLabel = "%RELNO%.%BLDNO%",
+                    UserDefinedLabel = "$ReleaseNumber.$BuildNumber",
                     ProviderId = this.ScmProviderId
                 }));
             AddAction(getSourcePlanId, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.GetLabeledAction", new
                 {
                     SourcePath = this.SolutionPath,
-                    UserDefinedLabel = "%RELNO%.%BLDNO%",
+                    UserDefinedLabel = "$ReleaseNumber.$BuildNumber",
                     ProviderId = this.ScmProviderId,
                     OverriddenTargetDirectory = @"~\Src"
                 }));
@@ -131,7 +124,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             {
                 OverriddenSourceDirectory = @"~\Src",
                 FileMasks = new[] { @"*\AssemblyInfo.cs", @"*\AssemblyInfo.vb" },
-                Version = "%RELNO%.%BLDNO%",
+                Version = "$ReleaseNumber.$BuildNumber",
                 Recursive = true
             });
 
