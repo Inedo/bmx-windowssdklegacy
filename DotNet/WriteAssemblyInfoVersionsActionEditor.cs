@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Web.UI.WebControls;
+using Inedo.BuildMaster.Data;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
 
@@ -12,10 +13,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox txtFileMasks;
         private CheckBox chkRecursive;
         private ValidatingTextBox txtVersion;
-
-        public WriteAssemblyInfoVersionsActionEditor()
-        {
-        }
 
         public override bool DisplaySourceDirectory
         {
@@ -45,11 +42,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void CreateChildControls()
         {
+            var application = StoredProcs.Applications_GetApplication(this.ApplicationId).Execute().Applications_Extended.FirstOrDefault();
+            var variableMode = application != null ? application.VariableSupport_Code : Domains.VariableSupportCodes.All;
+
             this.txtFileMasks = new ValidatingTextBox
             {
                 Required = true,
                 TextMode = TextBoxMode.MultiLine,
-                Width = 300,
                 Rows = 5,
                 Text = "*\\AssemblyInfo.cs"
             };
@@ -61,34 +60,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             this.txtVersion = new ValidatingTextBox
             {
-                Width = 300,
                 Required = true,
-                Text = "%RELNO%.%BLDNO%"
+                Text = variableMode == Domains.VariableSupportCodes.Old ? "%RELNO%.%BLDNO%" : "$ReleaseNumber.$BuildNumber"
             };
 
             this.Controls.Add(
-                new FormFieldGroup(
-                    "Files",
-                    "Specify the masks (one per line) used to determine if a file should be searched for Assembly Version Attributes to replace.",
-                    false,
-                    new StandardFormField(
-                        "File Masks:",
-                        this.txtFileMasks
-                    ),
-                    new StandardFormField(
-                        string.Empty,
-                        this.chkRecursive
-                    )
-                ),
-                new FormFieldGroup(
-                    "Assembly Version",
-                    "Specify the version to write to the matched Assembly Version Attributes.",
-                    true,
-                    new StandardFormField(
-                        "Version:",
-                        this.txtVersion
-                    )
-                )
+                new SlimFormField("Assembly version files:", this.txtFileMasks)
+                {
+                    HelpText = "Use standard BuildMaster file masks (one per line)."
+                },
+                new SlimFormField("Assembly version:", this.txtVersion),
+                new SlimFormField("Options:", this.chkRecursive)
             );
         }
     }

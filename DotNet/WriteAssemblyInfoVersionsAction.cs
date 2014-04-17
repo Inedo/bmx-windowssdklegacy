@@ -20,15 +20,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     {
         private static readonly Regex AttributeRegex = new Regex(@"(?<s>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<e>""\s*\))", RegexOptions.Compiled);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WriteAssemblyInfoVersionsAction"/> class.
-        /// </summary>
-        public WriteAssemblyInfoVersionsAction()
-        {
-            this.FileMasks = new[] { "*\\AssemblyInfo.cs" };
-            this.Version = "%RELNO%.%BLDNO%";
-        }
-
         [Persistent]
         public string[] FileMasks { get; set; }
         [Persistent]
@@ -92,7 +83,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             foreach (var match in matches)
             {
-                this.LogDebug("Writing assembly versions attributes to {0}...", match.Path);
+                this.LogInformation("Writing assembly versions attributes to {0}...", match.Path);
 
                 var text = Encoding.UTF8.GetString(fileOps.ReadFileBytes(match.Path));
                 if (AttributeRegex.IsMatch(text))
