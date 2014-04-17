@@ -3,7 +3,10 @@ using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
-
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using FileAssociation = Inedo.BuildMasterExtensions.WindowsSdk.DotNet.ClickOnceAction.FileAssociation;
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     internal sealed class ClickOnceActionEditor : ActionEditorBase
@@ -15,16 +18,32 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox txtCertificateHash;
         private ValidatingTextBox txtVersion;
         private ValidatingTextBox txtMinVersion;
+        private ValidatingTextBox txtEntryPointFile;
         private CheckBox chkMapFileExtensions;
         private CheckBox chkInstallApplication;
         private ValidatingTextBox txtIconFile;
+        private ValidatingTextBox txtFilesExcludedFromManifest;
+        private ValidatingTextBox txtAppCodeBaseDirectory;
         private CheckBox chkCreateDesktopIcon;
         private CheckBox chkStartupCheckForUpdate;
+        private CheckBox chkTrustUrlParameters;
+
+        private ValidatingTextBox txtFileAssociationExtension1;
+        private ValidatingTextBox txtFileAssociationDescription1;
+        private ValidatingTextBox txtFileAssociationProgId1;
+        private ValidatingTextBox txtFileAssociationDefaultIcon1;
+
+        private ValidatingTextBox txtFileAssociationExtension2;
+        private ValidatingTextBox txtFileAssociationDescription2;
+        private ValidatingTextBox txtFileAssociationProgId2;
+        private ValidatingTextBox txtFileAssociationDefaultIcon2;
 
         public override bool DisplaySourceDirectory { get { return true; } }
 
         protected override void CreateChildControls()
         {
+            //Inedo.Web.Controls.
+
             this.txtApplicationName = new ValidatingTextBox { Required = true, Width = 300 };
             this.txtProviderUrl = new ValidatingTextBox { Required = true, Width = 300 };
             this.txtCertificatePath = new SourceControlFileFolderPicker { ServerId = this.ServerId };
@@ -36,8 +55,22 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkInstallApplication = new CheckBox { Text = "Install application onto local machine" };
             this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon" };
             this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup" };
-
+            this.txtEntryPointFile = new ValidatingTextBox { Width = 300 };
+            this.txtFilesExcludedFromManifest = new ValidatingTextBox { Width = 300, TextMode = TextBoxMode.MultiLine };
             this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
+            this.txtAppCodeBaseDirectory = new ValidatingTextBox { Width = 300 };
+            this.chkTrustUrlParameters = new CheckBox { Text = "Trust URL Parameters" };
+
+            this.txtFileAssociationDefaultIcon1 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationDescription1 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationExtension1 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationProgId1 = new ValidatingTextBox { Width = 300 };
+
+            this.txtFileAssociationDefaultIcon2 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationDescription2 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationExtension2 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationProgId2 = new ValidatingTextBox { Width = 300 };
+
             this.Controls.Add(
                 new FormFieldGroup(
                     "Application Settings",
@@ -57,7 +90,24 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     new StandardFormField(
                         "Provider URL:",
                         this.txtProviderUrl),
-                        new StandardFormField("Icon File:", this.txtIconFile)
+                    new StandardFormField("Icon File:", this.txtIconFile),
+                    new StandardFormField("Application Code Base Directory:", this.txtAppCodeBaseDirectory),
+                    new StandardFormField(
+                        "Entry Point File:",
+                        this.txtEntryPointFile),
+                    new StandardFormField("Files to exclude from manifest:",
+                        this.txtFilesExcludedFromManifest),
+                    new StandardFormField(String.Empty, this.chkTrustUrlParameters),
+                    new StandardFormField("File Association 1:",
+                        new StandardFormField("Default Icon:", this.txtFileAssociationDefaultIcon1),
+                        new StandardFormField("Description:", this.txtFileAssociationDescription1),
+                        new StandardFormField("Extension:", this.txtFileAssociationExtension1),
+                        new StandardFormField("Prog Id:", this.txtFileAssociationProgId1)),
+                    new StandardFormField("File Association 2:",
+                        new StandardFormField("Default Icon:", this.txtFileAssociationDefaultIcon2),
+                        new StandardFormField("Description:", this.txtFileAssociationDescription2),
+                        new StandardFormField("Extension:", this.txtFileAssociationExtension2),
+                        new StandardFormField("Prog Id:", this.txtFileAssociationProgId2))
                     ),
                 new FormFieldGroup(
                     "File Extension Mapping",
@@ -111,10 +161,59 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.chkCreateDesktopIcon.Checked = c1action.CreateDesktopIcon;
             this.chkStartupCheckForUpdate.Checked = c1action.StartupUpdateCheck;
             this.txtMinVersion.Text = c1action.MinVersion;
+            this.txtEntryPointFile.Text = c1action.EntryPointFile;
+            this.txtFilesExcludedFromManifest.Text = String.Join(Environment.NewLine, c1action.FilesExcludedFromManifest);
+            this.txtAppCodeBaseDirectory.Text = c1action.AppCodeBaseDirectory;
+            this.chkTrustUrlParameters.Checked = c1action.TrustUrlParameters;
+
+            if (c1action.FileAssociations.Length >= 1)
+            {
+                this.txtFileAssociationDefaultIcon1.Text = c1action.FileAssociations[0].DefaultIcon;
+                this.txtFileAssociationDescription1.Text = c1action.FileAssociations[0].Description;
+                this.txtFileAssociationExtension1.Text = c1action.FileAssociations[0].Extension;
+                this.txtFileAssociationProgId1.Text = c1action.FileAssociations[0].ProgId;
+            }
+            if (c1action.FileAssociations.Length >= 2)
+            {
+                this.txtFileAssociationDefaultIcon2.Text = c1action.FileAssociations[1].DefaultIcon;
+                this.txtFileAssociationDescription2.Text = c1action.FileAssociations[1].Description;
+                this.txtFileAssociationExtension2.Text = c1action.FileAssociations[1].Extension;
+                this.txtFileAssociationProgId2.Text = c1action.FileAssociations[1].ProgId;
+            }
         }
 
         public override ActionBase CreateFromForm()
         {
+            List<FileAssociation> fileAssociations = new List<FileAssociation>();
+
+            if (!String.IsNullOrWhiteSpace(this.txtFileAssociationDefaultIcon1.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationDescription1.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationExtension1.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationProgId1.Text))
+            {
+                fileAssociations.Add(new FileAssociation
+                {
+                    DefaultIcon = this.txtFileAssociationDefaultIcon1.Text,
+                    Description = this.txtFileAssociationDescription1.Text,
+                    Extension = this.txtFileAssociationExtension1.Text,
+                    ProgId = this.txtFileAssociationProgId1.Text
+                });
+            }
+
+            if (!String.IsNullOrWhiteSpace(this.txtFileAssociationDefaultIcon2.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationDescription2.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationExtension2.Text)
+                && !String.IsNullOrWhiteSpace(this.txtFileAssociationProgId2.Text))
+            {
+                fileAssociations.Add(new FileAssociation
+                {
+                    DefaultIcon = this.txtFileAssociationDefaultIcon2.Text,
+                    Description = this.txtFileAssociationDescription2.Text,
+                    Extension = this.txtFileAssociationExtension2.Text,
+                    ProgId = this.txtFileAssociationProgId2.Text
+                });
+            }
+
             return new ClickOnceAction
             {
                 ApplicationName = this.txtApplicationName.Text,
@@ -128,7 +227,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 IconFile = this.txtIconFile.Text,
                 CreateDesktopIcon = this.chkCreateDesktopIcon.Checked,
                 StartupUpdateCheck = this.chkStartupCheckForUpdate.Checked,
-                MinVersion = this.txtMinVersion.Text
+                MinVersion = this.txtMinVersion.Text,
+                EntryPointFile = this.txtEntryPointFile.Text,
+                FilesExcludedFromManifest = this.txtFilesExcludedFromManifest.Text.Split('\n').Select(x => x.Trim()).ToArray(),
+                AppCodeBaseDirectory = this.txtAppCodeBaseDirectory.Text,
+                TrustUrlParameters = this.chkTrustUrlParameters.Checked,
+                FileAssociations = fileAssociations.ToArray()
             };
         }
     }
