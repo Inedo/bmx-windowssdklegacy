@@ -1,9 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
+using System.Reflection;
+using System.Data.Common;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -17,6 +22,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [CustomEditor(typeof(ClickOnceActionEditor))]
     public sealed class ClickOnceAction : RemoteActionBase
     {
+        [Serializable]
+        public class FileAssociation
+        {
+            public string Extension { get; set; }
+            public string Description { get; set; }
+            public string ProgId { get; set; }
+            public string DefaultIcon { get; set; }
+        }
+
         /// <summary>
         /// Gets or sets the name of the application whose manifest is being generated or updated. E.g. MyWpfApplication.
         /// </summary>
@@ -106,10 +120,30 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool StartupUpdateCheck { get; set; }
 
+        [Persistent]
+        public string EntryPointFile { get; set; }
+
+        [Persistent]
+        public string[] FilesExcludedFromManifest { get; set; }
+
+        [Persistent]
+        public string AppCodeBaseDirectory { get; set; }
+
+        [Persistent]
+        public bool TrustUrlParameters { get; set; }
+
+        [Persistent]
+        public FileAssociation[] FileAssociations { get; set; }
+
+        public ClickOnceAction()
+        {
+            this.FilesExcludedFromManifest = new string[0];
+            this.FileAssociations = new FileAssociation[0];
+        }
 
         protected override void Execute()
         {
-            
+
             LogDebug("Creating Application Manifest File...");
             ExecuteRemoteCommand("CreateApplication");
             LogInformation("Application Manifest File created.");
@@ -130,7 +164,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             ExecuteRemoteCommand("CopyAppFiles");
             LogInformation(
                 "Application files copied "
-                + (MapFileExtensions ? "and mapped to .deploy" :"")
+                + (MapFileExtensions ? "and mapped to .deploy" : "")
                 + ".");
         }
 
@@ -149,8 +183,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 //%_MAGE% -New Application -ToFile %_PRJNME%.exe.manifest -Version %1 -FromDirectory 
 
                 string icon = String.IsNullOrEmpty(IconFile) ? String.Empty : String.Format("-IconFile \"{0}\" ", IconFile);
-                
-                return ExecuteCommandLine(
+
+                ExecuteCommandLine(
                     GetMagePath(),
                     string.Format(
                     "-New Application "
@@ -162,6 +196,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     Version,
                     icon),
                     Context.SourceDirectory).ToString();
+
+                UpdateApplicationManifest(appManifest, this.FilesExcludedFromManifest);
+                return null;
             }
             else if (name == "SignApplication")
             {
@@ -185,16 +222,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                         + "-Version {1} "
                         + "-AppManifest \"{2}\" "
                         + "-providerUrl \"{3}/{4}.application\" "
-                        + " -Install {5} ",
+                        + "-Install {5} "
+                        + (String.IsNullOrWhiteSpace(this.AppCodeBaseDirectory) ? String.Empty : "-AppCodeBase \"{6}\" "),
                         deployManifest,
                         Version,
                         appManifest,
                         ProviderUrl,
                         ApplicationName,
-                        InstallApplication.ToString().ToLower()),
+                        InstallApplication.ToString().ToLower(),
+                        Path.Combine(this.AppCodeBaseDirectory, Path.GetFileName(appManifest))),
                     Context.SourceDirectory).ToString();
 
-               
+
                 if (InstallApplication && !String.IsNullOrEmpty(MinVersion))
                 {
                     ExecuteCommandLine(
@@ -210,7 +249,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
                 //Moved existing MapFileExtensions functionality to the function UpdateApplicationFile
 
-                UpdateApplicationFile(deployManifest);
+                UpdateDeploymentManifest(deployManifest);
                 return null;
             }
             else if (name == "SignDeployment")
@@ -235,21 +274,40 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             else
             {
                 throw new ArgumentOutOfRangeException("name");
-            }           
+            }
 
         }
 
         private string GetCertificateArguments()
         {
+            var certificatePath = this.CertificatePath;
+            var certificatePassword = this.CertificatePassword;
             if (!string.IsNullOrEmpty(this.CertificateHash))
-                return string.Format("-CertHash \"{0}\" ", this.CertificateHash);
+            {
+                var certificateHash = this.CertificateHash;
+                certificateHash = certificateHash.Replace(" ", "").ToUpper();
+                var certStore = new X509Store(StoreLocation.LocalMachine);
+                certStore.Open(OpenFlags.ReadOnly);
+                var certs = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, false);
+                if (certs.Count > 0)
+                {
+                    var cert = certs[0];
+                    certificatePath = Path.Combine(this.Context.TempDirectory, "Cert.pfx");
+                    var certData = cert.Export(X509ContentType.Pfx);
+                    File.WriteAllBytes(certificatePath, certData);
+                }
+                else
+                {
+                    LogWarning("Cert with thumbprint {0} not found.", certificateHash);
+                }
+            }
 
-            if (string.IsNullOrEmpty(this.CertificatePassword))
-                return string.Format("-CertFile \"{0}\" ", this.CertificatePath);
+            if (string.IsNullOrEmpty(certificatePassword))
+                return string.Format("-CertFile \"{0}\" ", certificatePath);
 
-            return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", this.CertificatePath, this.CertificatePassword);
+            return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
         }
-        
+
         // A riff on Util.Files.CopyFiles, with the rename included
         //   Copy/Pasting code generally isn't a good idea, but this is a pretty rare function
         //   and recursing directories to copy is pretty straight forward
@@ -306,18 +364,72 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             return Path.Combine(sdkPath, @"bin\mage.exe");
         }
 
-        private void UpdateApplicationFile(string deployManifest)
+        private void UpdateApplicationManifest(string applicationManifest, IEnumerable<string> excludedFiles)
+        {
+            if (String.IsNullOrWhiteSpace(this.EntryPointFile)) return;
+
+            excludedFiles = excludedFiles.ToList();
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(applicationManifest);
+
+            XmlNamespaceManager nsmgr = CreateNamespaceManager(doc);
+
+            XmlNode entryPointNode = doc.SelectSingleNode("asmv1:assembly/asmv2:entryPoint", nsmgr);
+
+            var assemblyName = AssemblyName.GetAssemblyName(Path.Combine(this.Context.SourceDirectory, this.EntryPointFile));
+
+
+            XmlElement assemblyIdentityNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:assemblyIdentity", nsmgr);
+            assemblyIdentityNode.SetAttribute("name", assemblyName.Name);
+            assemblyIdentityNode.SetAttribute("version", assemblyName.Version.ToString());
+
+            var publicKeyToken = assemblyName.GetPublicKeyToken();
+
+            const string publicKeyTokenAttributeName = "publicKeyToken";
+            if (publicKeyToken.Length > 0)
+            {
+                assemblyIdentityNode.SetAttribute(publicKeyTokenAttributeName, BitConverter.ToString(publicKeyToken).Replace("-", string.Empty).ToUpper());
+            }
+            else if (assemblyIdentityNode.HasAttribute(publicKeyTokenAttributeName))
+            {
+                assemblyIdentityNode.RemoveAttribute(publicKeyTokenAttributeName);
+            }
+            var culture = assemblyName.CultureInfo.Name;
+            assemblyIdentityNode.SetAttribute("language", String.IsNullOrWhiteSpace(culture) ? "neutral" : culture);
+            assemblyIdentityNode.SetAttribute("processorArchitecture", assemblyName.ProcessorArchitecture.ToString().ToLower());
+
+            XmlElement commandLineNode = (XmlElement)entryPointNode.SelectSingleNode("asmv2:commandLine", nsmgr);
+            commandLineNode.SetAttribute("file", this.EntryPointFile);
+
+            foreach (XmlNode fileNode in doc.SelectNodes("asmv1:assembly/asmv2:file", nsmgr))
+            {
+                var element = (XmlElement)fileNode;
+                var fileName = element.GetAttribute("name");
+                if (excludedFiles.Any(x => fileName.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    LogInformation("File {0} excluded from deployment manifest.", fileName);
+                    fileNode.ParentNode.RemoveChild(fileNode);
+                }
+            }
+
+            var assemblyNode = doc.SelectSingleNode("asmv1:assembly", nsmgr);
+            foreach (var fileAssociation in this.FileAssociations)
+            {
+                var fileAssociationNode = CreateFileAssociationNode(doc, fileAssociation);
+                assemblyNode.AppendChild(fileAssociationNode);
+            }
+
+            doc.Save(applicationManifest);
+        }
+
+        private void UpdateDeploymentManifest(string deploymentManifest)
         {
             //ClickOnce Deployment Manifest Reference: http://msdn.microsoft.com/en-us/library/k26e96zf.aspx
             XmlDocument doc = new XmlDocument();
-            doc.Load(deployManifest);
+            doc.Load(deploymentManifest);
 
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
-            nsmgr.AddNamespace(String.Empty, "urn:schemas-microsoft-com:asm.v2");
-            nsmgr.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
-            nsmgr.AddNamespace("asmv2", "urn:schemas-microsoft-com:asm.v2");
-            nsmgr.AddNamespace("co.v1", "urn:schemas-microsoft-com:clickonce.v1");
-            nsmgr.AddNamespace("co.v2", "urn:schemas-microsoft-com:clickonce.v2");
+            XmlNamespaceManager nsmgr = CreateNamespaceManager(doc);
 
             XmlNode deploymentNode = doc.SelectSingleNode("asmv1:assembly/asmv2:deployment", nsmgr);
             if (deploymentNode != null)
@@ -325,7 +437,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 if (InstallApplication && CreateDesktopIcon)
                 {
                     LogDebug("Adding CreateDesktopShortcut attribute...");
-                    ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");                    
+                    ((XmlElement)deploymentNode).SetAttribute("createDesktopShortcut", "urn:schemas-microsoft-com:clickonce.v1", "true");
+                }
+
+                if (this.TrustUrlParameters)
+                {
+                    LogDebug("Adding TrustUrlParameters attribute...");
+                    ((XmlElement)deploymentNode).SetAttribute("trustURLParameters", "true");
                 }
 
                 if (StartupUpdateCheck)
@@ -341,8 +459,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
                         //Force app to check for new version everytime at startup
                         LogDebug("Adding beforeApplicationStartup Element...");
-                        XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");                        
-                        updateNode.AppendChild(newNode);                        
+                        XmlNode newNode = doc.CreateElement("beforeApplicationStartup", "urn:schemas-microsoft-com:asm.v2");
+
+                        updateNode.AppendChild(newNode);
                     }
                 }
                 if (MapFileExtensions)
@@ -356,7 +475,30 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 LogError("deployment element not found in manifest");
             }
 
-            doc.Save(deployManifest);
+            doc.Save(deploymentManifest);
+        }
+
+        private XmlNode CreateFileAssociationNode(XmlDocument doc, FileAssociation fileAssociation)
+        {
+            var xmlElement = doc.CreateElement("fileAssociation", "urn:schemas-microsoft-com:clickonce.v1");
+
+            xmlElement.SetAttribute("defaultIcon", fileAssociation.DefaultIcon);
+            xmlElement.SetAttribute("description", fileAssociation.Description);
+            xmlElement.SetAttribute("extension", fileAssociation.Extension);
+            xmlElement.SetAttribute("progid", fileAssociation.ProgId);
+
+            return xmlElement;
+        }
+
+        private static XmlNamespaceManager CreateNamespaceManager(XmlDocument doc)
+        {
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace(String.Empty, "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
+            nsmgr.AddNamespace("asmv2", "urn:schemas-microsoft-com:asm.v2");
+            nsmgr.AddNamespace("co.v1", "urn:schemas-microsoft-com:clickonce.v1");
+            nsmgr.AddNamespace("co.v2", "urn:schemas-microsoft-com:clickonce.v2");
+            return nsmgr;
         }
     }
 }
