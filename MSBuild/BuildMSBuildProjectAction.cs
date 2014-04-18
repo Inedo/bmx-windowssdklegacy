@@ -103,12 +103,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             return new ActionDescription(
                 new ShortActionDescription(
                     "Build ",
-                    new DirectoryHilite(this.OverriddenSourceDirectory, projectPath),
+                    new Hilite(projectPath),
                     " (",
                     new Hilite(config),
                     ")"
                 ),
                 new LongActionDescription(
+                    "from ",
+                    new DirectoryHilite(this.OverriddenSourceDirectory),
                     "to ",
                     targetHilite
                 )
