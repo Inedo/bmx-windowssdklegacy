@@ -111,7 +111,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 new LongActionDescription(
                     "from ",
                     new DirectoryHilite(this.OverriddenSourceDirectory),
-                    "to ",
+                    " to ",
                     targetHilite
                 )
             );
