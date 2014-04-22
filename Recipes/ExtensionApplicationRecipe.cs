@@ -22,7 +22,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
     {
         private int applicationId;
 
-        public string OrganizationName { get; set; }
+        public string ApplicationName { get; set; }
         public string SolutionPath { get; set; }
         public int ScmProviderId { get; set; }
         internal ProjectInfo Project { get; set; }
@@ -34,10 +34,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
         public override void Execute()
         {
-            string extensionName = this.OrganizationName + "Extension";
-
             this.applicationId = Util.Recipes.CreateNewApplication(
-                extensionName, 
+                this.ApplicationName, 
                 Domains.ReleaseNumberSchemes.MajorMinor, 
                 Domains.BuildNumberSchemes.Sequential, 
                 true, 
@@ -97,7 +95,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.Files.CreateZipFileAction", new
                 {
-                    FileName = extensionName + ".bmx"
+                    FileName = this.ApplicationName + ".bmx"
                 }));
             Util.Recipes.AddAction(planId, 1, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.Artifacts.CreateArtifactAction", new

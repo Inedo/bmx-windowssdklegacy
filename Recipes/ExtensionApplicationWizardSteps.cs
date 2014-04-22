@@ -8,6 +8,8 @@ using ICSharpCode.SharpZipLib.Zip;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web;
 using Inedo.Web.Controls;
+using Inedo.Web.Controls.ButtonLinks;
+using Inedo.Web.Controls.SimpleHtml;
 using Inedo.Web.Handlers;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
@@ -34,23 +36,33 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             { 
             }
 
-            public string OrganizationName { get; set; }
+            public string ApplicationName { get; set; }
 
             protected override void CreateChildControls()
             {
-                this.Controls.AddLiteral("<style type=\"text/css\"> p { margin: 20px 0; } </style>");
-                this.Controls.AddHtml("p", "In order to build this project, you must have a source control provider setup within BuildMaster. On the next step, you will need to point to the location in source control where your extension project is stored. If you haven't added this project to source control, you can download the starter project by clicking the button below.");
+                this.Controls.Add(
+                    new P(
+                        "In order to build this project, you must have a source control provider setup within BuildMaster. ",
+                        "On the next step, you will need to point to the location in source control where your extension project is stored."),
+                    
+                    new H2("Cloning/Patching an Inedo Extension"),
+                    new P("If you want to change the behavior of an existing Inedo extension, you can fork the extension's code on GitHub: ",
+                        new A("http://github.com/inedo"){ Href = "http://github.com/inedo", Target = "_blank" }),
 
-                var lnk = new HyperLink()
-                    {
-                        CssClass = "buttonMinor",
-                        Text = "Download Starter Project"
-                    };
-                lnk.PreRender += (s, e) => lnk.NavigateUrl = GetDownloadResourceUrl(KramericaDownloadHandler) + "?name=" + HttpUtility.UrlEncode(this.OrganizationName);
-                this.Controls.Add(lnk);
-
-                this.Controls.AddHtml("p", "Once you have downloaded the project and added it to a source control provider, and you'll be able to select its path in the next step. The project is for Visual Studio 2010 and written in C#.");
-                this.Controls.AddLiteral("<p>For more information on creating an extension, please see our <a href=\"http://links.inedo.com/buildmaster-sdk-example\" target=\"_blank\">BuildMaster SDK example tutorial</a>.</p>");
+                    new H2("Sample Extension Project"),
+                    new P("If you are building a custom extension, you can download a starter project by clicking the button below."),
+                    new RenderDelegator(w => w.Write(
+                        "<a href=\"{0}\" class=\"buttonMinor\">Download {1} Starter Project</a>", 
+                        GetDownloadResourceUrl(KramericaDownloadHandler) + "?name=" + HttpUtility.UrlEncode(this.ApplicationName),
+                        this.ApplicationName)),
+                    new P(
+                        "Once you have downloaded the project and added it to a source control provider, and you'll be able to select its path in the next step. ",
+                        "The project is for Visual Studio 2010 and written in C#."),
+                    new P(
+                        "For more information on creating an extension, please see our ",
+                        new A("BuildMaster SDK example tutorial"){ Href = "http://links.inedo.com/buildmaster-sdk-example", Target = "_blank" },
+                        ".")
+                );
             }
 
             private static string GetDownloadResourceUrl(ProcessRequestDelegate del)
@@ -65,6 +77,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             private static void KramericaDownloadHandler(HttpContext context)
             {
                 var replacementName = Regex.Replace(context.Request.QueryString["name"], @"[\W]", "");
+                if (replacementName.EndsWith("Extension")) replacementName = replacementName.Substring(0, replacementName.Length - "Extension".Length);
 
                 context.Response.Clear();
                 context.Response.AddHeader("Content-Disposition", "attachment; filename=" + replacementName + "Extension.zip");

@@ -9,13 +9,14 @@ using Inedo.BuildMaster.Extensibility.Recipes;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
+using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 {
     internal sealed class ExtensionApplicationRecipeEditor : RecipeEditorBase
     {
         private ExtensionApplicationWizardSteps wizardSteps = new ExtensionApplicationWizardSteps();
-        private ValidatingTextBox txtOrganizationName;
+        private ValidatingTextBox txtApplicationName;
 
         private int ProviderId
         {
@@ -51,7 +52,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         {
             return new ExtensionApplicationRecipe()
             {
-                OrganizationName = this.txtOrganizationName.Text.Replace(" ", ""),
+                ApplicationName = this.txtApplicationName.Text,
                 ScmProviderId = this.ProviderId,
                 SolutionPath = this.SolutionPath,
                 Project = this.Project
@@ -62,17 +63,25 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         {
             base.CreateChildControls();
 
-            this.txtOrganizationName = new ValidatingTextBox
+            this.txtApplicationName = new ValidatingTextBox
             {
                 Required = true,
-                Width = 300
+                Width = 300,
+                ValidationExpression = "[0-9a-zA-Z]+"
             };
+            try
+            {
+                txtApplicationName.Text = (Environment.UserDomainName ?? "").ToLowerInvariant() + "Extension";
+                if (!string.IsNullOrEmpty(txtApplicationName.Text))
+                    txtApplicationName.Text = txtApplicationName.Text[0].ToString().ToUpperInvariant() + txtApplicationName.Text.Substring(1);
+            }
+            catch {}
 
-            this.txtOrganizationName.ServerValidate +=
+            this.txtApplicationName.ServerValidate +=
                 (s, e) =>
                 {
                     var applications = StoredProcs.Applications_GetApplications(null).Execute();
-                    if (applications.Any(app => app.Application_Name.Equals(this.txtOrganizationName.Text.Replace(" ", "") + "Extension", StringComparison.OrdinalIgnoreCase)))
+                    if (applications.Any(app => app.Application_Name.Equals(this.txtApplicationName.Text, StringComparison.OrdinalIgnoreCase)))
                         e.IsValid = false;
                 };
 
@@ -106,27 +115,27 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             var ctlSolutionPath = new SourceControlFileFolderPicker
             {
-                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles
+                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles,
+                BindToActionSourceControlProvider = true,
+                Width = 300
             };
 
-            var ffSolutionPath = new StandardFormField("Path of solution:", ctlSolutionPath)
-            {
-                Visible = false
-            };
+            var ffSolutionPath = new StandardFormField("Path of solution file (.sln):", ctlSolutionPath);
 
             this.wizardSteps.SelectOrganizationName.Controls.Add(
                 new FormFieldGroup(
-                    "Organization Name",
-                    "This should be your company or division name, e.g. \"Initech\". <br /><br />This is used to generate the sample code and also create the application name.",
-                    true,
+                    "Application Name",
+                    "For custom extensions, the name should be <em>InitechExtension</em>, where \"Initech\" is your company's name. There's no need to have more than one custom extension per organization<br /><br />" 
+                    + "For cloning BuildMaster extensions, use the exact name of the extension, for example <em>WindowsSdk</em><br /><br />.",
+                    false,
                     new StandardFormField(
-                        "Organization Name:",
-                        txtOrganizationName
+                        "Application Name (alpha-numeric only):",
+                        txtApplicationName
                     )
                 )
             );
 
-            txtOrganizationName.Load += (s, e) => this.wizardSteps.DownloadInstructions.OrganizationName = txtOrganizationName.Text;
+            txtApplicationName.Load += (s, e) => this.wizardSteps.DownloadInstructions.ApplicationName = txtApplicationName.Text;
 
             this.wizardSteps.SelectProviderAndSolution.Controls.Add(
                 new FormFieldGroup(
@@ -136,7 +145,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     new StandardFormField(
                         "Source Control Provider:",
                         ddlProvider,
-                        ctlNoProviders
+                        ctlNoProviders,
+                        new Div(
+                            new ActionServerPicker { ID = "bm-action-server-id" }
+                        ) { Style = "display: none;" }
                     ),
                     ffSolutionPath
                 )
@@ -207,7 +219,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             protected override void Render(HtmlTextWriter writer)
             {
-                if (editor.ProviderId == 0 || editor.SolutionPath == null || string.IsNullOrEmpty(editor.txtOrganizationName.Text))
+                if (editor.ProviderId == 0 || editor.SolutionPath == null || string.IsNullOrEmpty(editor.txtApplicationName.Text))
                     return;
 
                 writer.Write(
@@ -216,7 +228,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     "<p><strong>Application Name: </strong> {2}</p>",
                     StoredProcs.Providers_GetProvider(editor.ProviderId).ExecuteDataRow()[TableDefs.Providers.Provider_Name],
                     editor.SolutionPath,
-                    editor.txtOrganizationName.Text.Replace(" ", "") + "Extension"
+                    editor.txtApplicationName.Text
                 );
             }
         }

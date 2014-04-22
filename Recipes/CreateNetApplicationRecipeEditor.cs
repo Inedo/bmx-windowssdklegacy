@@ -70,10 +70,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             var ctlProjectPath = new SourceControlFileFolderPicker
             {
                 DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles,
-                BindToActionSourceControlProvider = true
+                BindToActionSourceControlProvider = true,
+                Width = 300
             };
 
-            var ffProjectPath = new StandardFormField("Path of solution or project:", ctlProjectPath);
+            var ffProjectPath = new StandardFormField("Path of solution or project (.sln, .csproj, etc):", ctlProjectPath);
 
             var ctlProjectsInSolution = new CheckBoxList();
 
