@@ -16,8 +16,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
 
         public override void BindToForm(ActionBase extension)
         {
-            this.EnsureChildControls();
-
             var action = (SignExeAction)extension;
             this.txtSubject.Text = action.SubjectName;
             this.txtTimestampServer.Text = action.TimestampServer;
@@ -30,8 +28,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         }
         public override ActionBase CreateFromForm()
         {
-            this.EnsureChildControls();
-
             return new SignExeAction
             {
                 SubjectName = this.txtSubject.Text,
@@ -45,38 +41,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
 
         protected override void CreateChildControls()
         {
-            this.txtSubject = new ValidatingTextBox { Required = true, Width = 300 };
-            this.txtTimestampServer = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
-            this.txtContentDescription = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
-            this.txtContentUrl = new ValidatingTextBox { DefaultText = "(none)", Width = 300 };
+            this.txtSubject = new ValidatingTextBox { Required = true };
+            this.txtTimestampServer = new ValidatingTextBox { DefaultText = "(none)" };
+            this.txtContentDescription = new ValidatingTextBox { DefaultText = "(none)", };
+            this.txtContentUrl = new ValidatingTextBox { DefaultText = "(none)" };
             this.ctlSignExe = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles };
 
             this.Controls.Add(
-                new FormFieldGroup(
-                    "Target",
-                    "Specify the executable file to sign.",
-                    false,
-                    new StandardFormField("File to Sign:", this.ctlSignExe)
-                ),
-                new FormFieldGroup(
-                    "Subject",
-                    "The subject name (or a substring of the subject name) of the signing certificate.",
-                    false,
-                    new StandardFormField("Subject Name:", this.txtSubject)
-                ),
-                new FormFieldGroup(
-                    "Timestamp Server URL",
-                    "The URL of the timestamp server used when signing the executable. If not specified, no timestamp is used.",
-                    false,
-                    new StandardFormField("Timestamp Server URL:", this.txtTimestampServer)
-                ),
-                new FormFieldGroup(
-                    "Additional Metadata",
-                    "Optionally provide additional information to add to the signature.",
-                    true,
-                    new StandardFormField("Description of Signed Content:", this.txtContentDescription),
-                    new StandardFormField("URL with More Information:", this.txtContentUrl)
-                )
+                new SlimFormField("File to sign:", this.ctlSignExe),
+                new SlimFormField("Certificate subject:", this.txtSubject),
+                new SlimFormField("Timestamp server URL:", this.txtTimestampServer),
+                new SlimFormField("Description:", this.txtContentDescription),
+                new SlimFormField("Information URL:", this.txtContentUrl)
             );
         }
     }

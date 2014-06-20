@@ -8,9 +8,6 @@ using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    /// <summary>
-    /// Provides the UI elements for configuring a convert project library action.
-    /// </summary>
     internal sealed class ConvertProjectReferencesActionEditor : ActionEditorBase
     {
         private SourceControlFileFolderPicker libPath;
@@ -21,34 +18,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             get { return true; }
         }
-
-        protected override void CreateChildControls()
+        public override string SourceDirectoryLabel
         {
-            this.libPath = new SourceControlFileFolderPicker { Required = true, DisplayMode = SourceControlBrowser.DisplayModes.Folders };
-            this.searchMask = new ValidatingTextBox() { Required = true, Text = "*.csproj", TextMode = TextBoxMode.MultiLine,  Rows = 4, Columns = 30, Width = 300 };
-            this.recursive = new CheckBox() { Text = "Recursive" };
-
-            this.Controls.Add(
-                new FormFieldGroup(
-                    "Library",
-                    "The library directory which contains referenced assemblies.",
-                    false,
-                    new StandardFormField(string.Empty, this.libPath)
-                    ),
-                new FormFieldGroup(
-                    "Project Files",
-                    "Determines which project files are converted.",
-                    true,
-                    new StandardFormField("File Masks:", this.searchMask),
-                    new StandardFormField(string.Empty, this.recursive)
-                    )
-                );
+            get { return "In:"; }
+        }
+        public override string ServerLabel
+        {
+            get { return "On:"; }
         }
 
         public override void BindToForm(ActionBase extension)
         {
-            this.EnsureChildControls();
-
             var convert = (ConvertProjectReferencesAction)extension;
             this.libPath.Text = convert.LibraryPath;
             this.searchMask.Text = string.Join(Environment.NewLine, convert.SearchMasks);
@@ -57,14 +37,35 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         public override ActionBase CreateFromForm()
         {
-            this.EnsureChildControls();
-
             return new ConvertProjectReferencesAction()
             {
                 LibraryPath = this.libPath.Text,
                 SearchMasks = Regex.Split(this.searchMask.Text, "\r?\n"),
                 Recursive = this.recursive.Checked
             };
+        }
+
+        protected override void CreateChildControls()
+        {
+            this.libPath = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.Folders };
+            this.searchMask = new ValidatingTextBox { Text = "*.csproj", TextMode = TextBoxMode.MultiLine, Rows = 4 };
+            this.recursive = new CheckBox { Text = "Recursive" };
+
+            this.Controls.Add(
+                new FormFieldGroup(
+                    "Library",
+                    "The library directory which contains referenced assemblies.",
+                    false,
+                    new StandardFormField(string.Empty, this.libPath)
+                ),
+                new FormFieldGroup(
+                    "Project Files",
+                    "Determines which project files are converted.",
+                    true,
+                    new StandardFormField("File Masks:", this.searchMask),
+                    new StandardFormField(string.Empty, this.recursive)
+                )
+            );
         }
     }
 }

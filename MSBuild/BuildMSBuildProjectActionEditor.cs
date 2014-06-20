@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
@@ -12,9 +11,6 @@ using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    /// <summary>
-    /// Implements common UI elements for building .NET application actions.
-    /// </summary>
     internal sealed class BuildMSBuildProjectActionEditor : ActionEditorBase
     {
         private DropDownList ddlProjectBuildConfiguration;
@@ -29,14 +25,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         private TextBox txtAdditionalProperties;
         private HtmlGenericControl divTargetDir;
         private SourceControlFileFolderPicker txtTargetDir;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildMSBuildProjectActionEditor"/> class.
-        /// </summary>
-        public BuildMSBuildProjectActionEditor()
-        {
-            this.ValidateBeforeSave += new EventHandler<ValidationEventArgs<ActionBase>>(BuildNetAppActionEditor_ValidateBeforeSave);
-        }
 
         protected override void CreateChildControls()
         {
@@ -256,81 +244,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             /* At this point, the target dir is "default", and the project path is relative to the default 
               so we should use the pre-3.7 and NOT split out the overridden source directory */
             return false;
-        }
-
-        private void BuildNetAppActionEditor_ValidateBeforeSave(object sender, ValidationEventArgs<ActionBase> e)
-        {
-            if (string.IsNullOrEmpty(this.txtProjectPath.Text))
-            {
-                e.ValidLevel = ValidationLevel.Warning;
-                e.Message = "Project path is not set. This may result in build errors.";
-            }
-        }
-
-        private LiteralControl GetClientSideScript(string ddlProjectBuildId, string divConfigId, string ddlTargetPlatformId, string divPlatformId, string chkWebProjectId, string ddlBuildOutputDirId, string divTargetDirId)
-        {
-            return new LiteralControl(
-                "<script type=\"text/javascript\">" +
-                    "$(document).ready(function(){" +
-                        "var onload = $('#" + ddlProjectBuildId + "').find('option').filter(':selected').text();" +
-                        "if(onload == 'Other')" +
-                        "{" +
-                            "$('#" + divConfigId + "').show();" +
-                        "}" +
-
-                        "$('#" + ddlProjectBuildId + "').change(function () {" +
-                            "var selectedConfig = $(this).find('option').filter(':selected').text();" +
-                            "if(selectedConfig == 'Other')" +
-                            "{" +
-                                "$('#" + divConfigId + "').show();" +
-                            "}" +
-                            "else" +
-                            "{" +
-                                "$('#" + divConfigId + "').hide();" +
-                            "}" +
-                        "});" +
-
-                        "var onload2 = $('#" + ddlTargetPlatformId + "').find('option').filter(':selected').text();" +
-                        "if(onload2 == 'Other')" +
-                        "{" +
-                            "$('#" + divPlatformId + "').show();" +
-                        "}" +
-
-                        "$('#" + ddlTargetPlatformId + "').change(function () {" +
-                            "var selectedConfig = $(this).find('option').filter(':selected').text();" +
-                            "if(selectedConfig == 'Other')" +
-                            "{" +
-                                "$('#" + divPlatformId + "').show();" +
-                            "}" +
-                            "else" +
-                            "{" +
-                                "$('#" + divPlatformId + "').hide();" +
-                            "}" +
-                        "});" +
-
-                        "$('#" + chkWebProjectId + "').change(function () {" +
-                            "if ($(this).is(':checked')) {" +
-                                "$('#" + ddlBuildOutputDirId + "').val('target').attr('disabled', 'disabled');" +
-                                "$('#" + divTargetDirId + "').show();" +
-                            "}" +
-                            "else {" +
-                                "$('#" + ddlBuildOutputDirId + "').removeAttr('disabled');" +
-                            "}" +
-                        "});" +
-
-                        "$('#" + ddlBuildOutputDirId + "').change(function () {" +
-                            "if($(this).val() == 'target')" +
-                            "{" +
-                                "$('#" + divTargetDirId + "').show();" +
-                            "}" +
-                            "else" +
-                            "{" +
-                                "$('#" + divTargetDirId + "').hide();" +
-                            "}" +
-                        "}).change();" +
-
-                    "});" +
-                "</script>");
         }
     }
 }

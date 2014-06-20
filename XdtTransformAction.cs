@@ -15,33 +15,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
     [CustomEditor(typeof(XdtTransformActionEditor))]
     public sealed class XdtTransformAction : AgentBasedActionBase
     {
-        /// <summary>
-        /// Gets or sets the source file.
-        /// </summary>
         [Persistent]
         public string SourceFile { get; set; }
 
-        /// <summary>
-        /// Gets or sets the transform file.
-        /// </summary>
         [Persistent]
         public string TransformFile { get; set; }
 
-        /// <summary>
-        /// Gets or sets the destination file.
-        /// </summary>
         [Persistent]
         public string DestinationFile { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to preserve or collapse whitespace.
-        /// </summary>
         [Persistent]
         public bool PreserveWhitespace { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether verbose logging should be enabled.
-        /// </summary>
         [Persistent]
         public bool Verbose { get; set; }
 
@@ -49,7 +34,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         {
             return new ActionDescription(
                 new ShortActionDescription(
-                    "XDT transform ",
+                    "XDT Transform ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.SourceFile)
                 ),
                 new LongActionDescription(

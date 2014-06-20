@@ -7,9 +7,6 @@ using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    /// <summary>
-    /// Represents an action that builds a .NET application.
-    /// </summary>
     [ActionProperties(
         "Build MSBuild Project",
         "Builds a project or solution using MSBuild.")]
@@ -17,55 +14,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
     public sealed class BuildMSBuildProjectAction : MSBuildActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildMSBuildProjectAction"/> class.
-        /// </summary>
-        public BuildMSBuildProjectAction()
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the project's build configuration (generally, Debug or Release)
-        /// </summary>
         [Persistent]
         public string ProjectBuildConfiguration { get; set; }
 
-        /// <summary>
-        /// Gets or sets the project's target platform (generally AnyCPU or x86).
-        /// </summary>
         [Persistent]
         public string ProjectTargetPlatform { get; set; }
 
-        /// <summary>
-        /// Gets or sets the absolute path the project file
-        /// </summary>
-        /// <example>
-        /// c:\Build\myproj\myproj.cs
-        /// </example>
         [Persistent]
         public string ProjectPath { get; set; }
 
-        /// <summary>
-        /// Gets or sets the project's properties for the msbuild script
-        /// </summary>
         [Persistent]
         public string MSBuildProperties { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this is a web project.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this is a web project; otherwise, <c>false</c>.
-        /// </value>
         [Persistent]
         public bool IsWebProject { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [build to project config subdirectories].
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if [build to project config subdirectories]; otherwise, <c>false</c>.
-        /// </value>
         [Persistent]
         public bool BuildToProjectConfigSubdirectories { get; set; }
 

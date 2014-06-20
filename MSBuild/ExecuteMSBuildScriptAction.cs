@@ -6,9 +6,6 @@ using Inedo.BuildMaster.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    /// <summary>
-    /// Represents an action that builds an MSBuild project.
-    /// </summary>
     [ActionProperties(
         "Execute MSBuild Script",
         "Executes an .msbuild script file.")]
@@ -16,29 +13,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
     public sealed class ExecuteMSBuildScriptAction : MSBuildActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExecuteMSBuildScriptAction"/> class.
-        /// </summary>
         public ExecuteMSBuildScriptAction()
         {
             this.MSBuildProperties = string.Empty;
         }
 
-        /// <summary>
-        /// Gets or sets the project's target for the msbuild script
-        /// </summary>
         [Persistent]
         public string ProjectBuildTarget { get; set; }
 
-        /// <summary>
-        /// Gets or sets the project's path for the msbuild script
-        /// </summary>
         [Persistent]
         public string MSBuildPath { get; set; }
 
-        /// <summary>
-        /// Gets or sets the project's properties for the msbuild script
-        /// </summary>
         [Persistent]
         public string MSBuildProperties { get; set; }
 

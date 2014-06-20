@@ -18,11 +18,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             get { return true; }
         }
+        public override string SourceDirectoryLabel
+        {
+            get { return "In:"; }
+        }
+        public override string ServerLabel
+        {
+            get { return "On:"; }
+        }
 
         public override void BindToForm(ActionBase extension)
         {
-            this.EnsureChildControls();
-
             var action = (WriteAssemblyInfoVersionsAction)extension;
             this.txtFileMasks.Text = string.Join(Environment.NewLine, action.FileMasks ?? new string[0]);
             this.chkRecursive.Checked = action.Recursive;
@@ -30,8 +36,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         }
         public override ActionBase CreateFromForm()
         {
-            this.EnsureChildControls();
-
             return new WriteAssemblyInfoVersionsAction
             {
                 FileMasks = this.txtFileMasks.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries),

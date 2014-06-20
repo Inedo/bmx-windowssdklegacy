@@ -2,8 +2,8 @@ using System;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -16,47 +16,51 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             get { return true; }
         }
+        public override string SourceDirectoryLabel
+        {
+            get { return "In:"; }
+        }
+        public override string ServerLabel
+        {
+            get { return "On:"; }
+        }
 
         protected override void CreateChildControls()
         {
-            this.txtGacFiles = new TextBox();
-            txtGacFiles.TextMode = TextBoxMode.MultiLine;
-            txtGacFiles.Rows = 4;
-            txtGacFiles.Columns = 30;
-            txtGacFiles.Width = Unit.Pixel(300);
+            this.txtGacFiles = new TextBox
+            {
+                TextMode = TextBoxMode.MultiLine,
+                Rows = 4
+            };
 
-            this.chkForceRefresh = new CheckBox();
-            chkForceRefresh.Text = "Force refresh";
-            chkForceRefresh.Checked = true;
+            this.chkForceRefresh = new CheckBox
+            {
+                Text = "Force refresh",
+                Checked = true
+            };
 
-            var GacFilesFieldGroup =
-                new FormFieldGroup("Files",
-                    "Files listed (entered one per line) will be added to the GAC.",
-                    true,
-                    new StandardFormField("Files:", txtGacFiles),
-                    new StandardFormField("", chkForceRefresh)
-                );
-
-            this.Controls.Add(GacFilesFieldGroup);
+            this.Controls.Add(
+                new SlimFormField("Files:", this.txtGacFiles)
+                {
+                    HelpText = "Files or masks listed (entered one per line) will be added to the GAC."
+                },
+                new SlimFormField("Options:", this.chkForceRefresh)
+            );
         }
 
         public override void BindToForm(ActionBase extension)
         {
-            this.EnsureChildControls();
-
             var gac = (GacInstallAction)extension;
-            txtGacFiles.Text = string.Join(Environment.NewLine, gac.FileMasks);
-            chkForceRefresh.Checked = gac.ForceRefresh;
+            this.txtGacFiles.Text = string.Join(Environment.NewLine, gac.FileMasks);
+            this.chkForceRefresh.Checked = gac.ForceRefresh;
         }
 
         public override ActionBase CreateFromForm()
         {
-            this.EnsureChildControls();
-
             return new GacInstallAction
             {
-                FileMasks = Regex.Split(txtGacFiles.Text, Environment.NewLine),
-                ForceRefresh = chkForceRefresh.Checked
+                FileMasks = Regex.Split(this.txtGacFiles.Text, Environment.NewLine),
+                ForceRefresh = this.chkForceRefresh.Checked
             };
         }
     }

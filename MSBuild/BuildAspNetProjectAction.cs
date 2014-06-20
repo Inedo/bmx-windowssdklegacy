@@ -14,21 +14,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [CustomEditor(typeof(BuildAspNetProjectActionEditor))]
     public sealed class BuildAspNetProjectAction : MSBuildActionBase
     {
-        /// <summary>
-        /// Gets or sets the build configuration.
-        /// </summary>
         [Persistent]
         public string ProjectBuildConfiguration { get; set; }
 
-        /// <summary>
-        /// Gets or sets the project path.
-        /// </summary>
         [Persistent]
         public string ProjectPath { get; set; }
 
-        /// <summary>
-        /// Gets or sets the additional arguments to pass to MSBuild.
-        /// </summary>
         [Persistent]
         public string AdditionalArguments { get; set; }
 

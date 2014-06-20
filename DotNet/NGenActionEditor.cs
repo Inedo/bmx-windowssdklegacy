@@ -1,43 +1,32 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    /// <summary>
-    /// Provides an editor UI for the NGen action.
-    /// </summary>
     internal sealed class NGenActionEditor : ActionEditorBase
     {
         private DropDownList ddlMode;
         private ValidatingTextBox txtTargetAssembly;
         private CheckBox cbQueue;
-        private FormFieldGroup ffgTargetAssembly;
-        private FormFieldGroup ffgOptions;
+        private SlimFormField ffgTargetAssembly;
+        private SlimFormField ffgOptions;
 
         public override void BindToForm(ActionBase extension)
         {
-            if (extension == null)
-                throw new ArgumentNullException("extension");
-
-            EnsureChildControls();
-
             var ngen = (NGenAction)extension;
-            this.ddlMode.SelectedValue = ngen.RunMode;
+            this.ddlMode.SelectedValue = ngen.RunMode.ToString();
             this.txtTargetAssembly.Text = ngen.TargetAssembly ?? string.Empty;
             this.cbQueue.Checked = ngen.UseQueue;
-            HandleModeChange();
+            this.HandleModeChange();
         }
         public override ActionBase CreateFromForm()
         {
-            EnsureChildControls();
-
-            return new NGenAction()
+            return new NGenAction
             {
-                RunMode = this.ddlMode.SelectedValue,
+                RunMode = (NGenMode)Enum.Parse(typeof(NGenMode), this.ddlMode.SelectedValue),
                 TargetAssembly = this.txtTargetAssembly.Text,
                 UseQueue = this.cbQueue.Checked
             };
@@ -45,18 +34,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void CreateChildControls()
         {
-            base.CreateChildControls();
+            this.txtTargetAssembly = new ValidatingTextBox { Required = true };
 
-            this.txtTargetAssembly = new ValidatingTextBox()
-            {
-                Width = 300,
-                Required = true
-            };
-
-            this.cbQueue = new CheckBox()
-            {
-                Text = "Queue for background generation"
-            };
+            this.cbQueue = new CheckBox { Text = "Queue for background generation" };
 
             this.ddlMode = new DropDownList();
             this.ddlMode.AutoPostBack = true;
@@ -66,32 +46,20 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.ddlMode.SelectedValue = "Install";
             this.ddlMode.SelectedIndexChanged += ddlMode_SelectedIndexChanged;
 
-            this.ffgTargetAssembly = new FormFieldGroup(
-                "Target Assembly",
-                "The absolute path to the .NET assembly or its strong name if it is installed in the GAC.",
-                false,
-                new StandardFormField("Absolute path or strong name of assembly:", this.txtTargetAssembly));
+            this.ffgTargetAssembly = new SlimFormField("Target assembly:", this.txtTargetAssembly)
+            {
+                HelpText = "The absolute path to the .NET assembly or its strong name if it is installed in the GAC."
+            };
 
-            this.ffgOptions = new FormFieldGroup(
-                "Options",
-                "Additional options for NGen.",
-                true,
-                new StandardFormField(string.Empty, this.cbQueue));
+            this.ffgOptions = new SlimFormField("Options:", this.cbQueue);
 
-            CUtil.Add(this,
-                new FormFieldGroup(
-                    "Action",
-                    "The NGen action to perform.",
-                    false,
-                    new StandardFormField("Action:", this.ddlMode)
-                    ),
+            this.Controls.Add(
+                new SlimFormField("Action:", this.ddlMode),
                 this.ffgTargetAssembly,
-                this.ffgOptions);
+                this.ffgOptions
+            );
         }
 
-        /// <summary>
-        /// Updates various child controls when the selected mode has changed.
-        /// </summary>
         private void HandleModeChange()
         {
             switch (this.ddlMode.SelectedValue)
@@ -116,11 +84,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
         }
 
-        /// <summary>
-        /// Handles the SelectedIndexChanged event of the ddlMode control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ddlMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             HandleModeChange();

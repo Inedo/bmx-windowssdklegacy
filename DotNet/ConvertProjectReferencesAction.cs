@@ -10,9 +10,6 @@ using Inedo.BuildMaster.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    /// <summary>
-    /// Defines an action for converting .NET project references to file references.
-    /// </summary>
     [ActionProperties(
         "Convert Project References",
         "Converts project references in .NET projects to file references.")]
@@ -20,33 +17,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
     public sealed class ConvertProjectReferencesAction : RemoteActionBase
     {
-        /// <summary>
-        /// Namespace URI for MSBuild project files.
-        /// </summary>
         private const string NamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-        /// <summary>
-        /// Initializes a new instance of the ConvertProjectLibraryAction class.
-        /// </summary>
-        public ConvertProjectReferencesAction()
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the path to the library directory.
-        /// </summary>
         [Persistent]
         public string LibraryPath { get; set; }
 
-        /// <summary>
-        /// Gets or sets the search mask used to identify project files to convert.
-        /// </summary>
         [Persistent]
         public string[] SearchMasks { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the action should search for project files recursively.
-        /// </summary>
         [Persistent]
         public bool Recursive { get; set; }
 
@@ -59,7 +37,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 new LongActionDescription(
                     "in ",
                     new DirectoryHilite(this.OverriddenSourceDirectory),
-                    " and matching ",
+                    " matching ",
                     new ListHilite(this.SearchMasks),
                     " with library path ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.LibraryPath)
@@ -76,20 +54,20 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             if (string.IsNullOrEmpty(this.LibraryPath))
             {
-                LogError("Library path not specified.");
+                this.LogError("Library path not specified.");
                 return;
             }
 
-            if (SearchMasks == null || SearchMasks.Length == 0)
+            if (this.SearchMasks == null || this.SearchMasks.Length == 0)
             {
-                LogError("Search mask not specified.");
+                this.LogError("Search mask not specified.");
                 return;
             }
 
-            LogDebug("Converting references...");
-            ExecuteRemoteCommand("convert");
+            this.LogDebug("Converting references...");
+            this.ExecuteRemoteCommand("convert");
 
-            LogInformation("Project file conversion complete.");
+            this.LogInformation("Project file conversion complete.");
         }
 
         protected override string ProcessRemoteCommand(string name, string[] args)
@@ -110,15 +88,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             var matches = Util.Files.Comparison.GetMatches(sourcePath, entry, this.SearchMasks);
 
             foreach (var projectFile in matches)
-                ConvertProject(projectFile.Path);
+                this.ConvertProject(projectFile.Path);
 
             return string.Empty;
         }
 
-        /// <summary>
-        /// Converts an MSBuild project file's project references to file references.
-        /// </summary>
-        /// <param name="projectFile">Full path to project file to convert.</param>
         private void ConvertProject(string projectFile)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -186,11 +160,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             File.SetAttributes(projectFile, attribs);
         }
 
-        /// <summary>
-        /// Returns the full name of an assembly.
-        /// </summary>
-        /// <param name="assemblyFileName">The file name of the assembly.</param>
-        /// <returns>The full name of the assembly.</returns>
         private static AssemblyName GetFullAssemblyName(string assemblyFileName)
         {
             try
@@ -203,11 +172,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
         }
 
-        /// <summary>
-        /// Returns the target assembly name read from a project file.
-        /// </summary>
-        /// <param name="projectFile">MSBuild project file to read.</param>
-        /// <returns>Name of the target assembly read from the project file if found; otherwise null.</returns>
         private static string GetReferencedAssemblyName(string projectFile)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -234,14 +198,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 return null;
         }
 
-        /// <summary>
-        /// Creates a new .NET assembly reference as an XML element.
-        /// </summary>
-        /// <param name="assemblyFullName">Full name of the assembly to reference.</param>
-        /// <param name="projectPath">Full path to the project file which contains the reference.</param>
-        /// <param name="libraryPath">Full path to the library assembly to reference.</param>
-        /// <param name="xmlDoc">XmlDocument instance used to create a new node.</param>
-        /// <returns>XmlElement specifying the MSBuild assembly file reference.</returns>
         private static XmlNode CreateFileReference(string assemblyFullName, string projectPath, string libraryPath, XmlElement privateNode, XmlDocument xmlDoc)
         {
             var newNode = xmlDoc.CreateElement("Reference", NamespaceUri);
@@ -260,12 +216,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             return newNode;
         }
 
-        /// <summary>
-        /// Attempts to determine a relative path between two absolute paths.
-        /// </summary>
-        /// <param name="from">Starting absolute path.</param>
-        /// <param name="to">Destination absolute path.</param>
-        /// <returns>Relative path from the start to the destination.</returns>
         private static string RelativePathTo(string from, string to)
         {
             Uri uriFrom = new Uri(from);

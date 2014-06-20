@@ -2,16 +2,12 @@
 using System.IO;
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
 using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    /// <summary>
-    /// Custom editor for the <see cref="BuildAspNetProjectAction"/> action.
-    /// </summary>
     internal sealed class BuildAspNetProjectActionEditor : ActionEditorBase
     {
         private DropDownList ddlProjectBuildConfiguration;
@@ -20,21 +16,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         private ValidatingTextBox txtProjectPath;
         private ValidatingTextBox txtAdditionalArguments;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildAspNetProjectActionEditor"/> class.
-        /// </summary>
-        public BuildAspNetProjectActionEditor()
+        public override bool DisplayTargetDirectory
         {
+            get { return true; }
+        }
+        public override string TargetDirectoryLabel
+        {
+            get { return "To:"; }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether [display target directory].
-        /// </summary>
-        public override bool DisplayTargetDirectory { get { return true; } }
-
-        /// <summary>
-        /// Binds to form.
-        /// </summary>
         public override void BindToForm(ActionBase extension)
         {
             var action = (BuildAspNetProjectAction)extension;
@@ -53,9 +43,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             this.txtAdditionalArguments.Text = action.AdditionalArguments;
         }
 
-        /// <summary>
-        /// Creates from form.
-        /// </summary>
         public override ActionBase CreateFromForm()
         {
             return new BuildAspNetProjectAction()
@@ -71,7 +58,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void CreateChildControls()
         {
-            this.ddlProjectBuildConfiguration = new DropDownList()
+            this.ddlProjectBuildConfiguration = new DropDownList
             {
                 Items =
                 {
@@ -81,30 +68,18 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 }
             };
 
-            this.txtOtherConfig = new ValidatingTextBox() { Width = 150 };
-            this.divConfig = new Div() { ID = "divConfig" };
+            this.txtOtherConfig = new ValidatingTextBox();
+            this.divConfig = new Div { ID = "divConfig" };
             this.divConfig.Controls.Add(this.txtOtherConfig);
 
-            this.txtProjectPath = new ValidatingTextBox() { Width = 300, Required = true };
+            this.txtProjectPath = new ValidatingTextBox { Required = true };
 
-            this.txtAdditionalArguments = new ValidatingTextBox() { Width = 300 };
+            this.txtAdditionalArguments = new ValidatingTextBox();
 
             this.Controls.Add(
-                new FormFieldGroup("Project or Solution File Path",
-                    "The path to the MVC project file or solution file.<br /><br />This path may be absolute or relative to the default directory.",
-                    false,
-                    new StandardFormField("Project File:", this.txtProjectPath)
-                ),
-                new FormFieldGroup("Project Build Configuration",
-                    "The build configuration and platform for your project (usually either Debug or Release).",
-                    false,
-                    new StandardFormField("Project Build Configuration:", this.ddlProjectBuildConfiguration, this.divConfig)
-                ),
-                new FormFieldGroup("Additional Arguments",
-                    "Any additional arguments to pass to MSBuild.",
-                    false,
-                    new StandardFormField("Additional Arguments:", this.txtAdditionalArguments)
-                )
+                new SlimFormField("Project file:", this.txtProjectPath),
+                new SlimFormField("Build configuration:", this.ddlProjectBuildConfiguration, this.divConfig),
+                new SlimFormField("Additional arguments:", this.txtAdditionalArguments)
             );
         }
 

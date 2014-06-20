@@ -4,9 +4,6 @@ using Inedo.BuildMaster.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    /// <summary>
-    /// Represents an action that installs a .NET assembly into the Global Assembly Cache.
-    /// </summary>
     [ActionProperties(
         "Install Assemblies into the GAC",
         "Installs .NET assemblies into the Global Assembly Cache.")]
@@ -14,19 +11,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [CustomEditor(typeof(GacInstallActionEditor))]
     public sealed class GacInstallAction : RemoteActionBase
     {
-        /// <summary>
-        /// Gets or sets an array of files to install to the GAC.
-        /// </summary>
         [Persistent]
         public string[] FileMasks { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether a refresh is forced.
-        /// </summary>
-        /// <remarks>
-        /// A forced refresh indicates that the GAC'ed assembly will be updated
-        /// even if the version number has not changed.
-        /// </remarks>
         [Persistent]
         public bool ForceRefresh { get; set; }
 
@@ -54,19 +41,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             if (string.IsNullOrEmpty(this.Context.SourceDirectory))
             {
-                LogError("Invalid configuration; a source path must be provided.");
+                this.LogError("Invalid configuration; a source path must be provided.");
                 return;
             }
 
-            if (FileMasks.Length == 0)
+            if (this.FileMasks.Length == 0)
             {
-                LogInformation("Nothing to install into the GAC.");
+                this.LogWarning("Nothing to install into the GAC.");
                 return;
             }
 
-            ExecuteRemoteCommand("gac");
+            this.ExecuteRemoteCommand("gac");
 
-            LogInformation("Installation into the GAC complete");
+            this.LogInformation("Installation into the GAC complete.");
         }
 
         protected override string ProcessRemoteCommand(string name, string[] args)

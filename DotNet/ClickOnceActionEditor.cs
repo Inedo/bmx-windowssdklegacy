@@ -1,12 +1,13 @@
-﻿using System.Web.UI.WebControls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.UI.WebControls;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using FileAssociation = Inedo.BuildMasterExtensions.WindowsSdk.DotNet.ClickOnceAction.FileAssociation;
+
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     internal sealed class ClickOnceActionEditor : ActionEditorBase
@@ -38,38 +39,39 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox txtFileAssociationProgId2;
         private ValidatingTextBox txtFileAssociationDefaultIcon2;
 
-        public override bool DisplaySourceDirectory { get { return true; } }
+        public override bool DisplaySourceDirectory
+        {
+            get { return true; }
+        }
 
         protected override void CreateChildControls()
         {
-            //Inedo.Web.Controls.
-
-            this.txtApplicationName = new ValidatingTextBox { Required = true, Width = 300 };
-            this.txtProviderUrl = new ValidatingTextBox { Required = true, Width = 300 };
+            this.txtApplicationName = new ValidatingTextBox { Required = true };
+            this.txtProviderUrl = new ValidatingTextBox { Required = true };
             this.txtCertificatePath = new SourceControlFileFolderPicker();
-            this.txtCertificatePassword = new PasswordTextBox { Width = 250 };
-            this.txtCertificateHash = new ValidatingTextBox { Width = 300 };
-            this.txtVersion = new ValidatingTextBox { Required = true, Width = 300 };
-            this.txtMinVersion = new ValidatingTextBox { Required = false, Width = 300 };
+            this.txtCertificatePassword = new PasswordTextBox();
+            this.txtCertificateHash = new ValidatingTextBox();
+            this.txtVersion = new ValidatingTextBox { Required = true };
+            this.txtMinVersion = new ValidatingTextBox();
             this.chkMapFileExtensions = new CheckBox { Text = "Rename files to .deploy" };
             this.chkInstallApplication = new CheckBox { Text = "Install application onto local machine" };
             this.chkCreateDesktopIcon = new CheckBox { Text = "Create desktop icon" };
             this.chkStartupCheckForUpdate = new CheckBox { Text = "Check for update at startup" };
-            this.txtEntryPointFile = new ValidatingTextBox { Width = 300 };
-            this.txtFilesExcludedFromManifest = new ValidatingTextBox { Width = 300, TextMode = TextBoxMode.MultiLine };
-            this.txtIconFile = new ValidatingTextBox { Required = false, Width = 300 };
-            this.txtAppCodeBaseDirectory = new ValidatingTextBox { Width = 300 };
-            this.chkTrustUrlParameters = new CheckBox { Text = "Trust URL Parameters" };
+            this.txtEntryPointFile = new ValidatingTextBox();
+            this.txtFilesExcludedFromManifest = new ValidatingTextBox { TextMode = TextBoxMode.MultiLine };
+            this.txtIconFile = new ValidatingTextBox();
+            this.txtAppCodeBaseDirectory = new ValidatingTextBox();
+            this.chkTrustUrlParameters = new CheckBox { Text = "Trust URL parameters" };
 
-            this.txtFileAssociationDefaultIcon1 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationDescription1 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationExtension1 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationProgId1 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationDefaultIcon1 = new ValidatingTextBox();
+            this.txtFileAssociationDescription1 = new ValidatingTextBox();
+            this.txtFileAssociationExtension1 = new ValidatingTextBox();
+            this.txtFileAssociationProgId1 = new ValidatingTextBox();
 
-            this.txtFileAssociationDefaultIcon2 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationDescription2 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationExtension2 = new ValidatingTextBox { Width = 300 };
-            this.txtFileAssociationProgId2 = new ValidatingTextBox { Width = 300 };
+            this.txtFileAssociationDefaultIcon2 = new ValidatingTextBox();
+            this.txtFileAssociationDescription2 = new ValidatingTextBox();
+            this.txtFileAssociationExtension2 = new ValidatingTextBox();
+            this.txtFileAssociationProgId2 = new ValidatingTextBox();
 
             this.Controls.Add(
                 new FormFieldGroup(
@@ -173,6 +175,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 this.txtFileAssociationExtension1.Text = c1action.FileAssociations[0].Extension;
                 this.txtFileAssociationProgId1.Text = c1action.FileAssociations[0].ProgId;
             }
+
             if (c1action.FileAssociations.Length >= 2)
             {
                 this.txtFileAssociationDefaultIcon2.Text = c1action.FileAssociations[1].DefaultIcon;
@@ -184,7 +187,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         public override ActionBase CreateFromForm()
         {
-            List<FileAssociation> fileAssociations = new List<FileAssociation>();
+            var fileAssociations = new List<FileAssociation>();
 
             if (!String.IsNullOrWhiteSpace(this.txtFileAssociationDefaultIcon1.Text)
                 && !String.IsNullOrWhiteSpace(this.txtFileAssociationDescription1.Text)

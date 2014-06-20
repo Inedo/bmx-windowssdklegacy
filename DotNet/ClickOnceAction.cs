@@ -12,9 +12,6 @@ using System.Collections.Generic;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    /// <summary>
-    /// Represents an action that prepares a ClickOnce application for deployment
-    /// </summary>
     [ActionProperties(
         "Prepare ClickOnce Application",
         "Prepares a ClickOnce application for deployment.")]
@@ -143,28 +140,27 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void Execute()
         {
+            this.LogDebug("Creating Application Manifest File...");
+            this.ExecuteRemoteCommand("CreateApplication");
+            this.LogInformation("Application Manifest File created.");
 
-            LogDebug("Creating Application Manifest File...");
-            ExecuteRemoteCommand("CreateApplication");
-            LogInformation("Application Manifest File created.");
+            this.LogDebug("Signing Application Manifest File...");
+            this.ExecuteRemoteCommand("SignApplication");
+            this.LogInformation("Application Manifest File signed.");
 
-            LogDebug("Signing Application Manifest File...");
-            ExecuteRemoteCommand("SignApplication");
-            LogInformation("Application Manifest File signed.");
+            this.LogDebug("Creating Deployment Manifest File...");
+            this.ExecuteRemoteCommand("CreateDeployment");
+            this.LogInformation("Deployment Manifest File created.");
 
-            LogDebug("Creating Deployment Manifest File...");
-            ExecuteRemoteCommand("CreateDeployment");
-            LogInformation("Deployment Manifest File created.");
+            this.LogDebug("Signing Deployment Manifest File...");
+            this.ExecuteRemoteCommand("SignDeployment");
+            this.LogInformation("Deployment Manifest File signed.");
 
-            LogDebug("Signing Deployment Manifest File...");
-            ExecuteRemoteCommand("SignDeployment");
-            LogInformation("Deployment Manifest File signed.");
-
-            LogDebug("Copying application files...");
-            ExecuteRemoteCommand("CopyAppFiles");
-            LogInformation(
+            this.LogDebug("Copying application files...");
+            this.ExecuteRemoteCommand("CopyAppFiles");
+            this.LogInformation(
                 "Application files copied "
-                + (MapFileExtensions ? "and mapped to .deploy" : "")
+                + (this.MapFileExtensions ? "and mapped to .deploy" : "")
                 + ".");
         }
 
@@ -311,7 +307,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         // A riff on Util.Files.CopyFiles, with the rename included
         //   Copy/Pasting code generally isn't a good idea, but this is a pretty rare function
         //   and recursing directories to copy is pretty straight forward
-        void CopyFiles(string sourceFolder, string targetFolder, bool renameToDeploy)
+        private void CopyFiles(string sourceFolder, string targetFolder, bool renameToDeploy)
         {
             // If the source path isn't found, there's nothing to copy
             if (!Directory.Exists(sourceFolder))
