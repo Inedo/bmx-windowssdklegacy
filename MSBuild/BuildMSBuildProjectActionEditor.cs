@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Web.UI.HtmlControls;
+﻿using System.IO;
 using System.Web.UI.WebControls;
+using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
-using Inedo.Web.ClientResources;
 using Inedo.Web.Controls;
 using Inedo.Web.Controls.SimpleHtml;
 
@@ -13,50 +11,38 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     internal sealed class BuildMSBuildProjectActionEditor : ActionEditorBase
     {
-        private DropDownList ddlProjectBuildConfiguration;
-        private HtmlGenericControl divConfig;
-        private TextBox txtOtherConfig;
-        private TextBox txtProjectPath;
+        private ValidatingTextBox txtProjectBuildConfiguration;
+        private SourceControlFileFolderPicker txtProjectPath;
         private CheckBox chkWebProject;
+        private Div divWebProject;
         private DropDownList ddlBuildOutputDir;
-        private DropDownList ddlProjectBuildTargetPlatform;
-        private TextBox txtOtherPlatform;
-        private HtmlGenericControl divPlatform;
+        private ValidatingTextBox txtProjectBuildTargetPlatform;
         private TextBox txtAdditionalProperties;
-        private HtmlGenericControl divTargetDir;
         private SourceControlFileFolderPicker txtTargetDir;
+        private ValidatingTextBox txtAdditionalArguments;
 
         protected override void CreateChildControls()
         {
-            this.ddlProjectBuildConfiguration = new DropDownList
+            this.txtProjectBuildConfiguration = new ValidatingTextBox
             {
-                ID = "ddlProjectBuildConfiguration",
-                Items =
-                {
-                    new ListItem("Debug", "Debug"),
-                    new ListItem("Release", "Release"),
-                    new ListItem("Other", "Other")
-                }
+                ID = "txtProjectBuildConfiguration",
+                AutoCompleteValues = new[] { "Debug", "Release" },
+                Required = true,
+                Text = "Release"
             };
 
-            this.txtOtherConfig = new TextBox { Width = 150 };
-
-            this.ddlProjectBuildTargetPlatform = new DropDownList
+            this.txtProjectBuildTargetPlatform = new ValidatingTextBox
             {
-                ID = "ddlProjectBuildTargetPlatform",
-                Items =
-                {
-                    new ListItem("(Default)", string.Empty),
-                    new ListItem("Any CPU", "AnyCPU"),
-                    new ListItem("x86", "x86"),
-                    new ListItem("x64", "x64"),
-                    new ListItem("Other", "Other")
-                }
+                ID = "txtProjectBuildTargetPlatform",
+                AutoCompleteValues = new[] { "AnyCPU", "Any CPU", "x86", "x64", "Win32" },
+                DefaultText = "(default)"
             };
 
-            this.txtOtherPlatform = new TextBox { Width = 150 };
-
-            this.txtProjectPath = new TextBox { Width = 325 };
+            this.txtProjectPath = new SourceControlFileFolderPicker
+            {
+                ID = "txtProjectPath",
+                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles
+            };
 
             this.chkWebProject = new CheckBox
             {
@@ -76,108 +62,68 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             this.txtTargetDir = new SourceControlFileFolderPicker
             {
-                DefaultText = "default"
+                DefaultText = "$CurrentDirectory"
             };
 
-            this.txtAdditionalProperties = new TextBox
+            this.txtAdditionalProperties = new ValidatingTextBox
             {
                 TextMode = TextBoxMode.MultiLine,
+                DefaultText = "(none)",
                 Rows = 5
             };
 
-            this.divConfig = new HtmlGenericControl("div") { ID = "divConfig" };
-            this.divConfig.Style.Value = "display:none;";
+            var divTargetDir = new Div(
+                this.txtTargetDir
+            ) { ID = "divTargetDir" };
 
-            this.divConfig.Controls.Add(this.txtOtherConfig);
+            this.divWebProject = new Div(
+                this.chkWebProject,
+                new Div(
+                    new StatusImg { Status = StatusType.Warning, Style = "width: 16px; height: 16px; display: block; float: left;" },
+                    "This option will be removed in a future version of the extension. Use the Build ASP.NET Project action instead."
+                ) { Style = "font-size: 9px; margin-left: 20px;" }
+            ) { IsIdRequired = false, Visible = false, Style = "margin-top: 10px;" };
 
-            this.divPlatform = new HtmlGenericControl("div") { ID = "divPlatform" };
-            this.divPlatform.Style.Value = "display:none;";
-
-            this.divPlatform.Controls.Add(this.txtOtherPlatform);
-
-            this.divTargetDir = new HtmlGenericControl("div") { ID = "divTargetDir" };
-            this.divTargetDir.Style.Value = "display:none;";
-
-            this.divTargetDir.Controls.Add(this.txtTargetDir);
+            this.txtAdditionalArguments = new ValidatingTextBox
+            {
+                ID = "txtAdditionalArguments",
+                DefaultText = "(none)"
+            };
 
             this.Controls.Add(
-                new SlimFormField("Project/solution file:", this.txtProjectPath, new Div(this.chkWebProject)),
-                new SlimFormField("Configuration:", this.ddlProjectBuildConfiguration, this.divConfig),
-                new SlimFormField("Platform:", this.ddlProjectBuildTargetPlatform, this.divPlatform),
-                new SlimFormField("Output directory:", this.ddlBuildOutputDir, this.divTargetDir)
+                new SlimFormField("Project/solution file:", this.txtProjectPath, this.divWebProject),
+                new SlimFormField("Configuration:", this.txtProjectBuildConfiguration),
+                new SlimFormField("Platform:", this.txtProjectBuildTargetPlatform),
+                new SlimFormField("Output directory:", this.ddlBuildOutputDir, divTargetDir)
                 {
-                    HelpText = "The directory of the build output. The \\bin\\{config} option is recommended when building a solution file. If \"This is a Web Application project\" is selected, an output directory must be specified."
+                    HelpText = "The directory of the build output. The \\bin\\{config} option is recommended when building a solution file."
                 },
                 new SlimFormField("MSBuild properties:", this.txtAdditionalProperties)
                 {
                     HelpText = HelpText.FromHtml("Additional properties, separated by newlines. Example:<br />WarningLevel=2<br />Optimize=false")
                 },
+                new SlimFormField("Additional arguments:", this.txtAdditionalArguments),
                 new RenderJQueryDocReadyDelegator(
                     w =>
                     {
-                        w.Write("BmExecuteMSBuildScriptActionEditor(");
-                        InedoLib.Util.JavaScript.WriteJson(
-                            w,
-                            new
-                            {
-                                ddlConfigId = "#" + ddlProjectBuildConfiguration.ClientID,
-                                divConfigId = "#" + divConfig.ClientID,
-                                ddlPlatformId = "#" + ddlProjectBuildTargetPlatform.ClientID,
-                                divPlatformId = "#" + divPlatform.ClientID,
-                                ddlTargetDirId = "#" + ddlBuildOutputDir.ClientID,
-                                divTargetDirId = "#" + divTargetDir.ClientID,
-                                chkWebProjectId = "#" + chkWebProject.ClientID
-                            }
-                        );
-                        w.Write(");");
+                        w.Write("$('#{0}').change(function(){{if($(this).val()=='target')$('#{1}').show();else $('#{1}').hide();}});", this.ddlBuildOutputDir.ClientID, divTargetDir.ClientID);
+                        w.Write("$('#{0}').change();", this.ddlBuildOutputDir.ClientID);
                     }
                 )
             );
         }
 
-        protected override void OnPreRender(EventArgs e)
-        {
-            this.IncludeClientResourceInPage(
-                new JavascriptResource
-                {
-                    ResourcePath = "~/extension-resources/windowssdk/msbuild/executemsbuildscriptactioneditor.js?" + typeof(BuildMSBuildProjectActionEditor).Assembly.GetName().Version,
-                    CompatibleVersions = { InedoLibCR.Versions.jq152, InedoLibCR.Versions.jq161, InedoLibCR.Versions.jq171 }
-                }
-            );
-
-            base.OnPreRender(e);
-        }
-
         public override void BindToForm(ActionBase extension)
         {
-            this.EnsureChildControls();
-
             var buildAction = (BuildMSBuildProjectAction)extension;
 
-            if (buildAction.ProjectBuildConfiguration == "Debug" || buildAction.ProjectBuildConfiguration == "Release")
-            {
-                this.ddlProjectBuildConfiguration.SelectedValue = buildAction.ProjectBuildConfiguration;
-            }
-            else
-            {
-                this.ddlProjectBuildConfiguration.SelectedValue = "Other";
-                this.txtOtherConfig.Text = buildAction.ProjectBuildConfiguration;
-            }
-
-            var platform = buildAction.ProjectTargetPlatform ?? string.Empty;
-            if (platform == string.Empty || platform == "AnyCPU" || platform == "x86" || platform == "x64")
-            {
-                this.ddlProjectBuildTargetPlatform.SelectedValue = platform;
-            }
-            else
-            {
-                this.ddlProjectBuildTargetPlatform.SelectedValue = "Other";
-                this.txtOtherPlatform.Text = platform;
-            }
-
-            this.txtProjectPath.Text = Path.Combine(buildAction.OverriddenSourceDirectory ?? "", buildAction.ProjectPath);
+            this.txtProjectBuildConfiguration.Text = buildAction.ProjectBuildConfiguration;
+            this.txtProjectBuildTargetPlatform.Text = buildAction.ProjectTargetPlatform;
+            this.txtProjectPath.Text = Path.Combine(buildAction.OverriddenSourceDirectory ?? string.Empty, buildAction.ProjectPath);
             this.chkWebProject.Checked = buildAction.IsWebProject;
-            this.txtAdditionalProperties.Text = buildAction.MSBuildProperties ?? "";
+            this.divWebProject.Visible = buildAction.IsWebProject;
+            this.txtAdditionalProperties.Text = buildAction.MSBuildProperties ?? string.Empty;
+            this.txtAdditionalArguments.Text = buildAction.AdditionalArguments;
             if (buildAction.BuildToProjectConfigSubdirectories)
             {
                 this.ddlBuildOutputDir.SelectedValue = "bin";
@@ -191,19 +137,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         public override ActionBase CreateFromForm()
         {
-            this.EnsureChildControls();
-
-            var buildAction = new BuildMSBuildProjectAction();
-
-            if (ddlProjectBuildConfiguration.SelectedValue != "Other")
-                buildAction.ProjectBuildConfiguration = this.ddlProjectBuildConfiguration.SelectedValue;
-            else
-                buildAction.ProjectBuildConfiguration = this.txtOtherConfig.Text;
-
-            if (ddlProjectBuildTargetPlatform.SelectedValue != "Other")
-                buildAction.ProjectTargetPlatform = this.ddlProjectBuildTargetPlatform.SelectedValue;
-            else
-                buildAction.ProjectTargetPlatform = this.txtOtherPlatform.Text;
+            var buildAction = new BuildMSBuildProjectAction
+            {
+                ProjectBuildConfiguration = Util.NullIf(this.txtProjectBuildConfiguration.Text, string.Empty),
+                ProjectTargetPlatform = Util.NullIf(this.txtProjectBuildTargetPlatform.Text, string.Empty),
+                AdditionalArguments = Util.NullIf(this.txtAdditionalArguments.Text, string.Empty),
+                IsWebProject = this.chkWebProject.Checked
+            };
 
             if (SeparateOverriddenSourceDirectory(this.txtProjectPath.Text, this.txtTargetDir.Text))
             {
@@ -215,13 +155,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 buildAction.ProjectPath = this.txtProjectPath.Text;
             }
 
-            buildAction.IsWebProject = this.chkWebProject.Checked;
             buildAction.MSBuildProperties = this.txtAdditionalProperties.Text;
 
             if (this.ddlBuildOutputDir.SelectedValue == "bin" && !this.chkWebProject.Checked)
             {
                 buildAction.BuildToProjectConfigSubdirectories = true;
-                buildAction.OverriddenTargetDirectory = "";
+                buildAction.OverriddenTargetDirectory = string.Empty;
             }
             else
             {

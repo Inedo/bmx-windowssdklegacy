@@ -27,6 +27,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public string MSBuildProperties { get; set; }
 
+        [Persistent]
+        public string AdditionalArguments { get; set; }
+
         public override ActionDescription GetActionDescription()
         {
             return new ActionDescription(
@@ -45,40 +48,36 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void Execute()
         {
-            var retval = ExecuteRemoteCommand(null);
-            if (retval != "0")
-                this.LogError("MSBuild action failed; msbuild.exe returned code " + retval);
+            this.LogInformation("Executing {0}...", this.MSBuildPath);
+            this.ExecuteRemoteCommand(null);
         }
 
         protected override string ProcessRemoteCommand(string name, string[] args)
         {
             var projectFileName = Path.Combine(this.Context.SourceDirectory, this.MSBuildPath);
 
-            // Parse build properties from:
-            //      prop1=val1
-            //      prop2=val2
-            // to:
-            //      prop1=val1;prop2=val2
-            var buildProperties = string.Join(
-                ";",
-                this.MSBuildProperties.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-            );
+            var buildProperties = string.Join(";", this.MSBuildProperties.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
             //Execute msbuild script
             //Format: MSBuild {projectFileName} /t:{ProjectBuildTarget}
-            return this.InvokeMSBuild(
+            int result = this.InvokeMSBuild(
                 string.Format(
-                    " \"{0}\" \"/t:{1}\" \"/p:outDir={2}{3}\"",
+                    " \"{0}\" \"/t:{1}\" \"/p:outDir={2}{3}\" {4}",
                     projectFileName,
                     this.ProjectBuildTarget,
                     this.Context.TargetDirectory.EndsWith("\\") ?
                         this.Context.TargetDirectory :
                         this.Context.TargetDirectory + "\\",
-                    Util.ConcatNE(";", buildProperties)
+                    Util.ConcatNE(";", buildProperties),
+                    Util.ConcatNE("\"", this.AdditionalArguments, "\"")
                 ),
                 this.Context.SourceDirectory
-            )
-            .ToString();
+            );
+
+            if (result != 0)
+                this.LogError("MSBuild failed with code {0}.", result);
+
+            return result.ToString();
         }
     }
 }

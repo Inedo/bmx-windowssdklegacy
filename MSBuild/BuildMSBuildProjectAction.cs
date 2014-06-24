@@ -32,6 +32,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public bool BuildToProjectConfigSubdirectories { get; set; }
 
+        [Persistent]
+        public string AdditionalArguments { get; set; }
+
         public override ActionDescription GetActionDescription()
         {
             var projectPath = this.ProjectPath ?? string.Empty;
@@ -66,15 +69,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             return new ActionDescription(
                 new ShortActionDescription(
                     "Build ",
-                    new Hilite(projectPath),
-                    " (",
-                    new Hilite(config),
-                    ")"
+                    new DirectoryHilite(this.OverriddenSourceDirectory, projectPath)
                 ),
                 new LongActionDescription(
-                    "from ",
-                    new DirectoryHilite(this.OverriddenSourceDirectory),
-                    " to ",
+                    "with ",
+                    new Hilite(config),
+                    " configuration to ",
                     targetHilite
                 )
             );
@@ -82,48 +82,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void Execute()
         {
-            var retVal = string.Empty;
-
-            this.LogDebug("Building Application");
-            retVal = this.ExecuteRemoteCommand("Build");
-            if (retVal != "0")
-            {
-                this.LogError("Step failed (msbuild returned code {0})", retVal);
-                return;
-            }
-
-            if (this.IsWebProject)
-            {
-                this.LogDebug("Copying Web Files");
-                retVal = this.ExecuteRemoteCommand("CopyWeb");
-                if (retVal != "0")
-                {
-                    this.LogError("Step failed (msbuild returned code {0})", retVal);
-                    return;
-                }
-
-                this.LogDebug("Copying References");
-                retVal = this.ExecuteRemoteCommand("CopyRef");
-                if (retVal != "0")
-                {
-                    this.LogError("Step failed (msbuild returned code {0})", retVal);
-                    return;
-                }
-            }
-
+            this.LogInformation("Building {0}...", this.ProjectPath);
+            this.ExecuteRemoteCommand(null);
         }
 
         protected override string ProcessRemoteCommand(string name, string[] args)
         {
             var projectFullPath = Path.Combine(this.Context.SourceDirectory, this.ProjectPath);
 
-            var buildProperties =
-                string.Join(
-                    ";",
-                    (this.MSBuildProperties ?? "").Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-            );
-
-            LogDebug(string.Format("  Action: {0}; Path: {1}", name, projectFullPath));
+            var buildProperties = string.Join(";", (this.MSBuildProperties ?? "").Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
             var config = "Configuration=" + this.ProjectBuildConfiguration;
             if (!string.IsNullOrEmpty(this.ProjectTargetPlatform))
@@ -132,48 +99,66 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             if (!string.IsNullOrEmpty(buildProperties))
                 config += ";" + buildProperties;
 
-            switch (name)
+            try
             {
-                case "Build":
-                    try
-                    {
-                        DotNetHelper.EnsureMsBuildWebTargets();
-                    }
-                    catch
-                    {
-                        //gulp
-                    }
-                    return msbuild(" \"{0}\" \"/p:{1}\""
-                        + (this.IsWebProject || this.BuildToProjectConfigSubdirectories ? "" : "  \"/p:OutDir={2}\\\""),
-                        projectFullPath,
-                        config,
-                        this.Context.TargetDirectory.EndsWith(Path.DirectorySeparatorChar.ToString())
-                            ? this.Context.TargetDirectory
-                            : this.Context.TargetDirectory + Path.DirectorySeparatorChar
-                        );
-
-                case "CopyWeb":
-                    return msbuild(" \"{0}\" /target:_CopyWebApplication \"/p:OutDir={1}\\\" \"/p:WebProjectOutputDir={1}\\\" \"/p:{2}\"",
-                        projectFullPath,
-                        this.Context.TargetDirectory.EndsWith(Path.DirectorySeparatorChar.ToString())
-                            ? this.Context.TargetDirectory
-                            : this.Context.TargetDirectory + Path.DirectorySeparatorChar,
-                        config);
-                    
-                case "CopyRef":
-                    return msbuild(" \"{0}\" /target:ResolveReferences \"/property:OutDir={1}\\\" \"/p:{2}\"",
-                        projectFullPath,
-                        Path.Combine(this.Context.TargetDirectory, "bin" + Path.DirectorySeparatorChar),
-                        config);
-                    
-                default:
-                    throw new ArgumentOutOfRangeException("name");
+                DotNetHelper.EnsureMsBuildWebTargets();
             }
+            catch
+            {
+            }
+
+            this.LogDebug("Building {0}...", projectFullPath);
+
+            int result = this.RunMSBuild(
+                " \"{0}\" \"/p:{1}\"" + (this.IsWebProject || this.BuildToProjectConfigSubdirectories ? string.Empty : "  \"/p:OutDir={2}\\\""),
+                projectFullPath,
+                config,
+                this.Context.TargetDirectory.EndsWith("\\")
+                    ? this.Context.TargetDirectory
+                    : this.Context.TargetDirectory + '\\'
+            );
+
+            if (result != 0)
+            {
+                this.LogError("Build failed (msbuild returned {0}).", result);
+            }
+            else if (this.IsWebProject)
+            {
+                result = this.RunMSBuild(
+                    " \"{0}\" /target:_CopyWebApplication \"/p:OutDir={1}\\\" \"/p:WebProjectOutputDir={1}\\\" \"/p:{2}\"",
+                    projectFullPath,
+                    this.Context.TargetDirectory.EndsWith("\\")
+                        ? this.Context.TargetDirectory
+                        : this.Context.TargetDirectory + '\\',
+                    config
+                );
+
+                if (result != 0)
+                {
+                    this.LogError("CopyWebApplication failed (msbuild returned {0}).", result);
+                }
+                else
+                {
+                    result = this.RunMSBuild(" \"{0}\" /target:ResolveReferences \"/property:OutDir={1}\\\" \"/p:{2}\"",
+                        projectFullPath,
+                        Path.Combine(this.Context.TargetDirectory, "bin") + '\\',
+                        config
+                    );
+
+                    if (result != 0)
+                        this.LogError("ResolveReferences failed (msbuild returned {0}).", result);
+                }
+            }
+
+            return result.ToString();
         }
 
-        private string msbuild(string argsFormat, params string[] args)
+        private int RunMSBuild(string argsFormat, params string[] args)
         {
             var allArgs = string.Format(argsFormat, args);
+
+            if (!string.IsNullOrWhiteSpace(this.AdditionalArguments))
+                allArgs += " " + this.AdditionalArguments;
 
             var workingDir = Path.Combine(
                 this.Context.SourceDirectory,
@@ -183,11 +168,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             if (!Directory.Exists(workingDir))
                 throw new DirectoryNotFoundException(string.Format("Directory {0} does not exist.", workingDir));
 
-            return this.InvokeMSBuild(
-                allArgs,
-                workingDir
-            )
-            .ToString();
+            return this.InvokeMSBuild(allArgs, workingDir);
         }
     }
 }

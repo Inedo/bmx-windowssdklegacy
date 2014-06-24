@@ -1,6 +1,7 @@
 ﻿using System.Web.UI.WebControls;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
 
@@ -8,8 +9,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     internal sealed class ExecuteMSBuildScriptActionEditor : ActionEditorBase
     {
-        private ValidatingTextBox txtProjectFilePath, txtMSBuildTarget, txtAdditionalProperties;
-        private DropDownList ddlVersion;
+        private SourceControlFileFolderPicker txtProjectFilePath;
+        private ValidatingTextBox txtMSBuildTarget;
+        private ValidatingTextBox txtAdditionalProperties;
+        private ValidatingTextBox txtAdditionalArguments;
 
         public override bool DisplayTargetDirectory
         {
@@ -22,30 +25,40 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void CreateChildControls()
         {
-            this.ddlVersion = new DropDownList();
-            this.ddlVersion.Items.Add(new ListItem("(auto detect)", ""));
-            this.ddlVersion.Items.Add(new ListItem("2.0", "2.0.50727"));
-            this.ddlVersion.Items.Add(new ListItem("3.5", "3.5"));
-            this.ddlVersion.Items.Add(new ListItem("4.0", "4.0.30319"));
+            this.txtProjectFilePath = new SourceControlFileFolderPicker
+            {
+                ID = "txtProjectFilePath",
+                Required = true
+            };
 
-            this.txtProjectFilePath = new ValidatingTextBox();
-
-            this.txtMSBuildTarget = new ValidatingTextBox { Required = true };
+            this.txtMSBuildTarget = new ValidatingTextBox
+            {
+                ID = "txtMSBuildTarget",
+                Required = true
+            };
 
             this.txtAdditionalProperties = new ValidatingTextBox
             {
+                ID = "txtAdditionalProperties",
                 TextMode = TextBoxMode.MultiLine,
+                DefaultText = "(none)",
                 Rows = 5
             };
 
+            this.txtAdditionalArguments = new ValidatingTextBox
+            {
+                ID = "txtAdditionalArguments",
+                DefaultText = "(none)"
+            };
+
             this.Controls.Add(
-                new SlimFormField(".NET version:", this.ddlVersion),
                 new SlimFormField("MSBuild file:", this.txtProjectFilePath),
                 new SlimFormField("MSBuild target:", this.txtMSBuildTarget),
                 new SlimFormField("MSBuild properties:", this.txtAdditionalProperties)
                 {
                     HelpText = HelpText.FromHtml("Additional properties, separated by newlines. Example:<br />WarningLevel=2<br />Optimize=false")
-                }
+                },
+                new SlimFormField("Additional arguments:", this.txtAdditionalArguments)
             );
         }
 
@@ -55,7 +68,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             this.txtProjectFilePath.Text = Util.Path2.Combine(buildAction.OverriddenSourceDirectory, buildAction.MSBuildPath);
             this.txtMSBuildTarget.Text = buildAction.ProjectBuildTarget;
             this.txtAdditionalProperties.Text = buildAction.MSBuildProperties;
-            this.ddlVersion.SelectedValue = buildAction.DotNetVersion ?? string.Empty;
+            this.txtAdditionalArguments.Text = buildAction.AdditionalArguments;
         }
 
         public override ActionBase CreateFromForm()
@@ -70,7 +83,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 MSBuildPath = Util.Path2.GetFileName(this.txtProjectFilePath.Text),
                 ProjectBuildTarget = this.txtMSBuildTarget.Text,
                 MSBuildProperties = buildProperties,
-                DotNetVersion = this.ddlVersion.SelectedValue
+                AdditionalArguments = this.txtAdditionalArguments.Text
             };
         }
     }

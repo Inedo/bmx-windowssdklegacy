@@ -28,13 +28,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             return new ActionDescription(
                 new ShortActionDescription(
                     "Build MVC Project ",
-                    new DirectoryHilite(this.OverriddenSourceDirectory, this.ProjectPath),
-                    " (",
-                    new Hilite(this.ProjectBuildConfiguration),
-                    ")"
+                    new DirectoryHilite(this.OverriddenSourceDirectory, this.ProjectPath)
                 ),
                 new LongActionDescription(
-                    "to ",
+                    "with ",
+                    new Hilite(this.ProjectBuildConfiguration),
+                    " configuration to ",
                     new DirectoryHilite(this.OverriddenTargetDirectory)
                 )
             );
