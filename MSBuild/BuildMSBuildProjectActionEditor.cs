@@ -47,7 +47,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 Items =
                 {
                     new ListItem("(Default)", string.Empty),
-                    new ListItem("Any CPU", "AnyCPU"),
+                    new ListItem("Any CPU", "Any CPU"),
                     new ListItem("x86", "x86"),
                     new ListItem("x64", "x64"),
                     new ListItem("Other", "Other")
