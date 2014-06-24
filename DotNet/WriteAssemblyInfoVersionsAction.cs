@@ -99,6 +99,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 {
                     text = AttributeRegex.Replace(text, replacementText);
 
+                    var attr = fileOps.GetFileEntry(match.Path).Attributes;
+                    if ((attr & FileAttributes.ReadOnly) != 0)
+                        fileOps.SetAttributes(match.Path, null, attr & ~FileAttributes.ReadOnly);
+
                     using (var stream = fileOps.OpenFile(match.Path, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(stream, encoding))
                     {
