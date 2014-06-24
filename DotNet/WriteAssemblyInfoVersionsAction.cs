@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,7 +19,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [RequiresInterface(typeof(IFileOperationsExecuter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase
     {
-        private static readonly Regex AttributeRegex = new Regex(@"(?<s>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<e>""\s*\))", RegexOptions.Compiled);
+        private static readonly Regex AttributeRegex = new Regex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         [Persistent]
         public string[] FileMasks { get; set; }
@@ -79,20 +80,30 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 return;
             }
 
-            var replacementText = "${s}" + this.Version + "${e}";
+            var replacementText = "${1}" + this.Version + "${2}";
 
             foreach (var match in matches)
             {
                 this.LogInformation("Writing assembly versions attributes to {0}...", match.Path);
+                string text;
+                Encoding encoding;
 
-                var text = Encoding.UTF8.GetString(fileOps.ReadFileBytes(match.Path));
+                using (var stream = fileOps.OpenFile(match.Path, FileMode.Open, FileAccess.Read))
+                using (var reader = new StreamReader(stream, true))
+                {
+                    text = reader.ReadToEnd();
+                    encoding = reader.CurrentEncoding;
+                }
+
                 if (AttributeRegex.IsMatch(text))
                 {
                     text = AttributeRegex.Replace(text, replacementText);
-                    fileOps.WriteFileBytes(
-                        match.Path,
-                        Encoding.UTF8.GetBytes(text)
-                    );
+
+                    using (var stream = fileOps.OpenFile(match.Path, FileMode.Create, FileAccess.Write))
+                    using (var writer = new StreamWriter(stream, encoding))
+                    {
+                        writer.Write(text);
+                    }
                 }
             }
         }
