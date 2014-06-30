@@ -131,6 +131,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             for (int i = 0; i < deployableIds.Length; i++)
             {
                 int buildPlanId = this.CreatePlan(deployableIds[i], this.WorkflowSteps[0], "Build " + this.Projects[i].Name, string.Format("Builds {0} and creates an artifact from the build output.", this.Projects[i].Name));
+
                 AddAction(buildPlanId, new BuildMSBuildProjectAction
                 {
                     OverriddenSourceDirectory = @"~\Src",
@@ -148,6 +149,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
             for (int i = 0; i < deployableIds.Length; i++)
             {
                 int deployPlanId = this.CreatePlan(deployableIds[i], this.WorkflowSteps[0], "Deploy " + this.Projects[i].Name, string.Format("Deploys {0}.", this.Projects[i].Name));
+                
                 AddAction(deployPlanId, Util.Recipes.Munging.MungeCoreExAction(
                     "Inedo.BuildMaster.Extensibility.Actions.Artifacts.DeployArtifactAction", new
                     {
@@ -173,7 +175,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         }
         private static int AddAction(int planId, ActionBase action)
         {
-            return Util.Recipes.AddAction(planId, action);
+            return Util.Recipes.AddAction(planId, 1, action);
         }
         private void AddConfigurationFile(int configFileId, string releaseNumber, IEnumerable<string> instanceNames, byte[] fileBytes)
         {
