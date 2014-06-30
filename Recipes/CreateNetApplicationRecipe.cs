@@ -169,35 +169,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         }
         private int CreatePlan(int? deployableId, int environmentId, string planName, string planDesc)
         {
-            var proc = StoredProcs.Plans_CreatePlanActionGroup(
-                Deployable_Id: deployableId,
-                Environment_Id: environmentId,
-                Application_Id: this.ApplicationId,
-                Active_Indicator: Domains.YN.Yes,
-                ActionGroup_Name: planName,
-                ActionGroup_Description: planDesc
-            );
-            proc.ExecuteNonQuery();
-            return proc.ActionGroup_Id.Value;
+            return Util.Recipes.CreatePlan(this.ApplicationId, deployableId, environmentId, planName, planDesc);
         }
         private static int AddAction(int planId, ActionBase action)
         {
-            var proc = StoredProcs.Plans_CreateOrUpdateAction(
-                Plan_Id: planId,
-                Server_Id: action is AgentBasedActionBase ? (int?)1 : null,
-                Action_Description: action.ToString(),
-                ResumeNextOnFailure_Indicator: Domains.YN.No,
-                Action_Configuration: Util.Persistence.SerializeToPersistedObjectXml(action),
-                ActionType_Name: Util.Reflection.GetCustomAttribute<ActionPropertiesAttribute>(action.GetType()).Name,
-                Active_Indicator: Domains.YN.Yes,
-                Retry_Count: 0,
-                LogFailureAsWarning_Indicator: Domains.YN.No
-            );
-            proc.ExecuteNonQuery();
-            return proc.Action_Sequence.Value;
+            return Util.Recipes.AddAction(planId, action);
         }
         private void AddConfigurationFile(int configFileId, string releaseNumber, IEnumerable<string> instanceNames, byte[] fileBytes)
         {
+
             var configBuffer = new StringBuilder();
             using (var configXmlWriter = XmlWriter.Create(configBuffer, new XmlWriterSettings { OmitXmlDeclaration = true, NewLineHandling = NewLineHandling.None, CloseOutput = true }))
             {
