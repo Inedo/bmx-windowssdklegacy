@@ -56,6 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Azure\PublishAzureWebsiteAction.cs" />
+    <Compile Include="Azure\PublishAzureWebsiteActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MSBuild\BuildAspNetProjectAction.cs" />
     <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>

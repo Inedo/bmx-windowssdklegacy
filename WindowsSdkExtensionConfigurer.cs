@@ -25,6 +25,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         public string WindowsSdkPath { get; set; }
         [Persistent]
         public string FrameworkRuntimePath { get; set; }
+        [Persistent]
+        public string AzureUserName { get; set; }
+        [Persistent(Encrypted = true)]
+        public string AzurePassword { get; set; }
 
         /// <summary>
         /// Returns the full path to a specified .NET framework runtime version.
