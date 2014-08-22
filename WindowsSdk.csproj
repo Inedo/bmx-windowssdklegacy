@@ -31,20 +31,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BuildMaster.Web.Controls">
-      <HintPath>packages\Inedo.BuildMaster.SDK.4.3\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>packages\Inedo.BuildMaster.SDK.4.4\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
     </Reference>
     <Reference Include="BuildMasterCore">
-      <HintPath>packages\Inedo.BuildMaster.SDK.4.3\lib\net40\BuildMasterCore.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>packages\Inedo.BuildMaster.SDK.4.4\lib\net40\BuildMasterCore.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="InedoLib">
-      <HintPath>packages\Inedo.BuildMaster.SDK.4.3\lib\net40\InedoLib.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>packages\Inedo.BuildMaster.SDK.4.4\lib\net40\InedoLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />

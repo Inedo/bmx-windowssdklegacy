@@ -104,15 +104,27 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 }
             }
 
-            int getSourcePlanId = this.CreatePlan(null, this.WorkflowSteps[0], "Get Source", "Applies a label to the files in Source Control and gets a copy of the label.");
-            AddAction(getSourcePlanId, Util.Recipes.Munging.MungeCoreExAction(
+            int firstDeploymentPlanId = Util.Recipes.CreateDeploymentPlanForWorkflowStep(this.WorkflowId, 1); 
+
+            for (int i = 2; i <= this.WorkflowSteps.Length; i++)
+                Util.Recipes.CreateDeploymentPlanForWorkflowStep(this.WorkflowId, i);
+
+            int actionGroupId = Util.Recipes.CreateDeploymentPlanActionGroup(
+                firstDeploymentPlanId, 
+                deployableId: null,
+                name: "Get Source", 
+                description: ""
+            );
+
+            //int getSourcePlanId = this.CreatePlan(null, this.WorkflowSteps[0], "", "");
+            Util.Recipes.AddAction(actionGroupId, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.ApplyLabelAction", new
                 {
                     SourcePath = this.SolutionPath,
                     UserDefinedLabel = "$ReleaseNumber.$BuildNumber",
                     ProviderId = this.ScmProviderId
                 }));
-            AddAction(getSourcePlanId, Util.Recipes.Munging.MungeCoreExAction(
+            Util.Recipes.AddAction(actionGroupId, Util.Recipes.Munging.MungeCoreExAction(
                 "Inedo.BuildMaster.Extensibility.Actions.SourceControl.GetLabeledAction", new
                 {
                     SourcePath = this.SolutionPath,
@@ -120,7 +132,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     ProviderId = this.ScmProviderId,
                     OverriddenTargetDirectory = @"~\Src"
                 }));
-            AddAction(getSourcePlanId, new WriteAssemblyInfoVersionsAction
+            Util.Recipes.AddAction(actionGroupId, new WriteAssemblyInfoVersionsAction
             {
                 OverriddenSourceDirectory = @"~\Src",
                 FileMasks = new[] { @"*\AssemblyInfo.cs", @"*\AssemblyInfo.vb" },
@@ -130,16 +142,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             for (int i = 0; i < deployableIds.Length; i++)
             {
-                int buildPlanId = this.CreatePlan(deployableIds[i], this.WorkflowSteps[0], "Build " + this.Projects[i].Name, string.Format("Builds {0} and creates an artifact from the build output.", this.Projects[i].Name));
+                actionGroupId = Util.Recipes.CreateDeploymentPlanActionGroup(
+                    firstDeploymentPlanId,
+                    deployableId: deployableIds[i],
+                    name: "Build " + this.Projects[i].Name,
+                    description: string.Format("Builds {0} and creates an artifact from the build output.", this.Projects[i].Name)
+                );
 
-                AddAction(buildPlanId, new BuildMSBuildProjectAction
+                Util.Recipes.AddAction(actionGroupId, new BuildMSBuildProjectAction
                 {
                     OverriddenSourceDirectory = @"~\Src",
                     ProjectPath = this.Projects[i].FileSystemPath,
                     ProjectBuildConfiguration = "Debug",
                     IsWebProject = this.Projects[i].IsWebApplication
                 });
-                AddAction(buildPlanId, Util.Recipes.Munging.MungeCoreExAction(
+                Util.Recipes.AddAction(actionGroupId, Util.Recipes.Munging.MungeCoreExAction(
                     "Inedo.BuildMaster.Extensibility.Actions.Artifacts.CreateArtifactAction", new
                     {
                         ArtifactName = this.Projects[i].Name
@@ -148,9 +165,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             for (int i = 0; i < deployableIds.Length; i++)
             {
-                int deployPlanId = this.CreatePlan(deployableIds[i], this.WorkflowSteps[0], "Deploy " + this.Projects[i].Name, string.Format("Deploys {0}.", this.Projects[i].Name));
-                
-                AddAction(deployPlanId, Util.Recipes.Munging.MungeCoreExAction(
+                actionGroupId = Util.Recipes.CreateDeploymentPlanActionGroup(
+                    firstDeploymentPlanId,
+                    deployableId: deployableIds[i],
+                    name: "Deploy " + this.Projects[i].Name,
+                    description: string.Format("Deploys {0}.", this.Projects[i].Name)
+                );
+
+                Util.Recipes.AddAction(actionGroupId, Util.Recipes.Munging.MungeCoreExAction(
                     "Inedo.BuildMaster.Extensibility.Actions.Artifacts.DeployArtifactAction", new
                     {
                         ArtifactName = this.Projects[i].Name,
@@ -159,7 +181,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
                 foreach (int configFileId in configIds[i])
                 {
-                    AddAction(deployPlanId, Util.Recipes.Munging.MungeCoreExAction(
+                    Util.Recipes.AddAction(actionGroupId, Util.Recipes.Munging.MungeCoreExAction(
                     "Inedo.BuildMaster.Extensibility.Actions.Configuration.DeployConfigurationFileAction", new
                     {
                         ConfigurationFileId = configFileId,
@@ -168,14 +190,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                     }));
                 }
             }
-        }
-        private int CreatePlan(int? deployableId, int environmentId, string planName, string planDesc)
-        {
-            return Util.Recipes.CreatePlan(this.ApplicationId, deployableId, environmentId, planName, planDesc);
-        }
-        private static int AddAction(int planId, ActionBase action)
-        {
-            return Util.Recipes.AddAction(planId, 1, action);
         }
         private void AddConfigurationFile(int configFileId, string releaseNumber, IEnumerable<string> instanceNames, byte[] fileBytes)
         {

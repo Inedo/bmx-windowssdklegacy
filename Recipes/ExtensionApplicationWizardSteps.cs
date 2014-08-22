@@ -46,8 +46,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                         "On the next step, you will need to point to the location in source control where your extension project is stored."),
                     
                     new H2("Cloning/Patching an Inedo Extension"),
-                    new P("If you want to change the behavior of an existing Inedo extension, you can fork the extension's code on GitHub: ",
-                        new A("http://github.com/inedo"){ Href = "http://github.com/inedo", Target = "_blank" }),
+                    new P("If you want to change the behavior of an existing Inedo extension, you can fork the extension's code on GitHub and modify it "
+                        + "by following this tutorial: ", 
+                        new A("http://inedo.com/support/tutorials/cloning-and-patching-an-inedo-extension")
+                        { 
+                            Href = "http://inedo.com/support/tutorials/cloning-and-patching-an-inedo-extension",
+                            Target = "_blank"
+                        }),
 
                     new H2("Sample Extension Project"),
                     new P("If you are building a custom extension, you can download a starter project by clicking the button below."),
