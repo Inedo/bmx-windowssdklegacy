@@ -11,6 +11,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         private ValidatingTextBox txtWindowsSdkPath;
         private ValidatingTextBox txtFrameworkRuntimePath;
         private ValidatingTextBox txtMSBuildToolsPath;
+        private ValidatingTextBox txtAzurePassword;
 
         public override void InitializeDefaultValues()
         {
@@ -25,6 +26,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             this.txtWindowsSdkPath.Text = configurer.WindowsSdkPath;
             this.txtFrameworkRuntimePath.Text = configurer.FrameworkRuntimePath;
             this.txtMSBuildToolsPath.Text = configurer.MSBuildToolsPath;
+            this.txtAzurePassword.Text = configurer.AzurePassword;
         }
 
         public override ExtensionConfigurerBase CreateFromForm()
@@ -33,7 +35,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             {
                 WindowsSdkPath = Util.NullIf(this.txtWindowsSdkPath.Text.Trim(), string.Empty),
                 FrameworkRuntimePath = Util.NullIf(this.txtFrameworkRuntimePath.Text.Trim(), string.Empty),
-                MSBuildToolsPath = Util.NullIf(this.txtMSBuildToolsPath.Text.Trim(), string.Empty)
+                MSBuildToolsPath = Util.NullIf(this.txtMSBuildToolsPath.Text.Trim(), string.Empty),
+                AzurePassword = Util.NullIf(this.txtAzurePassword.Text.Trim(), string.Empty)
             };
         }
 
@@ -56,6 +59,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
                 DefaultText = bm45 ? "latest installed tools path" : null
             };
 
+            this.txtAzurePassword = new ValidatingTextBox();
+
             this.Controls.Add(
                 new SlimFormField("Windows SDK path:", this.txtWindowsSdkPath)
                 {
@@ -68,7 +73,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
                 new SlimFormField("MSBuild tools path:", this.txtMSBuildToolsPath)
                 {
                     HelpText = @"Example: C:\Program Files (x86)\MSBuild\12.0\bin\amd64"
-                }
+                },
+                new SlimFormField("Azure password:", this.txtAzurePassword)
             );
         }
     }

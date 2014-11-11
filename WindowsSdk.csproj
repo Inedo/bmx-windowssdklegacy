@@ -57,30 +57,52 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Azure\PublishAzureWebsiteAction.cs" />
-    <Compile Include="Azure\PublishAzureWebsiteActionEditor.cs" />
+    <Compile Include="Azure\PublishAzureWebsiteActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MSBuild\BuildAspNetProjectAction.cs" />
-    <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs" />
+    <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\AddComponentLicenseAction.cs" />
-    <Compile Include="DotNet\AddComponentLicenseActionEditor.cs" />
+    <Compile Include="DotNet\AddComponentLicenseActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\ClickOnceAction.cs" />
-    <Compile Include="DotNet\ClickOnceActionEditor.cs" />
+    <Compile Include="DotNet\ClickOnceActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\ConvertProjectReferencesAction.cs" />
-    <Compile Include="DotNet\ConvertProjectReferencesActionEditor.cs" />
+    <Compile Include="DotNet\ConvertProjectReferencesActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\DotNetHelper.cs" />
     <Compile Include="DotNet\GacHelper.cs" />
     <Compile Include="DotNet\GacInstallAction.cs" />
-    <Compile Include="DotNet\GacInstallActionEditor.cs" />
+    <Compile Include="DotNet\GacInstallActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\NGenAction.cs" />
-    <Compile Include="DotNet\NGenActionEditor.cs" />
+    <Compile Include="DotNet\NGenActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\PrecompileAspNetSiteAction.cs" />
-    <Compile Include="DotNet\PrecompileAspNetSiteActionEditor.cs" />
+    <Compile Include="DotNet\PrecompileAspNetSiteActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="DotNet\WriteAssemblyInfoVersionsAction.cs" />
-    <Compile Include="DotNet\WriteAssemblyInfoVersionsActionEditor.cs" />
+    <Compile Include="DotNet\WriteAssemblyInfoVersionsActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MSBuild\MSBuildActionBase.cs" />
     <Compile Include="MSBuild\BuildMSBuildProjectAction.cs" />
-    <Compile Include="MSBuild\BuildMSBuildProjectActionEditor.cs" />
+    <Compile Include="MSBuild\BuildMSBuildProjectActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MSBuild\ExecuteMSBuildScriptAction.cs" />
-    <Compile Include="MSBuild\ExecuteMSBuildScriptActionEditor.cs" />
+    <Compile Include="MSBuild\ExecuteMSBuildScriptActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -88,20 +110,30 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Recipes\CreateNetApplicationRecipe.cs" />
-    <Compile Include="Recipes\CreateNetApplicationRecipeEditor.cs" />
+    <Compile Include="Recipes\CreateNetApplicationRecipeEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Recipes\CreateNetApplicationWizardSteps.cs" />
     <Compile Include="Recipes\ExtensionApplicationRecipe.cs" />
-    <Compile Include="Recipes\ExtensionApplicationRecipeEditor.cs" />
+    <Compile Include="Recipes\ExtensionApplicationRecipeEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Recipes\ExtensionApplicationWizardSteps.cs" />
     <Compile Include="Recipes\MSBuildProject.cs" />
     <Compile Include="Recipes\ProjectInfo.cs" />
     <Compile Include="Recipes\Solution.cs" />
     <Compile Include="SignExeAction.cs" />
-    <Compile Include="SignExeActionEditor.cs" />
+    <Compile Include="SignExeActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="WindowsSdkExtensionConfigurer.cs" />
-    <Compile Include="WindowsSdkExtensionConfigurerEditor.cs" />
+    <Compile Include="WindowsSdkExtensionConfigurerEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="XdtTransformAction.cs" />
-    <Compile Include="XdtTransformActionEditor.cs" />
+    <Compile Include="XdtTransformActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
