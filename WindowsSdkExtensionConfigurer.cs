@@ -19,12 +19,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         {
             this.WindowsSdkPath = GetWindowsSdkInstallRoot() ?? GetDotNetSdkInstallRoot() ?? string.Empty;
             this.FrameworkRuntimePath = Path.GetFullPath(Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), @"..\"));
+            this.MSBuildToolsPath = Util.NullIf(Environment.GetEnvironmentVariable("MSBuildToolsPath"), string.Empty);
         }
 
         [Persistent]
         public string WindowsSdkPath { get; set; }
         [Persistent]
         public string FrameworkRuntimePath { get; set; }
+        [Persistent]
+        public string MSBuildToolsPath { get; set; }
 
         /// <summary>
         /// Returns the full path to a specified .NET framework runtime version.

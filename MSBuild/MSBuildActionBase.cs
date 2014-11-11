@@ -85,6 +85,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <returns>Full path to msbuild.exe.</returns>
         protected string GetMSBuildPath()
         {
+            var configurer = (WindowsSdkExtensionConfigurer)this.GetExtensionConfigurer();
+            if (!string.IsNullOrWhiteSpace(configurer.MSBuildToolsPath))
+                return Path.Combine(configurer.MSBuildToolsPath, "msbuild.exe");
+
             return Path.Combine(GetFrameworkPath(), "msbuild.exe");
         }
         /// <summary>
