@@ -123,6 +123,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WindowsSdkExtensionConfigurer.cs" />
+    <Compile Include="WindowsSdkExtensionConfigurerEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="XdtTransformAction.cs" />
     <Compile Include="XdtTransformActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
+using Inedo.BuildMaster.Web;
 using Microsoft.Win32;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
+    [CustomEditor(typeof(WindowsSdkExtensionConfigurerEditor))]
     public sealed class WindowsSdkExtensionConfigurer : ExtensionConfigurerBase
     {
         private static readonly Regex VersionMatch = new Regex(@"\d+\.\d+", RegexOptions.Compiled | RegexOptions.Singleline);
@@ -19,7 +22,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         {
             this.WindowsSdkPath = GetWindowsSdkInstallRoot() ?? GetDotNetSdkInstallRoot() ?? string.Empty;
             this.FrameworkRuntimePath = Path.GetFullPath(Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), @"..\"));
-            this.MSBuildToolsPath = Util.NullIf(Environment.GetEnvironmentVariable("MSBuildToolsPath"), string.Empty);
+            this.MSBuildToolsPath = GetLatestToolsVersionPath();
         }
 
         [Persistent]
@@ -109,6 +112,37 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
                     return versionKey.GetValue("InstallationFolder") as string;
                 }
             }
+        }
+
+        private static string GetLatestToolsVersionPath()
+        {
+            using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions", false))
+            {
+                if (key == null)
+                    return null;
+
+                var latestVersion = key
+                    .GetSubKeyNames()
+                    .Select(k => new { Key = k, Version = TryParse(k) })
+                    .Where(v => v.Version != null)
+                    .OrderByDescending(v => v.Version)
+                    .FirstOrDefault();
+
+                if (latestVersion == null)
+                    return null;
+
+                using (var subkey = key.OpenSubKey(latestVersion.Key, false))
+                {
+                    return subkey.GetValue("MSBuildToolsPath") as string;
+                }
+            }
+        }
+
+        private static Version TryParse(string s)
+        {
+            Version v;
+            Version.TryParse(s, out v);
+            return v;
         }
     }
 }
