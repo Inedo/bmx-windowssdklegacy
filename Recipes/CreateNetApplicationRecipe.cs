@@ -5,7 +5,6 @@ using System.Text;
 using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Data;
-using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Providers.SourceControl;
 using Inedo.BuildMaster.Extensibility.Recipes;
 using Inedo.BuildMaster.Web;
@@ -79,22 +78,24 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                         for (int j = 0; j < this.Projects[i].ConfigFiles.Count; j++)
                         {
                             var createConfigFile = StoredProcs.ConfigurationFiles_CreateConfigurationFile(
-                                null,
-                                deployableIds[i],
-                                this.Projects[i].ConfigFiles[j].Replace((char)scm.DirectorySeparator, '\\')
+                                ConfigurationFile_Id: null,
+                                Deployable_Id: deployableIds[i],
+                                FilePath_Text: this.Projects[i].ConfigFiles[j].Replace((char)scm.DirectorySeparator, '\\'),
+                                ConfigurationFile_Name: null,
+                                Description_Text: null
                             );
-                            createConfigFile.ExecuteNonQuery();
-                            configIds[i][j] = (int)createConfigFile.ConfigurationFile_Id;
+                            configIds[i][j] = (int)createConfigFile.Execute();
 
                             foreach (int envId in this.WorkflowSteps)
                             {
                                 StoredProcs.ConfigurationFiles_CreateConfigurationFileInstance(
-                                    configIds[i][j],
-                                    environmentNames[envId],
-                                    envId,
-                                    Domains.YN.No,
-                                    null
-                                ).ExecuteNonQuery();
+                                    ConfigurationFile_Id: configIds[i][j],
+                                    Instance_Name: environmentNames[envId],
+                                    Environment_Id: envId,
+                                    Template_Indicator: Domains.YN.No,
+                                    Template_Instance_Name: null,
+                                    TransformType_Code: null
+                                ).Execute();
                             }
 
                             var configFileBytes = (byte[])scm.GetFileContents(this.SolutionPath + scm.DirectorySeparator + this.Projects[i].ScmDirectoryName + scm.DirectorySeparator + this.Projects[i].ConfigFiles[j]);
@@ -193,9 +194,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
         }
         private void AddConfigurationFile(int configFileId, string releaseNumber, IEnumerable<string> instanceNames, byte[] fileBytes)
         {
-
             var configBuffer = new StringBuilder();
-            using (var configXmlWriter = XmlWriter.Create(configBuffer, new XmlWriterSettings { OmitXmlDeclaration = true, NewLineHandling = NewLineHandling.None, CloseOutput = true }))
+            using (var configXmlWriter = XmlWriter.Create(configBuffer, new XmlWriterSettings { OmitXmlDeclaration = true, Indent = false, CloseOutput = true }))
             {
                 configXmlWriter.WriteStartElement("ConfigFiles");
 
@@ -205,7 +205,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                 {
                     configXmlWriter.WriteStartElement("Version");
                     configXmlWriter.WriteAttributeString("Instance_Name", instanceName);
-                    configXmlWriter.WriteAttributeString("Release_Number", releaseNumber);
                     configXmlWriter.WriteAttributeString("VersionNotes_Text", null);
                     configXmlWriter.WriteAttributeString("File_Bytes", base64);
                     configXmlWriter.WriteEndElement();
@@ -216,7 +215,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
             StoredProcs.ConfigurationFiles_CreateConfigurationFileVersions(
                 configFileId,
-                configBuffer.ToString()
+                configBuffer.ToString(),
+                releaseNumber
             ).ExecuteNonQuery();
         }
     }
