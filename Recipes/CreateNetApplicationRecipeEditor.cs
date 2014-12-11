@@ -129,7 +129,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
                         ctlNoProviders,
                         new Div(
                             new ActionServerPicker { ID = "bm-action-server-id" }
-                        ) { Style = "display: none;" }
+                        ) { ClientIDMode = ClientIDMode.Static, Style = "display: none;" }
                     ),
                     ffProjectPath
                 )
