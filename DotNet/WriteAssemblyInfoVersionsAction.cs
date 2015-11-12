@@ -2,12 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
+using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -17,9 +17,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
     [RequiresInterface(typeof(IFileOperationsExecuter))]
+    [ConvertibleToOperation(typeof(WriteAssemblyVersionsImporter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase
     {
-        private static readonly Regex AttributeRegex = new Regex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly LazyRegex AttributeRegex = Operations.DotNet.WriteAssemblyInfoVersionsOperation.AttributeRegex;
 
         [Persistent]
         public string[] FileMasks { get; set; }

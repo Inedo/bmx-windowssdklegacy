@@ -3,6 +3,7 @@ using System.IO;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
+using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
 using Inedo.IO;
 
@@ -13,6 +14,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         "Builds a project or solution using MSBuild.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
+    [ConvertibleToOperation(typeof(BuildProjectImporter))]
     public sealed class BuildMSBuildProjectAction : MSBuildActionBase
     {
         [Persistent]
