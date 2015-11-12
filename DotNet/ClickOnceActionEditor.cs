@@ -10,6 +10,7 @@ using FileAssociation = Inedo.BuildMasterExtensions.WindowsSdk.DotNet.ClickOnceA
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     internal sealed class ClickOnceActionEditor : ActionEditorBase
     {
         private ValidatingTextBox txtApplicationName;
@@ -39,10 +40,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox txtFileAssociationProgId2;
         private ValidatingTextBox txtFileAssociationDefaultIcon2;
 
-        public override bool DisplaySourceDirectory
-        {
-            get { return true; }
-        }
+        public override bool DisplaySourceDirectory => true;
 
         protected override void CreateChildControls()
         {
@@ -239,4 +237,5 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             };
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

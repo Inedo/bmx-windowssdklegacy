@@ -4,6 +4,7 @@ using System.Web;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
+using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
@@ -67,8 +68,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             foreach (var item in new DirectoryInfo(outputPath).EnumerateFileSystemInfos())
             {
                 var relativePath = item.FullName.Substring(outputPath.Length).TrimStart('\\', '/');
-                var targetPath = Util.Path2.Combine(this.Context.TargetDirectory, relativePath);
-                Directory.CreateDirectory(Util.Path2.GetDirectoryName(targetPath));
+                var targetPath = PathEx.Combine(this.Context.TargetDirectory, relativePath);
+                Directory.CreateDirectory(PathEx.GetDirectoryName(targetPath));
 
                 var fileInfo = item as FileInfo;
                 if (fileInfo != null)

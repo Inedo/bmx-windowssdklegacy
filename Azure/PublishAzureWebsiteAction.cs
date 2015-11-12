@@ -8,6 +8,7 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
+using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
 {
@@ -40,7 +41,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
         {
             return new ActionDescription(
                 new ShortActionDescription("Publish Azure Website"),
-                new LongActionDescription("from ", new Hilite(Util.Path2.GetFileName(this.ProjectPath)))
+                new LongActionDescription("from ", new Hilite(PathEx.GetFileName(this.ProjectPath)))
             );
         }
 
@@ -89,7 +90,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
             if (string.IsNullOrWhiteSpace(this.ProjectPublishProfileXml))
                 throw new InvalidOperationException("Either the publish profile name or custom XML value must be set.");
 
-            string path = Util.Path2.Combine(this.Context.TempDirectory, "buildmaster-azure.pubxml");
+            string path = PathEx.Combine(this.Context.TempDirectory, "buildmaster-azure.pubxml");
             File.WriteAllText(path, this.ProjectPublishProfileXml);
 
             return path;

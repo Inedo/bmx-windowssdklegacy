@@ -2,6 +2,7 @@
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.IO;
 using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
@@ -24,7 +25,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             if (string.IsNullOrEmpty(action.OverriddenSourceDirectory))
                 this.ctlSignExe.Text = action.SignExePath;
             else
-                this.ctlSignExe.Text = Util.Path2.Combine(action.OverriddenSourceDirectory, action.SignExePath);
+                this.ctlSignExe.Text = PathEx.Combine(action.OverriddenSourceDirectory, action.SignExePath);
         }
         public override ActionBase CreateFromForm()
         {
@@ -34,8 +35,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
                 TimestampServer = this.txtTimestampServer.Text,
                 ContentDescription = this.txtContentDescription.Text,
                 ContentUrl = this.txtContentUrl.Text,
-                SignExePath = Util.Path2.GetFileName(this.ctlSignExe.Text),
-                OverriddenSourceDirectory = Util.Path2.GetDirectoryName(this.ctlSignExe.Text)
+                SignExePath = PathEx.GetFileName(this.ctlSignExe.Text),
+                OverriddenSourceDirectory = PathEx.GetDirectoryName(this.ctlSignExe.Text)
             };
         }
 

@@ -7,6 +7,7 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
+using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
@@ -72,7 +73,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override string ProcessRemoteCommand(string name, string[] args)
         {
-            this.LibraryPath = Util.Path2.Combine(this.Context.SourceDirectory, this.LibraryPath);
+            this.LibraryPath = PathEx.Combine(this.Context.SourceDirectory, this.LibraryPath);
             var sourcePath = this.Context.SourceDirectory;
             LogDebug("Getting entries at " + sourcePath + "...");
 

@@ -1,8 +1,8 @@
 ﻿using System.Web.UI.WebControls;
-using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.IO;
 using Inedo.Web.Controls;
 using Inedo.Web.Controls.SimpleHtml;
 
@@ -23,7 +23,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
         public override void BindToForm(ActionBase extension)
         {
             var action = (PublishAzureWebsiteAction)extension;
-            this.txtProjectPath.Text = Util.Path2.Combine(action.OverriddenSourceDirectory, action.ProjectPath);
+            this.txtProjectPath.Text = PathEx.Combine(action.OverriddenSourceDirectory, action.ProjectPath);
             this.txtProjectPublishProfileName.Text = action.ProjectPublishProfileName;
             this.txtProjectPublishProfileXml.Text = action.ProjectPublishProfileXml;
             this.txtProjectBuildConfiguration.Text = action.ProjectBuildConfiguration;
@@ -38,8 +38,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
         {
             return new PublishAzureWebsiteAction()
             {
-                OverriddenSourceDirectory = Util.Path2.GetDirectoryName(this.txtProjectPath.Text),
-                ProjectPath = Util.Path2.GetFileName(this.txtProjectPath.Text),
+                OverriddenSourceDirectory = PathEx.GetDirectoryName(this.txtProjectPath.Text),
+                ProjectPath = PathEx.GetFileName(this.txtProjectPath.Text),
                 ProjectPublishProfileName = txtProjectPublishProfileName.Text,
                 ProjectPublishProfileXml = txtProjectPublishProfileXml.Text,
                 ProjectBuildConfiguration = txtProjectBuildConfiguration.Text,
