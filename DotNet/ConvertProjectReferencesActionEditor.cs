@@ -14,18 +14,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private ValidatingTextBox searchMask;
         private CheckBox recursive;
 
-        public override bool DisplaySourceDirectory
-        {
-            get { return true; }
-        }
-        public override string SourceDirectoryLabel
-        {
-            get { return "In:"; }
-        }
-        public override string ServerLabel
-        {
-            get { return "On:"; }
-        }
+        public override bool DisplaySourceDirectory => true;
+        public override string SourceDirectoryLabel => "In:";
+        public override string ServerLabel => "On:";
 
         public override void BindToForm(ActionBase extension)
         {
@@ -52,19 +43,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             this.recursive = new CheckBox { Text = "Recursive" };
 
             this.Controls.Add(
-                new FormFieldGroup(
-                    "Library",
-                    "The library directory which contains referenced assemblies.",
-                    false,
-                    new StandardFormField(string.Empty, this.libPath)
-                ),
-                new FormFieldGroup(
-                    "Project Files",
-                    "Determines which project files are converted.",
-                    true,
-                    new StandardFormField("File Masks:", this.searchMask),
-                    new StandardFormField(string.Empty, this.recursive)
-                )
+                new SlimFormField("Library:", this.libPath),
+                new SlimFormField("Project file masks:", this.searchMask),
+                new SlimFormField("Options:", this.recursive)
             );
         }
     }

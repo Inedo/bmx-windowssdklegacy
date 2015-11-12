@@ -15,6 +15,7 @@ using Inedo.Web.Controls.SimpleHtml;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     internal sealed class CreateNetApplicationRecipeEditor : RecipeEditorBase
     {
         private CreateNetApplicationWizardSteps wizardSteps = new CreateNetApplicationWizardSteps();
@@ -353,4 +354,5 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Recipes
 
         public override bool DisplayAsWizard { get { return true; } }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Web.UI.WebControls;
-using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.IO;
 using Inedo.Web.Controls;
 using Inedo.Web.Controls.SimpleHtml;
 
@@ -16,16 +16,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         private CheckBox chkPreserveWhitespace;
         private CheckBox chkVerbose;
 
-        public override string ServerLabel
-        {
-            get { return "On:"; }
-        }
+        public override string ServerLabel => "On:";
 
         public override void BindToForm(ActionBase extension)
         {
             var action = (XdtTransformAction)extension;
 
-            this.txtSourceFile.Text = Util.Path2.Combine(action.OverriddenSourceDirectory, action.SourceFile);
+            this.txtSourceFile.Text = PathEx.Combine(action.OverriddenSourceDirectory, action.SourceFile);
             this.txtTransformFile.Text = action.TransformFile;
             this.txtDestinationFile.Text = Path.Combine(action.OverriddenTargetDirectory, action.DestinationFile);
             this.chkPreserveWhitespace.Checked = action.PreserveWhitespace;
@@ -36,11 +33,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         {
             return new XdtTransformAction
             {
-                OverriddenSourceDirectory = Util.Path2.GetDirectoryName(this.txtSourceFile.Text),
-                SourceFile = Util.Path2.GetFileName(this.txtSourceFile.Text),
+                OverriddenSourceDirectory = PathEx.GetDirectoryName(this.txtSourceFile.Text),
+                SourceFile = PathEx.GetFileName(this.txtSourceFile.Text),
                 TransformFile = this.txtTransformFile.Text,
-                DestinationFile = Util.Path2.GetFileName(this.txtDestinationFile.Text),
-                OverriddenTargetDirectory = Util.Path2.GetDirectoryName(this.txtDestinationFile.Text),
+                DestinationFile = PathEx.GetFileName(this.txtDestinationFile.Text),
+                OverriddenTargetDirectory = PathEx.GetDirectoryName(this.txtDestinationFile.Text),
                 PreserveWhitespace = this.chkPreserveWhitespace.Checked,
                 Verbose = this.chkVerbose.Checked
             };

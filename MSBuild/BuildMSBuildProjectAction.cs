@@ -4,6 +4,7 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
+using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
@@ -50,14 +51,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 {
                     targetHilite = new DirectoryHilite(
                         this.OverriddenSourceDirectory,
-                        Util.Path2.Combine(Util.Path2.GetDirectoryName(projectPath), @"{Project}\bin\" + this.ProjectBuildConfiguration)
+                        PathEx.Combine(PathEx.GetDirectoryName(projectPath), @"{Project}\bin\" + this.ProjectBuildConfiguration)
                     );
                 }
                 else
                 {
                     targetHilite = new DirectoryHilite(
                         this.OverriddenSourceDirectory,
-                        Util.Path2.Combine(Util.Path2.GetDirectoryName(projectPath), @"bin\" + this.ProjectBuildConfiguration)
+                        PathEx.Combine(PathEx.GetDirectoryName(projectPath), @"bin\" + this.ProjectBuildConfiguration)
                     );
                 }
             }
@@ -160,7 +161,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             if (!string.IsNullOrWhiteSpace(this.AdditionalArguments))
                 allArgs += " " + this.AdditionalArguments;
 
-            var workingDir = Path.Combine(
+            var workingDir = PathEx.Combine(
                 this.Context.SourceDirectory,
                 Path.GetDirectoryName(this.ProjectPath)
             );

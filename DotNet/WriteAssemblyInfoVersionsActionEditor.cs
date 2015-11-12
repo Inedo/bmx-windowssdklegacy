@@ -14,18 +14,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         private CheckBox chkRecursive;
         private ValidatingTextBox txtVersion;
 
-        public override bool DisplaySourceDirectory
-        {
-            get { return true; }
-        }
-        public override string SourceDirectoryLabel
-        {
-            get { return "In:"; }
-        }
-        public override string ServerLabel
-        {
-            get { return "On:"; }
-        }
+        public override bool DisplaySourceDirectory => true;
+        public override string SourceDirectoryLabel => "In:";
+        public override string ServerLabel => "On:";
 
         public override void BindToForm(ActionBase extension)
         {

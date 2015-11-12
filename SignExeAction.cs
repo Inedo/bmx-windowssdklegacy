@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Web;
+using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
@@ -8,6 +10,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         "Sign Executable",
         "Signs an executable file with a certificate.")]
     [Tag(Tags.Windows)]
+    [CustomEditor(typeof(SignExeActionEditor))]
     public sealed class SignExeAction : AgentBasedActionBase
     {
         [Persistent]
@@ -53,7 +56,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             args.AppendFormat(" \"{0}\"", this.SignExePath);
 
             var configurer = (WindowsSdkExtensionConfigurer)this.GetExtensionConfigurer();
-            var signExePath = Util.Path2.Combine(configurer.WindowsSdkPath, "bin\\signtool.exe");
+            var signExePath = PathEx.Combine(configurer.WindowsSdkPath, "bin\\signtool.exe");
 
             int result = this.ExecuteCommandLine(signExePath, args.ToString());
             if (result != 0)

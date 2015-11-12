@@ -1,7 +1,7 @@
-﻿using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+﻿using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.IO;
 using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
@@ -25,7 +25,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         {
             var action = (BuildAspNetProjectAction)extension;
             this.txtProjectBuildConfiguration.Text = action.ProjectBuildConfiguration;
-            this.txtProjectPath.Text = Util.Path2.Combine(action.OverriddenSourceDirectory, action.ProjectPath);
+            this.txtProjectPath.Text = PathEx.Combine(action.OverriddenSourceDirectory, action.ProjectPath);
             this.txtAdditionalArguments.Text = action.AdditionalArguments;
         }
 
@@ -34,9 +34,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             return new BuildAspNetProjectAction
             {
                 ProjectBuildConfiguration = this.txtProjectBuildConfiguration.Text,
-                ProjectPath = Util.Path2.GetFileName(this.txtProjectPath.Text),
+                ProjectPath = PathEx.GetFileName(this.txtProjectPath.Text),
                 AdditionalArguments = this.txtAdditionalArguments.Text,
-                OverriddenSourceDirectory = Util.Path2.GetDirectoryName(this.txtProjectPath.Text)
+                OverriddenSourceDirectory = PathEx.GetDirectoryName(this.txtProjectPath.Text)
             };
         }
 

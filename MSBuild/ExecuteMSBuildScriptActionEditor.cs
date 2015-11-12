@@ -1,8 +1,8 @@
 ﻿using System.Web.UI.WebControls;
-using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.IO;
 using Inedo.Web.Controls;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
@@ -14,14 +14,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         private ValidatingTextBox txtAdditionalProperties;
         private ValidatingTextBox txtAdditionalArguments;
 
-        public override bool DisplayTargetDirectory
-        {
-            get { return true; }
-        }
-        public override string TargetDirectoryLabel
-        {
-            get { return "To:"; }
-        }
+        public override bool DisplayTargetDirectory => true;
+        public override string TargetDirectoryLabel => "To:";
 
         protected override void CreateChildControls()
         {
@@ -65,7 +59,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         public override void BindToForm(ActionBase extension)
         {
             var buildAction = (ExecuteMSBuildScriptAction)extension;
-            this.txtProjectFilePath.Text = Util.Path2.Combine(buildAction.OverriddenSourceDirectory, buildAction.MSBuildPath);
+            this.txtProjectFilePath.Text = PathEx.Combine(buildAction.OverriddenSourceDirectory, buildAction.MSBuildPath);
             this.txtMSBuildTarget.Text = buildAction.ProjectBuildTarget;
             this.txtAdditionalProperties.Text = buildAction.MSBuildProperties;
             this.txtAdditionalArguments.Text = buildAction.AdditionalArguments;
@@ -79,8 +73,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             return new ExecuteMSBuildScriptAction
             {
-                OverriddenSourceDirectory = Util.Path2.GetDirectoryName(this.txtProjectFilePath.Text),
-                MSBuildPath = Util.Path2.GetFileName(this.txtProjectFilePath.Text),
+                OverriddenSourceDirectory = PathEx.GetDirectoryName(this.txtProjectFilePath.Text),
+                MSBuildPath = PathEx.GetFileName(this.txtProjectFilePath.Text),
                 ProjectBuildTarget = this.txtMSBuildTarget.Text,
                 MSBuildProperties = buildProperties,
                 AdditionalArguments = this.txtAdditionalArguments.Text
