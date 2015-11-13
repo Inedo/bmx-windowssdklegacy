@@ -30,11 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildMaster.Web.Controls, Version=4.9.0.47, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+    <Reference Include="BuildMaster.Web.Controls">
       <HintPath>packages\Inedo.BuildMaster.SDK.4.9\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BuildMasterCore, Version=4.9.0.47, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+    <Reference Include="BuildMasterCore">
       <HintPath>packages\Inedo.BuildMaster.SDK.4.9\lib\net40\BuildMasterCore.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -42,7 +42,7 @@
       <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="InedoLib, Version=247.1.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+    <Reference Include="InedoLib">
       <HintPath>packages\Inedo.BuildMaster.SDK.4.9\lib\net40\InedoLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -57,12 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionImporters\BuildProjectImporter.cs" />
+    <Compile Include="ActionImporters\SignExeImporter.cs" />
     <Compile Include="ActionImporters\WriteAssemblyVersionsImporter.cs" />
     <Compile Include="Azure\PublishAzureWebsiteAction.cs" />
     <Compile Include="Azure\PublishAzureWebsiteActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Functions\MSBuildToolsPathVariableFunction.cs" />
+    <Compile Include="Functions\SignToolPathVariableFunction.cs" />
     <Compile Include="MSBuild\BuildAspNetProjectAction.cs" />
     <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -108,6 +110,7 @@
     </Compile>
     <Compile Include="Operations\DotNet\WriteAssemblyInfoVersionsOperation.cs" />
     <Compile Include="Operations\MSBuild\BuildMSBuildProjectOperation.cs" />
+    <Compile Include="Operations\SignBinaryOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -177,9 +180,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist $(SolutionDir) cmd /c "del $(SolutionDir)..\..\BuildMaster-4.9\ExtensionLib\$(TargetName).bmx"
+    <PostBuildEvent>if exist $(SolutionDir) cmd /c "del $(SolutionDir)..\..\BuildMaster\ExtensionLib\$(TargetName).bmx"
 
-if exist $(SolutionDir) $(SolutionDir)..\zip -r $(SolutionDir)..\..\BuildMaster-4.9\ExtensionLib\$(TargetName).bmx *.*</PostBuildEvent>
+if exist $(SolutionDir) $(SolutionDir)..\zip -r $(SolutionDir)..\..\BuildMaster\ExtensionLib\$(TargetName).bmx *.*</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
