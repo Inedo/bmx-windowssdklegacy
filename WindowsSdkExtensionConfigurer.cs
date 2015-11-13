@@ -79,7 +79,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         /// Returns the location of the Windows SDK if it is installed.
         /// </summary>
         /// <returns>Path to the Windows SDK if it is installed; otherwise null.</returns>
-        private static string GetWindowsSdkInstallRoot()
+        internal static string GetWindowsSdkInstallRoot()
         {
             using (var windowsKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows", false))
             {

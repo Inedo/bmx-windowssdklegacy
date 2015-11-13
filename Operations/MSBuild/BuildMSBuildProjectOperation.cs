@@ -53,11 +53,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             return new ExtendedRichDescription(
                 new RichDescription(
                     "Build ",
-                    config[nameof(this.ProjectPath)]
+                    new BuildMaster.Documentation.DirectoryHilite(config[nameof(this.ProjectPath)])
                 ),
                 new RichDescription(
                     "with ",
-                    config[nameof(this.BuildConfiguration)],
+                    new BuildMaster.Documentation.Hilite(config[nameof(this.BuildConfiguration)]),
                     " configuration"
                 )
             );
