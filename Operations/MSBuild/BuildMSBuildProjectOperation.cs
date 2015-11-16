@@ -79,8 +79,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             if (!string.IsNullOrEmpty(buildProperties))
                 config += ";" + buildProperties;
 
-            this.LogDebug($"Building {projectFullPath}...");
-
             var args = $"\"{projectFullPath}\" \"/p:{config}\"";
             if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
                 args += $" \"/p:OutDir={context.ResolvePath(this.TargetDirectory).TrimEnd('\\')}\\\\\"";
