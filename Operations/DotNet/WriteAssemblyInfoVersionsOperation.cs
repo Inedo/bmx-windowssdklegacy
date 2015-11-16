@@ -20,6 +20,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
     [DisplayName("Write Assembly Versions")]
     [ScriptAlias("Write-AssemblyVersion")]
     [Description("Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
+    [ScriptNamespace("DotNet", PreferUnqualified = true)]
     public sealed class WriteAssemblyInfoVersionsOperation : ExecuteOperation
     {
         internal static readonly LazyRegex AttributeRegex = new LazyRegex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
