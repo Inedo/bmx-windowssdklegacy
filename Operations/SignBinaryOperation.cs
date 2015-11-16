@@ -19,6 +19,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
     [Description("Signs .exe or .dll files using an installed code signing certificate.")]
     [Tag(Tags.Windows)]
     [DefaultProperty(nameof(Includes))]
+    [ScriptNamespace("Windows", PreferUnqualified = true)]
     public sealed class SignBinaryOperation : ExecuteOperation
     {
         [Required]

@@ -20,6 +20,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
     [ScriptAlias("Build-Project")]
     [DisplayName("Build MSBuild Project")]
     [Description("Builds a project or solution using MSBuild.")]
+    [ScriptNamespace("MSBuild")]
     [DefaultProperty(nameof(ProjectPath))]
     public sealed class BuildMSBuildProjectOperation : RemoteExecuteOperation
     {
