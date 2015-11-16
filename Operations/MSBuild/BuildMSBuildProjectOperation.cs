@@ -66,9 +66,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
         protected override Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
         {
-            this.LogInformation($"Building {this.ProjectPath}...");
+            var projectFullPath = context.ResolvePath(this.ProjectPath);
 
-            var projectFullPath = Path.Combine(context.WorkingDirectory, this.ProjectPath);
+            this.LogInformation($"Building {projectFullPath}...");
 
             var buildProperties = string.Join(";", this.MSBuildProperties ?? Enumerable.Empty<string>());
 
@@ -83,17 +83,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
             var args = $"\"{projectFullPath}\" \"/p:{config}\"";
             if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
-                args += $" \"/p:OutDir={this.TargetDirectory.TrimEnd('\\')}\\\\\"";
+                args += $" \"/p:OutDir={context.ResolvePath(this.TargetDirectory).TrimEnd('\\')}\\\\\"";
 
             if (!string.IsNullOrWhiteSpace(this.AdditionalArguments))
                 args += " " + this.AdditionalArguments;
 
-            var workingDir = PathEx.Combine(
-                context.WorkingDirectory,
-                Path.GetDirectoryName(this.ProjectPath)
-            );
+            var workingDir = PathEx.GetDirectoryName(projectFullPath);
 
-            if (!Directory.Exists(workingDir))
+            if (!DirectoryEx.Exists(workingDir))
                 throw new DirectoryNotFoundException($"Directory {workingDir} does not exist.");
 
             int result = this.InvokeMSBuild(args, workingDir);

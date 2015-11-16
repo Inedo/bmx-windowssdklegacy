@@ -56,7 +56,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
             this.LogInformation("Setting assembly version attributes to {0}...", this.Version);
 
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
-            var matches = fileOps.GetFileSystemInfos(this.SourceDirectory ?? context.WorkingDirectory, new MaskingContext(this.Includes, this.Excludes))
+            var matches = fileOps.GetFileSystemInfos(context.ResolvePath(this.SourceDirectory), new MaskingContext(this.Includes, this.Excludes))
                 .OfType<SlimFileInfo>()
                 .ToList();
 

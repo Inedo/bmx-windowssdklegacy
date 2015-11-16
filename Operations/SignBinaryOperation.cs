@@ -48,7 +48,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
 
         public override Task ExecuteAsync(IOperationExecutionContext context)
         {
-            var sourceDirectory = PathEx.Combine(context.WorkingDirectory, this.SourceDirectory);
+            var sourceDirectory = context.ResolvePath(this.SourceDirectory);
 
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
             var matches = fileOps.GetFileSystemInfos(sourceDirectory, new MaskingContext(this.Includes, this.Excludes))
