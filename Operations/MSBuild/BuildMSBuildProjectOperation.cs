@@ -66,6 +66,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
         protected override Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
         {
+            if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
+            {
+                var target = context.ResolvePath(this.TargetDirectory);
+                this.LogDebug($"Clearing {target}...");
+                DirectoryEx.Clear(target);
+                this.LogDebug(target + " cleared.");
+            }
+
             var projectFullPath = context.ResolvePath(this.ProjectPath);
 
             this.LogInformation($"Building {projectFullPath}...");
