@@ -34,7 +34,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
         [Required]
         [ScriptAlias("Include")]
         [Description(CommonDescriptions.IncludeMask)]
-        [DefaultValue("**\\AssemblyInfo.cs")]
         public IEnumerable<string> Includes { get; set; }
         [ScriptAlias("Exclude")]
         [Description(CommonDescriptions.ExcludeMask)]
@@ -49,6 +48,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
         public override Task ExecuteAsync(IOperationExecutionContext context)
         {
             var sourceDirectory = context.ResolvePath(this.SourceDirectory);
+
+            this.LogDebug($"Signing files in {sourceDirectory}...");
 
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
             var matches = fileOps.GetFileSystemInfos(sourceDirectory, new MaskingContext(this.Includes, this.Excludes))
