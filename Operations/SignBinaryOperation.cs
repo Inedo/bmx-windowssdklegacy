@@ -128,7 +128,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
                 return null;
             }
 
-            this.LogDebug("Signtool path: " + this.SignToolPath);
+            signToolPath = PathEx.Combine(signToolPath, "signtool.exe");
+
+            this.LogDebug("Signtool path: " + signToolPath);
             return signToolPath;
         }
 
