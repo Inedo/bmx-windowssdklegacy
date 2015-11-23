@@ -77,7 +77,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
             var signToolPath = this.GetSignToolPath(context.Agent);
             if (signToolPath != null)
             {
-                if (!FileEx.Exists(signToolPath))
+                if (!fileOps.FileExists(signToolPath))
                 {
                     this.LogError("Cannot find signtool.exe at: " + signToolPath);
                     return Complete;
