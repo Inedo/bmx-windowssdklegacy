@@ -77,6 +77,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
             var signToolPath = this.GetSignToolPath(context.Agent);
             if (signToolPath != null)
             {
+                if (!FileEx.Exists(signToolPath))
+                {
+                    this.LogError("Cannot find signtool.exe at: " + signToolPath);
+                    return Complete;
+                }
+
                 foreach (var match in matches)
                 {
                     var startInfo = new AgentProcessStartInfo
@@ -128,7 +134,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
                 return null;
             }
 
-            signToolPath = PathEx.Combine(signToolPath, "signtool.exe");
+            signToolPath = PathEx.Combine(signToolPath, "bin", "signtool.exe");
 
             this.LogDebug("Signtool path: " + signToolPath);
             return signToolPath;
