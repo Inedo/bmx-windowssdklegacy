@@ -50,7 +50,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 new SlimFormField("MSBuild target:", this.txtMSBuildTarget),
                 new SlimFormField("MSBuild properties:", this.txtAdditionalProperties)
                 {
-                    HelpText = HelpText.FromHtml("Additional properties, separated by newlines. Example:<br />WarningLevel=2<br />Optimize=false")
+                    HelpText = "Additional properties, separated by newlines. Example:<br />WarningLevel=2<br />Optimize=false"
                 },
                 new SlimFormField("Additional arguments:", this.txtAdditionalArguments)
             );

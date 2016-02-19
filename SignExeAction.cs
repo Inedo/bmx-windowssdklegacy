@@ -1,15 +1,17 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.IO;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
-    [ActionProperties(
-        "Sign Executable",
-        "Signs an executable file with a certificate.")]
+    [DisplayName("Sign Executable")]
+    [Description("Signs an executable file with a certificate.")]
     [Tag(Tags.Windows)]
     [CustomEditor(typeof(SignExeActionEditor))]
     [ConvertibleToOperation(typeof(SignExeImporter))]
@@ -26,14 +28,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         [Persistent]
         public string SignExePath { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Sign ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.SignExePath)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "using the ",
                     new Hilite(this.SubjectName),
                     " certificate"

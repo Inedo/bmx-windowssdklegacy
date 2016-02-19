@@ -1,19 +1,21 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Write Assembly Versions",
-        "Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
+    [DisplayName("Write Assembly Versions")]
+    [Description("Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
     [RequiresInterface(typeof(IFileOperationsExecuter))]
@@ -29,14 +31,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public string Version { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Set AssemblyVersion Attributes to ",
                     new Hilite(this.Version)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "in ",
                     new DirectoryHilite(this.OverriddenSourceDirectory),
                     " matching ",

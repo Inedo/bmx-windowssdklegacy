@@ -1,17 +1,18 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Precompile ASP.NET Site",
-        "Precompiles an ASP.NET (2.0 or later) site.")]
+    [DisplayName("Precompile ASP.NET Site")]
+    [Description("Precompiles an ASP.NET (2.0 or later) site.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(PrecompileAspNetSiteActionEditor))]
     public sealed class PrecompileAspNetSiteAction : MSBuildActionBase
@@ -25,14 +26,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool FixedNames { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Precompile site in ",
                     new DirectoryHilite(this.OverriddenSourceDirectory)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "to ",
                     new DirectoryHilite(this.OverriddenTargetDirectory),
                     " with virtual path ",

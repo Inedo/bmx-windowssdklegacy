@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
 using Inedo.IO;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Convert Project References",
-        "Converts project references in .NET projects to file references.")]
+    [DisplayName("Convert Project References")]
+    [Description("Converts project references in .NET projects to file references.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
     public sealed class ConvertProjectReferencesAction : RemoteActionBase
@@ -29,13 +31,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool Recursive { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Change Project References to Assembly References"
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "in ",
                     new DirectoryHilite(this.OverriddenSourceDirectory),
                     " matching ",

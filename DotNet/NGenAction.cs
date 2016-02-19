@@ -1,15 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "NGen",
-        "Installs/uninstalls native images from a .NET assembly and its dependencies.")]
+    [DisplayName("NGen")]
+    [Description("Installs/uninstalls native images from a .NET assembly and its dependencies.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(NGenActionEditor))]
     public sealed class NGenAction : MSBuildActionBase
@@ -21,35 +22,35 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public NGenMode RunMode { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
             switch (this.RunMode)
             {
                 case NGenMode.Install:
-                    return new ActionDescription(
-                        new ShortActionDescription(
+                    return new ExtendedRichDescription(
+                        new RichDescription(
                             "Generate Native Image for ",
                             new DirectoryHilite(this.OverriddenSourceDirectory, this.TargetAssembly)
                         )
                     );
 
                 case NGenMode.Uninstall:
-                    return new ActionDescription(
-                        new ShortActionDescription(
+                    return new ExtendedRichDescription(
+                        new RichDescription(
                             "Uninstall Native Images for ",
                             new DirectoryHilite(this.OverriddenSourceDirectory, this.TargetAssembly)
                         )
                     );
 
                 case NGenMode.Update:
-                    return new ActionDescription(
-                        new ShortActionDescription(
+                    return new ExtendedRichDescription(
+                        new RichDescription(
                             "Update the Native Image Cache"
                         )
                     );
 
                 default:
-                    return new ActionDescription(new ShortActionDescription());
+                    return new ExtendedRichDescription(new RichDescription());
             }
         }
 

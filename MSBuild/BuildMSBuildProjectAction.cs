@@ -1,17 +1,19 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
 using Inedo.IO;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    [ActionProperties(
-        "Build MSBuild Project",
-        "Builds a project or solution using MSBuild.")]
+    [DisplayName("Build MSBuild Project")]
+    [Description("Builds a project or solution using MSBuild.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
     [ConvertibleToOperation(typeof(BuildProjectImporter))]
@@ -38,7 +40,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public string AdditionalArguments { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
             var projectPath = this.ProjectPath ?? string.Empty;
 
@@ -69,12 +71,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 targetHilite = new DirectoryHilite(this.OverriddenTargetDirectory);
             }
 
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Build ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, projectPath)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "with ",
                     new Hilite(config),
                     " configuration to ",

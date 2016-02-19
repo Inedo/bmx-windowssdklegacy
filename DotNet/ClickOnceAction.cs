@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
-using System.Reflection;
-using System.Data.Common;
-using System.Security.Cryptography.X509Certificates;
-using System.Collections.Generic;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Prepare ClickOnce Application",
-        "Prepares a ClickOnce application for deployment.")]
+    [DisplayName("Prepare ClickOnce Application")]
+    [Description("Prepares a ClickOnce application for deployment.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ClickOnceActionEditor))]
     public sealed class ClickOnceAction : RemoteActionBase
@@ -333,16 +334,16 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
         }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Create ",
                     new Hilite(this.ApplicationName),
                     " ClickOnce Application from ",
                     new DirectoryHilite(this.OverriddenSourceDirectory)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "in ",
                     new DirectoryHilite(this.OverriddenTargetDirectory)
                 )

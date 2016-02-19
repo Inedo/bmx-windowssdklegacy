@@ -1,16 +1,17 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Web;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
 using Inedo.IO;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    [ActionProperties(
-        "Build ASP.NET Web or MVC Project",
-        "Builds an ASP.NET Web Application or ASP.NET MVC project and applies .config transforms.")]
+    [DisplayName("Build ASP.NET Web or MVC Project")]
+    [Description("Builds an ASP.NET Web Application or ASP.NET MVC project and applies .config transforms.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(BuildAspNetProjectActionEditor))]
     public sealed class BuildAspNetProjectAction : MSBuildActionBase
@@ -24,14 +25,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public string AdditionalArguments { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Build MVC Project ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.ProjectPath)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "with ",
                     new Hilite(this.ProjectBuildConfiguration),
                     " configuration to ",

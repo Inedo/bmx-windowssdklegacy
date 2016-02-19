@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 using Microsoft.Win32;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
@@ -15,9 +15,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
     {
         private static readonly Regex VersionMatch = new Regex(@"\d+\.\d+", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsSdkExtensionConfigurer"/> class.
-        /// </summary>
         public WindowsSdkExtensionConfigurer()
         {
             this.WindowsSdkPath = GetWindowsSdkInstallRoot() ?? GetDotNetSdkInstallRoot() ?? string.Empty;

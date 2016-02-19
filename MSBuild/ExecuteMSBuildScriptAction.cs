@@ -1,14 +1,15 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
-    [ActionProperties(
-        "Execute MSBuild Script",
-        "Executes an .msbuild script file.")]
+    [DisplayName("Execute MSBuild Script")]
+    [Description("Executes an .msbuild script file.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
     public sealed class ExecuteMSBuildScriptAction : MSBuildActionBase
@@ -30,16 +31,16 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         [Persistent]
         public string AdditionalArguments { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "MSBuild ",
                     new Hilite(this.ProjectBuildTarget),
                     " ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.MSBuildPath)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "with properties ",
                     new ListHilite((this.MSBuildProperties ?? string.Empty).Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                 )

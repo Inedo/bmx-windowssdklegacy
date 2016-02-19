@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
 using Inedo.IO;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
 {
-    [ActionProperties(
-        "Publish Azure Website",
-        "Builds and publishes a Windows Azure website.")]
+    [DisplayName("Publish Azure Website")]
+    [Description("Builds and publishes a Windows Azure website.")]
     [Tag(Tags.DotNet)]
     [Tag("azure")]
     [CustomEditor(typeof(PublishAzureWebsiteActionEditor))]
@@ -37,11 +36,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
         [Persistent(Encrypted = true)]
         public string Password { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription("Publish Azure Website"),
-                new LongActionDescription("from ", new Hilite(PathEx.GetFileName(this.ProjectPath)))
+            return new ExtendedRichDescription(
+                new RichDescription("Publish Azure Website"),
+                new RichDescription("from ", new Hilite(PathEx.GetFileName(this.ProjectPath)))
             );
         }
 

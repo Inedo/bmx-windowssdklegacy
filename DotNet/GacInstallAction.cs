@@ -1,12 +1,14 @@
+using System.ComponentModel;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Install Assemblies into the GAC",
-        "Installs .NET assemblies into the Global Assembly Cache.")]
+    [DisplayName("Install Assemblies into the GAC")]
+    [Description("Installs .NET assemblies into the Global Assembly Cache.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(GacInstallActionEditor))]
     public sealed class GacInstallAction : RemoteActionBase
@@ -17,15 +19,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         [Persistent]
         public bool ForceRefresh { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Install ",
                     new ListHilite(this.FileMasks),
                     " into the GAC"
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "from ",
                     new DirectoryHilite(this.OverriddenSourceDirectory)
                 )

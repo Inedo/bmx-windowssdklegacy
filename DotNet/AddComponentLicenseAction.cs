@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
-    [ActionProperties(
-        "Add Component License",
-        "Generates a licenses.licx file and adds it to project files.")]
+    [DisplayName("Add Component License")]
+    [Description("Generates a licenses.licx file and adds it to project files.")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(AddComponentLicenseActionEditor))]
     public sealed class AddComponentLicenseAction : RemoteActionBase
@@ -34,14 +36,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             return false;
         }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "Add Licenses to Projects in ",
                     new DirectoryHilite(this.OverriddenSourceDirectory)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "for ",
                     new ListHilite(this.LicenesedComponents)
                 )

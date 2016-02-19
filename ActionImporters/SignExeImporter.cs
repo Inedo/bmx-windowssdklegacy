@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Inedo.BuildMaster.Extensibility.Operations;
+﻿using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.BuildMasterExtensions.WindowsSdk.Operations;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters
@@ -14,10 +10,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters
             return new SignBinaryOperation
             {
                 Includes = new[] { action.SignExePath },
-                ContentDescription = InedoLib.Util.NullIf(action.ContentDescription, string.Empty),
-                ContentUrl = InedoLib.Util.NullIf(action.ContentUrl, string.Empty),
-                SourceDirectory = InedoLib.Util.NullIf(action.OverriddenSourceDirectory, string.Empty),
-                TimestampServer = InedoLib.Util.NullIf(action.TimestampServer, string.Empty),
+                ContentDescription = AH.NullIf(action.ContentDescription, string.Empty),
+                ContentUrl = AH.NullIf(action.ContentUrl, string.Empty),
+                SourceDirectory = AH.NullIf(action.OverriddenSourceDirectory, string.Empty),
+                TimestampServer = AH.NullIf(action.TimestampServer, string.Empty),
                 SubjectName = action.SubjectName
             };
         }

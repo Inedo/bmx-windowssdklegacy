@@ -1,15 +1,17 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Text;
 using Inedo.BuildMaster;
+using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
-    [ActionProperties(
-        "Transform Configuration File",
-        "Performs an XDT transform on a configuration file.")]
+    [DisplayName("Transform Configuration File")]
+    [Description("Performs an XDT transform on a configuration file.")]
     [Tag(Tags.ConfigurationFiles)]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(XdtTransformActionEditor))]
@@ -30,14 +32,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         [Persistent]
         public bool Verbose { get; set; }
 
-        public override ActionDescription GetActionDescription()
+        public override ExtendedRichDescription GetActionDescription()
         {
-            return new ActionDescription(
-                new ShortActionDescription(
+            return new ExtendedRichDescription(
+                new RichDescription(
                     "XDT Transform ",
                     new DirectoryHilite(this.OverriddenSourceDirectory, this.SourceFile)
                 ),
-                new LongActionDescription(
+                new RichDescription(
                     "to ",
                     new DirectoryHilite(this.OverriddenTargetDirectory, this.DestinationFile),
                     " using ",
