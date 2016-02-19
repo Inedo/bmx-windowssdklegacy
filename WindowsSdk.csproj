@@ -55,56 +55,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionImporters\BuildProjectImporter.cs" />
-    <Compile Include="ActionImporters\SignExeImporter.cs" />
-    <Compile Include="ActionImporters\WriteAssemblyVersionsImporter.cs" />
-    <Compile Include="Azure\PublishAzureWebsiteAction.cs" />
-    <Compile Include="Azure\PublishAzureWebsiteActionEditor.cs">
+    <Compile Include="Legacy\ActionImporters\BuildProjectImporter.cs" />
+    <Compile Include="Legacy\ActionImporters\SignExeImporter.cs" />
+    <Compile Include="Legacy\ActionImporters\WriteAssemblyVersionsImporter.cs" />
+    <Compile Include="Legacy\Azure\PublishAzureWebsiteAction.cs" />
+    <Compile Include="Legacy\Azure\PublishAzureWebsiteActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Functions\MSBuildToolsPathVariableFunction.cs" />
     <Compile Include="Functions\SignToolPathVariableFunction.cs" />
-    <Compile Include="MSBuild\BuildAspNetProjectAction.cs" />
-    <Compile Include="MSBuild\BuildAspNetProjectActionEditor.cs">
+    <Compile Include="Legacy\MSBuild\BuildAspNetProjectAction.cs" />
+    <Compile Include="Legacy\MSBuild\BuildAspNetProjectActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\AddComponentLicenseAction.cs" />
-    <Compile Include="DotNet\AddComponentLicenseActionEditor.cs">
+    <Compile Include="Legacy\DotNet\AddComponentLicenseAction.cs" />
+    <Compile Include="Legacy\DotNet\AddComponentLicenseActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\ClickOnceAction.cs" />
-    <Compile Include="DotNet\ClickOnceActionEditor.cs">
+    <Compile Include="Legacy\DotNet\ClickOnceAction.cs" />
+    <Compile Include="Legacy\DotNet\ClickOnceActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\ConvertProjectReferencesAction.cs" />
-    <Compile Include="DotNet\ConvertProjectReferencesActionEditor.cs">
+    <Compile Include="Legacy\DotNet\ConvertProjectReferencesAction.cs" />
+    <Compile Include="Legacy\DotNet\ConvertProjectReferencesActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\DotNetHelper.cs" />
-    <Compile Include="DotNet\GacHelper.cs" />
-    <Compile Include="DotNet\GacInstallAction.cs" />
-    <Compile Include="DotNet\GacInstallActionEditor.cs">
+    <Compile Include="Legacy\DotNet\DotNetHelper.cs" />
+    <Compile Include="Legacy\DotNet\GacHelper.cs" />
+    <Compile Include="Legacy\DotNet\GacInstallAction.cs" />
+    <Compile Include="Legacy\DotNet\GacInstallActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\NGenAction.cs" />
-    <Compile Include="DotNet\NGenActionEditor.cs">
+    <Compile Include="Legacy\DotNet\NGenAction.cs" />
+    <Compile Include="Legacy\DotNet\NGenActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\PrecompileAspNetSiteAction.cs" />
-    <Compile Include="DotNet\PrecompileAspNetSiteActionEditor.cs">
+    <Compile Include="Legacy\DotNet\PrecompileAspNetSiteAction.cs" />
+    <Compile Include="Legacy\DotNet\PrecompileAspNetSiteActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DotNet\WriteAssemblyInfoVersionsAction.cs" />
-    <Compile Include="DotNet\WriteAssemblyInfoVersionsActionEditor.cs">
+    <Compile Include="Legacy\DotNet\WriteAssemblyInfoVersionsAction.cs" />
+    <Compile Include="Legacy\DotNet\WriteAssemblyInfoVersionsActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MSBuild\MSBuildActionBase.cs" />
-    <Compile Include="MSBuild\BuildMSBuildProjectAction.cs" />
-    <Compile Include="MSBuild\BuildMSBuildProjectActionEditor.cs">
+    <Compile Include="Legacy\MSBuild\MSBuildActionBase.cs" />
+    <Compile Include="Legacy\MSBuild\BuildMSBuildProjectAction.cs" />
+    <Compile Include="Legacy\MSBuild\BuildMSBuildProjectActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MSBuild\ExecuteMSBuildScriptAction.cs" />
-    <Compile Include="MSBuild\ExecuteMSBuildScriptActionEditor.cs">
+    <Compile Include="Legacy\MSBuild\ExecuteMSBuildScriptAction.cs" />
+    <Compile Include="Legacy\MSBuild\ExecuteMSBuildScriptActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Operations\DotNet\WriteAssemblyInfoVersionsOperation.cs" />
@@ -116,16 +116,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SignExeAction.cs" />
-    <Compile Include="SignExeActionEditor.cs">
+    <Compile Include="Legacy\SignExeAction.cs" />
+    <Compile Include="Legacy\SignExeActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WindowsSdkExtensionConfigurer.cs" />
-    <Compile Include="WindowsSdkExtensionConfigurerEditor.cs">
+    <Compile Include="Legacy\WindowsSdkExtensionConfigurer.cs" />
+    <Compile Include="Legacy\WindowsSdkExtensionConfigurerEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="XdtTransformAction.cs" />
-    <Compile Include="XdtTransformActionEditor.cs">
+    <Compile Include="Legacy\XdtTransformAction.cs" />
+    <Compile Include="Legacy\XdtTransformActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>
@@ -156,7 +156,7 @@
     <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.Build.Tasks.Dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MSBuild\ExecuteMSBuildScriptActionEditor.js">
+    <Content Include="Legacy\MSBuild\ExecuteMSBuildScriptActionEditor.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\ctt.exe">
