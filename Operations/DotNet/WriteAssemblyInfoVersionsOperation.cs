@@ -105,11 +105,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
             return new ExtendedRichDescription(
                 new RichDescription(
                     "Set AssemblyVersion Attributes to ",
-                    new BuildMaster.Documentation.Hilite(config[nameof(Version)])
+                    new Hilite(config[nameof(Version)])
                 ),
                 new RichDescription(
                     "in ",
-                    new BuildMaster.Documentation.DirectoryHilite(config[nameof(SourceDirectory)]),
+                    new DirectoryHilite(config[nameof(SourceDirectory)]),
                     " matching ",
                     new MaskHilite(config[nameof(Includes)], config[nameof(Excludes)])
                 )

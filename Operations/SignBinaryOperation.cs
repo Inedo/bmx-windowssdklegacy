@@ -45,7 +45,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
         [Description(CommonDescriptions.SourceDirectory)]
         public string SourceDirectory { get; set; }
 
-        public override Task ExecuteAsync(IOperationExecutionContext context)
+        public override async Task ExecuteAsync(IOperationExecutionContext context)
         {
             var sourceDirectory = context.ResolvePath(this.SourceDirectory);
 
@@ -59,7 +59,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
             if (matches.Count == 0)
             {
                 this.LogWarning("No files found which match the specified criteria.");
-                return Complete;
+                return;
             }
 
             var args = new StringBuilder("sign /sm");
@@ -80,7 +80,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
                 if (!fileOps.FileExists(signToolPath))
                 {
                     this.LogError("Cannot find signtool.exe at: " + signToolPath);
-                    return Complete;
+                    return;
                 }
 
                 foreach (var match in matches)
@@ -94,13 +94,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
 
                     this.LogInformation($"Signing {match.FullName}...");
 
-                    int exitCode = this.ExecuteCommandLineAsync(context, startInfo).Result;
+                    int exitCode = await this.ExecuteCommandLineAsync(context, startInfo);
                     if (exitCode != 0)
                         this.LogError("Signtool.exe returned exit code " + exitCode);
                 }
             }
-
-            return Complete;
         }
 
         protected override ExtendedRichDescription GetDescription(IOperationConfiguration config)
@@ -112,7 +110,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
                 ),
                 new RichDescription(
                     "using the ",
-                    new BuildMaster.Documentation.Hilite(config[nameof(SubjectName)]),
+                    new Hilite(config[nameof(SubjectName)]),
                     " certificate"
                 )
             );
