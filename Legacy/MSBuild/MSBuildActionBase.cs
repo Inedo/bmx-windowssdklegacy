@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
+using Inedo.Diagnostics;
 using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
@@ -99,14 +100,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <returns>MSBuild exit code.</returns>
         protected int InvokeMSBuild(string arguments, string workingDirectory)
         {
-            var msbuildProxyPath = Path.Combine(
+            var msbuildLoggerPath = Path.Combine(
                 this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
-                @"ExtTemp\WindowsSdk\BmBuildLogger.exe"
+                @"ExtTemp\WindowsSdk\BmBuildLogger.dll"
             );
 
-            var allArgs = string.Format("\"{0}\" {1}", this.GetMSBuildPath(), arguments);
+            var allArgs = $"\"/logger:{msbuildLoggerPath}\" /noconsolelogger " + arguments;
 
-            return this.ExecuteCommandLine(msbuildProxyPath, allArgs, workingDirectory);
+            return this.ExecuteCommandLine(this.GetMSBuildPath(), allArgs, workingDirectory);
         }
 
         /// <summary>
@@ -115,14 +116,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         /// <param name="data">Data written to Standard Out.</param>
         protected override void LogProcessOutputData(string data)
         {
-            if (!string.IsNullOrEmpty(data))
+            if (!string.IsNullOrWhiteSpace(data) && data.StartsWith("<BM>"))
             {
-                if (data.StartsWith("!<BM>Info|"))
-                    this.LogInformation(data.Substring("!<BM>Info|".Length));
-                else if (data.StartsWith("!<BM>Warning|"))
-                    this.LogWarning(data.Substring("!<BM>Warning|".Length));
-                else
-                    this.LogDebug(data);
+                var bytes = Convert.FromBase64String(data.Substring("<BM>".Length));
+                var message = InedoLib.UTF8Encoding.GetString(bytes, 1, bytes.Length - 1);
+                this.Log((MessageLevel)bytes[0], message);
             }
         }
 

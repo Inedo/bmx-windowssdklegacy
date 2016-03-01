@@ -54,25 +54,25 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             return new ExtendedRichDescription(
                 new RichDescription(
                     "Build ",
-                    new BuildMaster.Documentation.DirectoryHilite(config[nameof(this.ProjectPath)])
+                    new DirectoryHilite(config[nameof(this.ProjectPath)])
                 ),
                 new RichDescription(
                     "with ",
-                    new BuildMaster.Documentation.Hilite(config[nameof(this.BuildConfiguration)]),
+                    new Hilite(config[nameof(this.BuildConfiguration)]),
                     " configuration"
                 )
             );
         }
 
-        protected override Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
+        protected override async Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
         {
-            if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
-            {
-                var target = context.ResolvePath(this.TargetDirectory);
-                this.LogDebug($"Clearing {target}...");
-                DirectoryEx.Clear(target);
-                this.LogDebug(target + " cleared.");
-            }
+            //if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
+            //{
+            //    var target = context.ResolvePath(this.TargetDirectory);
+            //    this.LogDebug($"Clearing {target}...");
+            //    DirectoryEx.Clear(target);
+            //    this.LogDebug(target + " cleared.");
+            //}
 
             var projectFullPath = context.ResolvePath(this.ProjectPath);
 
@@ -99,36 +99,19 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             if (!DirectoryEx.Exists(workingDir))
                 throw new DirectoryNotFoundException($"Directory {workingDir} does not exist.");
 
-            int result = this.InvokeMSBuild(args, workingDir);
+            int result = await this.InvokeMSBuildAsync(context, args, workingDir);
             if (result != 0)
                 this.LogError($"Build failed (msbuild returned {result}).");
-
-            return Complete;
         }
 
-        private int RunMSBuild(IRemoteOperationExecutionContext context, string argsFormat, params string[] args)
+        private async Task<int> InvokeMSBuildAsync(IRemoteOperationExecutionContext context, string arguments, string workingDirectory)
         {
-            var allArgs = string.Format(argsFormat, args);
-
-            if (!string.IsNullOrWhiteSpace(this.AdditionalArguments))
-                allArgs += " " + this.AdditionalArguments;
-
-            var workingDir = PathEx.Combine(
-                context.WorkingDirectory,
-                Path.GetDirectoryName(this.ProjectPath)
-            );
-
-            if (!Directory.Exists(workingDir))
-                throw new DirectoryNotFoundException($"Directory {workingDir} does not exist.");
-
-            return this.InvokeMSBuild(allArgs, workingDir);
-        }
-        private int InvokeMSBuild(string arguments, string workingDirectory)
-        {
-            var msbuildProxyPath = Path.Combine(
+            var msbuildLoggerPath = Path.Combine(
                 Path.GetDirectoryName(typeof(BuildMSBuildProjectOperation).Assembly.Location),
-                "BmBuildLogger.exe"
+                @"ExtTemp\WindowsSdk\BmBuildLogger.dll"
             );
+
+            var allArgs = $"\"/logger:{msbuildLoggerPath}\" /noconsolelogger " + arguments;
 
             var msBuildPath = this.GetMSBuildToolsPath();
             if (msBuildPath == null)
@@ -136,24 +119,14 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
             msBuildPath = Path.Combine(msBuildPath, "msbuild.exe");
 
-            var allArgs = $"\"{msBuildPath}\" {arguments}";
-
             var startInfo = new AgentProcessStartInfo
             {
-                FileName = msbuildProxyPath,
+                FileName = msBuildPath,
                 Arguments = allArgs,
                 WorkingDirectory = workingDirectory
             };
 
-            using (var process = new LocalTextDataProcess(startInfo))
-            {
-                process.OutputDataReceived += (s, e) => this.LogProcessOutputData(e.Data);
-                process.ErrorDataReceived += (s, e) => this.LogError(e.Data);
-
-                process.Start();
-                process.WaitForExit();
-                return process.ExitCode;
-            }
+            return await this.ExecuteCommandLineAsync(context, startInfo);
         }
         private string GetMSBuildToolsPath()
         {
@@ -200,19 +173,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             return path;
         }
 
-        private void LogProcessOutputData(string data)
+        protected override void LogProcessOutput(string text)
         {
-            if (!string.IsNullOrEmpty(data))
+            if (!string.IsNullOrWhiteSpace(text) && text.StartsWith("<BM>"))
             {
-                if (data.StartsWith("!<BM>Info|"))
-                    this.LogInformation(data.Substring("!<BM>Info|".Length));
-                else if (data.StartsWith("!<BM>Warning|"))
-                    this.LogWarning(data.Substring("!<BM>Warning|".Length));
-                else
-                    this.LogDebug(data);
+                var bytes = Convert.FromBase64String(text.Substring("<BM>".Length));
+                var message = InedoLib.UTF8Encoding.GetString(bytes, 1, bytes.Length - 1);
+                this.Log((MessageLevel)bytes[0], message);
             }
         }
-
 
         private static Version TryParse(string s)
         {
