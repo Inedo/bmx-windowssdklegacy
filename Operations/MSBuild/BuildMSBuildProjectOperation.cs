@@ -108,7 +108,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
         {
             var msbuildLoggerPath = Path.Combine(
                 Path.GetDirectoryName(typeof(BuildMSBuildProjectOperation).Assembly.Location),
-                @"ExtTemp\WindowsSdk\BmBuildLogger.dll"
+                "BmBuildLogger.dll"
             );
 
             var allArgs = $"\"/logger:{msbuildLoggerPath}\" /noconsolelogger " + arguments;
