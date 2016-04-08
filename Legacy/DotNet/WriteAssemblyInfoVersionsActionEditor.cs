@@ -37,7 +37,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void CreateChildControls()
         {
-            var application = StoredProcs.Applications_GetApplication(this.ApplicationId).Execute().Applications_Extended.FirstOrDefault();
+            var application = DB.Applications_GetApplication(this.ApplicationId).Applications_Extended.FirstOrDefault();
             var variableMode = application != null ? application.VariableSupport_Code : Domains.VariableSupportCodes.All;
 
             this.txtFileMasks = new ValidatingTextBox
