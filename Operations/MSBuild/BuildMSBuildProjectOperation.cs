@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.Diagnostics;
+using Inedo.Documentation;
 using Inedo.IO;
 using Microsoft.Win32;
 

@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
+using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
 

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
+using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
 

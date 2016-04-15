@@ -4,9 +4,9 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
+using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
 

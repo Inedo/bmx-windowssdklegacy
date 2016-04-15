@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Web;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Documentation;
 using Inedo.BuildMaster.Web;
+using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
 
