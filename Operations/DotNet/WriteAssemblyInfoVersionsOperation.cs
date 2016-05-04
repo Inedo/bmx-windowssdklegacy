@@ -37,6 +37,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
         [ScriptAlias("Version")]
         [DefaultValue("$ReleaseNumber.$BuildNumber")]
         public string Version { get; set; }
+        [DisplayName("Directory")]
         [ScriptAlias("FromDirectory")]
         [Description(CommonDescriptions.SourceDirectory)]
         public string SourceDirectory { get; set; }

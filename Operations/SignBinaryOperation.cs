@@ -24,12 +24,21 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
     {
         [Required]
         [ScriptAlias("SubjectName")]
+        [DisplayName("Subject")]
+        [Description("The subject name of the certificate. This is used to identify the certificate.")]
         public string SubjectName { get; set; }
         [ScriptAlias("TimestampServer")]
+        [DisplayName("Timestamp server")]
+        [Description("This server will be used to add a timestamp to the signature.")]
+        [DefaultValue("http://timestamp.comodoca.com/")]
         public string TimestampServer { get; set; }
         [ScriptAlias("ContentDescription")]
+        [DisplayName("Description")]
+        [Description("The content description that will be included with the signature.")]
         public string ContentDescription { get; set; }
         [ScriptAlias("ContentUrl")]
+        [DisplayName("URL")]
+        [Description("The content URL that will be included with the signature.")]
         public string ContentUrl { get; set; }
         [Required]
         [ScriptAlias("Include")]
@@ -40,8 +49,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
         public IEnumerable<string> Excludes { get; set; }
         [ScriptAlias("SignToolPath")]
         [DefaultValue("$SignToolPath")]
+        [DisplayName("signtool.exe path")]
+        [Description("The full path of signtool.exe.")]
         public string SignToolPath { get; set; }
         [ScriptAlias("SourceDirectory")]
+        [DisplayName("Directory")]
         [Description(CommonDescriptions.SourceDirectory)]
         public string SourceDirectory { get; set; }
 

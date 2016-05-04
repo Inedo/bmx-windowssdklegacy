@@ -25,28 +25,45 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
     public sealed class BuildMSBuildProjectOperation : RemoteExecuteOperation
     {
         [Required]
+        [ScriptAlias("ProjectFile")]
+        [DisplayName("Project file")]
+        [Description("The project or solution file to build.")]
+        public string ProjectPath { get; set; }
+
+        [Required]
         [ScriptAlias("Configuration")]
         [DefaultValue("Release")]
+        [DisplayName("Configuration")]
+        [Description("The configuration of the project to build.")]
         public string BuildConfiguration { get; set; }
 
         [ScriptAlias("Platform")]
+        [DisplayName("Target platform")]
+        [Description("The target platform to use; for example x86 or AnyCPU.")]
         public string TargetPlatform { get; set; }
 
-        [Required]
-        [ScriptAlias("ProjectFile")]
-        public string ProjectPath { get; set; }
-
+        [Category("Advanced")]
         [ScriptAlias("MSBuildProperties")]
+        [DisplayName("MSBuild properties")]
+        [Description("Additional properties to pass to MSBuild, formatted as key=value pairs.")]
         public IEnumerable<string> MSBuildProperties { get; set; }
 
+        [Category("Advanced")]
         [ScriptAlias("Arguments")]
+        [DisplayName("Additional arguments")]
+        [Description("Raw command line arguments to pass to MSBuild.")]
         public string AdditionalArguments { get; set; }
 
+        [Category("Advanced")]
         [ScriptAlias("MSBuildToolsPath")]
         [DefaultValue("$MSBuildToolsPath")]
+        [DisplayName("MSBuild tools path")]
+        [Description("Full path of the directory containing the MSBuild tools to use. This is usually similar to C:\\Program Files (x86)\\MSBuild\\14.0\\Bin.")]
         public string MSBuildToolsPath { get; set; }
 
         [ScriptAlias("To")]
+        [DisplayName("Target directory")]
+        [Description("The output directory for the build. When not specified, standard project build paths are used.")]
         public string TargetDirectory { get; set; }
 
         protected override ExtendedRichDescription GetDescription(IOperationConfiguration config)
@@ -66,14 +83,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
         protected override async Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
         {
-            //if (!string.IsNullOrWhiteSpace(this.TargetDirectory))
-            //{
-            //    var target = context.ResolvePath(this.TargetDirectory);
-            //    this.LogDebug($"Clearing {target}...");
-            //    DirectoryEx.Clear(target);
-            //    this.LogDebug(target + " cleared.");
-            //}
-
             var projectFullPath = context.ResolvePath(this.ProjectPath);
 
             this.LogInformation($"Building {projectFullPath}...");
