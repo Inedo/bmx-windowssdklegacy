@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Legacy\ActionImporters\BuildProjectImporter.cs" />
+    <Compile Include="Legacy\ActionImporters\XdtTransformImporter.cs" />
     <Compile Include="Legacy\ActionImporters\SignExeImporter.cs" />
     <Compile Include="Legacy\ActionImporters\WriteAssemblyVersionsImporter.cs" />
     <Compile Include="Legacy\Azure\PublishAzureWebsiteAction.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Legacy\MSBuild\ExecuteMSBuildScriptActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Operations\XdtTransformOperation.cs" />
     <Compile Include="Operations\DotNet\WriteAssemblyInfoVersionsOperation.cs" />
     <Compile Include="Operations\MSBuild\BuildMSBuildProjectOperation.cs" />
     <Compile Include="Operations\SignBinaryOperation.cs" />

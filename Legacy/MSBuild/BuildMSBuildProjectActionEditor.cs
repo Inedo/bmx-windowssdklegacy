@@ -79,7 +79,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             this.divWebProject = new Div(
                 this.chkWebProject,
                 new Div(
-                    new StatusImg { Status = StatusType.Warning, Style = "width: 16px; height: 16px; display: block; float: left;" },
                     "This option will be removed in a future version of the extension. Use the Build ASP.NET Project action instead."
                 ) { Style = "font-size: 9px; margin-left: 20px;" }
             ) { IsIdRequired = false, Visible = false, Style = "margin-top: 10px;" };
