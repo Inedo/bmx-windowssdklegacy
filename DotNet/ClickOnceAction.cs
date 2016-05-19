@@ -300,7 +300,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 else
                 {
                     LogInformation(string.Format("Cert with thumbprint {0} not found in local machine store, falling back to CertHash switch.", certificateHash));
-                    return string.Format("-CertHash {0} ", this.CertificateHash.Replace(" ", "").ToUpper());
+                    return string.Format("-CertHash {0} ", certificateHash);
                 }
             }
 
@@ -308,10 +308,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             {
                 return string.Format("-CertFile \"{0}\" ", certificatePath);
             }
-            else
-            {
-                return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
-            }
+            
+            return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
         }
 
         // A riff on Util.Files.CopyFiles, with the rename included
