@@ -280,17 +280,37 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         /// <returns>The switch and arguments.</returns>
         private string GetCertificateArguments()
         {
+            string certificatePath = this.CertificatePath;
+            string certificatePassword = this.CertificatePassword;
             if (!string.IsNullOrEmpty(this.CertificateHash))
             {
-                return string.Format("-CertHash {0} ", this.CertificateHash.Replace(" ", "").ToUpper());
+                string certificateHash = this.CertificateHash;
+                certificateHash = certificateHash.Replace(" ", "").ToUpper();
+                var certStore = new X509Store(StoreLocation.LocalMachine);
+                certStore.Open(OpenFlags.ReadOnly);
+                X509Certificate2Collection certs = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, false);
+                if (certs.Count > 0)
+                {
+                    var cert = certs[0];
+                    certificatePath = Path.Combine(this.Context.TempDirectory, "Cert.pfx");
+                    certificatePassword = System.Web.Security.Membership.GeneratePassword(25, 10);
+                    var certData = cert.Export(X509ContentType.Pfx, certificatePassword);
+                    File.WriteAllBytes(certificatePath, certData);
+                }
+                else
+                {
+                    LogInformation(string.Format("Cert with thumbprint {0} not found in local machine store, falling back to CertHash switch.", certificateHash));
+                    return string.Format("-CertHash {0} ", this.CertificateHash.Replace(" ", "").ToUpper());
+                }
             }
-            else if (string.IsNullOrEmpty(this.CertificatePassword))
+
+            if (string.IsNullOrEmpty(certificatePassword))
             {
-                return string.Format("-CertFile \"{0}\" ", this.CertificatePath);
+                return string.Format("-CertFile \"{0}\" ", certificatePath);
             }
             else
             {
-                return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", this.CertificatePath, this.CertificatePassword);
+                return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
             }
         }
 
