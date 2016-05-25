@@ -198,7 +198,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
             else if (name == "SignApplication")
             {
-                //%_MAGE% -Sign %_PRJNME%.exe.manifest -CertFile %_CERT%
+                //%_MAGE% -Sign %_PRJNME%.exe.manifest -{CertFile|CertHash} %_CERT%
                 return ExecuteCommandLine(
                     GetMagePath(),
                     string.Format(
@@ -250,7 +250,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
             else if (name == "SignDeployment")
             {
-                //%_MAGE% -Sign %_PRJNME%.application -CertFile %_CERT%
+                //%_MAGE% -Sign %_PRJNME%.application -{CertFile|CertHash} %_CERT%
                 return ExecuteCommandLine(
                     GetMagePath(),
                     string.Format(
@@ -274,33 +274,41 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         }
 
+        /// <summary>
+        /// Gets the signing certificate switch and arguments.
+        /// </summary>
+        /// <returns>The switch and arguments.</returns>
         private string GetCertificateArguments()
         {
-            var certificatePath = this.CertificatePath;
-            var certificatePassword = this.CertificatePassword;
+            string certificatePath = this.CertificatePath;
+            string certificatePassword = this.CertificatePassword;
             if (!string.IsNullOrEmpty(this.CertificateHash))
             {
-                var certificateHash = this.CertificateHash;
+                string certificateHash = this.CertificateHash;
                 certificateHash = certificateHash.Replace(" ", "").ToUpper();
                 var certStore = new X509Store(StoreLocation.LocalMachine);
                 certStore.Open(OpenFlags.ReadOnly);
-                var certs = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, false);
+                X509Certificate2Collection certs = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateHash, false);
                 if (certs.Count > 0)
                 {
                     var cert = certs[0];
                     certificatePath = Path.Combine(this.Context.TempDirectory, "Cert.pfx");
-                    var certData = cert.Export(X509ContentType.Pfx);
+                    certificatePassword = System.Web.Security.Membership.GeneratePassword(25, 10);
+                    var certData = cert.Export(X509ContentType.Pfx, certificatePassword);
                     File.WriteAllBytes(certificatePath, certData);
                 }
                 else
                 {
-                    LogWarning("Cert with thumbprint {0} not found.", certificateHash);
+                    LogInformation(string.Format("Cert with thumbprint {0} not found in local machine store, falling back to CertHash switch.", certificateHash));
+                    return string.Format("-CertHash {0} ", certificateHash);
                 }
             }
 
             if (string.IsNullOrEmpty(certificatePassword))
+            {
                 return string.Format("-CertFile \"{0}\" ", certificatePath);
-
+            }
+            
             return string.Format("-CertFile \"{0}\" -Password \"{1}\" ", certificatePath, certificatePassword);
         }
 
