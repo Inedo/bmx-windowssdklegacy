@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
@@ -128,7 +128,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
             msBuildPath = Path.Combine(msBuildPath, "msbuild.exe");
 
-            var startInfo = new AgentProcessStartInfo
+            var startInfo = new RemoteProcessStartInfo
             {
                 FileName = msBuildPath,
                 Arguments = allArgs,

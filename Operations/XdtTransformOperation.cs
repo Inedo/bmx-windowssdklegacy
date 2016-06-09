@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
@@ -59,7 +59,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
 
             await this.ExecuteCommandLineAsync(
                 context, 
-                new AgentProcessStartInfo { FileName = transformExePath, Arguments = arguments }
+                new RemoteProcessStartInfo { FileName = transformExePath, Arguments = arguments }
             );
         }
 

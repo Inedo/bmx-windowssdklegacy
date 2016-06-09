@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility;
 using Inedo.BuildMaster.Extensibility.Agents;
@@ -97,7 +98,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
 
                 foreach (var match in matches)
                 {
-                    var startInfo = new AgentProcessStartInfo
+                    var startInfo = new RemoteProcessStartInfo
                     {
                         FileName = signToolPath,
                         Arguments = args + " \"" + match.FullName + "\"",
@@ -128,7 +129,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
             );
         }
 
-        private string GetSignToolPath(AgentBase agent)
+        private string GetSignToolPath(BuildMasterAgent agent)
         {
             if (!string.IsNullOrWhiteSpace(this.SignToolPath))
             {

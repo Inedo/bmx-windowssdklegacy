@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
@@ -88,7 +88,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
 
                     var attr = match.Attributes;
                     if ((attr & FileAttributes.ReadOnly) != 0)
-                        fileOps.SetAttributes(match.FullName, null, attr & ~FileAttributes.ReadOnly);
+                        FileOperationsExecuter.SetAttributes(fileOps, match.FullName, attr & ~FileAttributes.ReadOnly);
 
                     using (var stream = fileOps.OpenFile(match.FullName, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(stream, encoding))

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
@@ -18,7 +19,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [Description("Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
     [Tag(Tags.DotNet)]
     [CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
-    [RequiresInterface(typeof(IFileOperationsExecuter))]
     [ConvertibleToOperation(typeof(WriteAssemblyVersionsImporter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase
     {
@@ -102,9 +102,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 {
                     text = AttributeRegex.Replace(text, replacementText);
 
-                    var attr = fileOps.GetFileEntry(match.Path).Attributes;
+                    var attr = fileOps.GetFileInfo(match.Path).Attributes;
                     if ((attr & FileAttributes.ReadOnly) != 0)
-                        fileOps.SetAttributes(match.Path, null, attr & ~FileAttributes.ReadOnly);
+                        fileOps.SetAttributesAsync(match.Path, attr & ~FileAttributes.ReadOnly).Wait();
 
                     using (var stream = fileOps.OpenFile(match.Path, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(stream, encoding))
