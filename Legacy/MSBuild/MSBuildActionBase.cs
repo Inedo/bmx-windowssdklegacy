@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Inedo.Agents;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.Diagnostics;
 using Inedo.Serialization;
@@ -101,8 +100,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
         protected int InvokeMSBuild(string arguments, string workingDirectory)
         {
             var msbuildLoggerPath = Path.Combine(
-                this.Context.Agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(),
-                @"ExtTemp\WindowsSdk\BmBuildLogger.dll"
+                Path.GetDirectoryName(typeof(MSBuildActionBase).Assembly.Location),
+                "BmBuildLogger.dll"
             );
 
             var allArgs = $"\"/logger:{msbuildLoggerPath}\" /noconsolelogger " + arguments;
