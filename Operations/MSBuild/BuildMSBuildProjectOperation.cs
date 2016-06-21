@@ -81,7 +81,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             );
         }
 
-        protected override async Task RemoteExecuteAsync(IRemoteOperationExecutionContext context)
+        protected override async Task<object> RemoteExecuteAsync(IRemoteOperationExecutionContext context)
         {
             var projectFullPath = context.ResolvePath(this.ProjectPath);
 
@@ -111,6 +111,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             int result = await this.InvokeMSBuildAsync(context, args, workingDir);
             if (result != 0)
                 this.LogError($"Build failed (msbuild returned {result}).");
+
+            return null;
         }
 
         private async Task<int> InvokeMSBuildAsync(IRemoteOperationExecutionContext context, string arguments, string workingDirectory)
