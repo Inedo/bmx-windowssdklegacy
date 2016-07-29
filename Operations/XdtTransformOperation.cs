@@ -41,14 +41,23 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
         [Description(CommonDescriptions.VerboseLogging)]
         public bool Verbose { get; set; }
 
+        private static string GetCttPath(IRemoteMethodExecuter executer)
+        {
+            string assemblyDir = executer.InvokeFunc(GetAgentProviderAssemblyDirectory);
+            return PathEx.Combine(assemblyDir, "Resources", "ctt.exe");
+        }
+
+        private static string GetAgentProviderAssemblyDirectory()
+        {
+            return PathEx.GetDirectoryName(typeof(XdtTransformOperation).Assembly.Location);
+        }
+
         public async override Task ExecuteAsync(IOperationExecutionContext context)
         {
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
-
-            var transformExePath = PathEx.Combine(
-                fileOps.GetBaseWorkingDirectory(),
-                @"ExtTemp\WindowsSdk\Resources\ctt.exe"
-            );
+            var remoteExecuter = context.Agent.GetService<IRemoteMethodExecuter>();
+            
+            var transformExePath = GetCttPath(remoteExecuter);
 
             if (!fileOps.FileExists(transformExePath))
                 throw new FileNotFoundException("ctt.exe could not be found on the agent.", transformExePath);
