@@ -6,6 +6,7 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
+using Inedo.IO;
 using Inedo.Serialization;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
@@ -51,11 +52,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         protected override void Execute()
         {
             var fileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
+            var remoteExecuter = this.Context.Agent.GetService<IRemoteMethodExecuter>();
 
-            var transformExePath = Path.Combine(
-                    fileOps.GetBaseWorkingDirectory(),
-                    @"ExtTemp\WindowsSdk\Resources\ctt.exe"
-            );
+            var transformExePath = GetCttPath(remoteExecuter);
 
             if (!fileOps.FileExists(transformExePath))
                 throw new FileNotFoundException("ctt.exe could not be found on the agent.", transformExePath);
@@ -80,6 +79,17 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
                 buffer.Append(" verbose");
 
             return buffer.ToString();
+        }
+
+        private static string GetCttPath(IRemoteMethodExecuter executer)
+        {
+            string assemblyDir = executer.InvokeFunc(GetAgentProviderAssemblyDirectory);
+            return PathEx.Combine(assemblyDir, "Resources", "ctt.exe");
+        }
+
+        private static string GetAgentProviderAssemblyDirectory()
+        {
+            return PathEx.GetDirectoryName(typeof(XdtTransformAction).Assembly.Location);
         }
     }
 }
