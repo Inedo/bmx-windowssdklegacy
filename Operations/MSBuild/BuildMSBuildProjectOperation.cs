@@ -137,6 +137,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
                 WorkingDirectory = workingDirectory
             };
 
+            this.LogDebug("Process: " + startInfo.FileName);
+            this.LogDebug("Arguments: " + startInfo.Arguments);
+            this.LogDebug("Working directory: " + startInfo.WorkingDirectory);
+            
             return await this.ExecuteCommandLineAsync(context, startInfo);
         }
         private string GetMSBuildToolsPath()
