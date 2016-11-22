@@ -8,6 +8,9 @@ using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility;
 using Inedo.BuildMaster.Extensibility.Operations;
+using Inedo.BuildMaster.Web;
+using Inedo.BuildMaster.Web.Controls;
+using Inedo.BuildMasterExtensions.WindowsSdk.SuggestionProviders;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
 using Inedo.IO;
@@ -27,25 +30,25 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
         [Required]
         [ScriptAlias("ProjectFile")]
         [DisplayName("Project file")]
-        [Description("The project or solution file to build.")]
+        [PlaceholderText("e.g. ProjectName.csproj or SolutionName.sln")]
         public string ProjectPath { get; set; }
 
-        [Required]
         [ScriptAlias("Configuration")]
         [DefaultValue("Release")]
         [DisplayName("Configuration")]
-        [Description("The configuration of the project to build.")]
+        [SuggestibleValue(typeof(BuildConfigurationSuggestionProvider))]
         public string BuildConfiguration { get; set; }
 
         [ScriptAlias("Platform")]
         [DisplayName("Target platform")]
-        [Description("The target platform to use; for example x86 or AnyCPU.")]
+        [SuggestibleValue(typeof(TargetPlatformSuggestionProvider))]
         public string TargetPlatform { get; set; }
 
         [Category("Advanced")]
         [ScriptAlias("MSBuildProperties")]
         [DisplayName("MSBuild properties")]
         [Description("Additional properties to pass to MSBuild, formatted as key=value pairs.")]
+        [FieldEditMode(FieldEditMode.Multiline)]
         public IEnumerable<string> MSBuildProperties { get; set; }
 
         [Category("Advanced")]
@@ -63,7 +66,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
 
         [ScriptAlias("To")]
         [DisplayName("Target directory")]
-        [Description("The output directory for the build. When not specified, standard project build paths are used.")]
+        [PlaceholderText("Default")]
         public string TargetDirectory { get; set; }
 
         protected override ExtendedRichDescription GetDescription(IOperationConfiguration config)
@@ -108,7 +111,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             if (!DirectoryEx.Exists(workingDir))
                 throw new DirectoryNotFoundException($"Directory {workingDir} does not exist.");
 
-            int result = await this.InvokeMSBuildAsync(context, args, workingDir);
+            int result = await this.InvokeMSBuildAsync(context, args, workingDir).ConfigureAwait(false);
             if (result != 0)
                 this.LogError($"Build failed (msbuild returned {result}).");
 
@@ -141,7 +144,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
             this.LogDebug("Arguments: " + startInfo.Arguments);
             this.LogDebug("Working directory: " + startInfo.WorkingDirectory);
             
-            return await this.ExecuteCommandLineAsync(context, startInfo);
+            return await this.ExecuteCommandLineAsync(context, startInfo).ConfigureAwait(false);
         }
         private string GetMSBuildToolsPath()
         {

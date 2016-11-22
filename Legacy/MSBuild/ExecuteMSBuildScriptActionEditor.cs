@@ -9,7 +9,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     internal sealed class ExecuteMSBuildScriptActionEditor : ActionEditorBase
     {
-        private SourceControlFileFolderPicker txtProjectFilePath;
+        private FileBrowserTextBox txtProjectFilePath;
         private ValidatingTextBox txtMSBuildTarget;
         private ValidatingTextBox txtAdditionalProperties;
         private ValidatingTextBox txtAdditionalArguments;
@@ -19,10 +19,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void CreateChildControls()
         {
-            this.txtProjectFilePath = new SourceControlFileFolderPicker
+            this.txtProjectFilePath = new FileBrowserTextBox
             {
                 ID = "txtProjectFilePath",
-                Required = true
+                Required = true,
+                IncludeFiles = true
             };
 
             this.txtMSBuildTarget = new ValidatingTextBox

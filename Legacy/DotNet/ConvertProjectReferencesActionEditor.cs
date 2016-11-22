@@ -10,7 +10,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     internal sealed class ConvertProjectReferencesActionEditor : ActionEditorBase
     {
-        private SourceControlFileFolderPicker libPath;
+        private FileBrowserTextBox libPath;
         private ValidatingTextBox searchMask;
         private CheckBox recursive;
 
@@ -38,7 +38,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
         protected override void CreateChildControls()
         {
-            this.libPath = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.Folders };
+            this.libPath = new FileBrowserTextBox();
             this.searchMask = new ValidatingTextBox { Text = "*.csproj", TextMode = TextBoxMode.MultiLine, Rows = 4 };
             this.recursive = new CheckBox { Text = "Recursive" };
 

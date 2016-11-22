@@ -9,7 +9,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     internal sealed class BuildAspNetProjectActionEditor : ActionEditorBase
     {
         private ValidatingTextBox txtProjectBuildConfiguration;
-        private SourceControlFileFolderPicker txtProjectPath;
+        private FileBrowserTextBox txtProjectPath;
         private ValidatingTextBox txtAdditionalArguments;
 
         public override bool DisplayTargetDirectory
@@ -50,7 +50,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 Text = "Release"
             };
 
-            this.txtProjectPath = new SourceControlFileFolderPicker
+            this.txtProjectPath = new FileBrowserTextBox
             {
                 ID = "txtProjectPath",
                 Required = true

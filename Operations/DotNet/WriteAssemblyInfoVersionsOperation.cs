@@ -25,20 +25,22 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
     {
         internal static readonly LazyRegex AttributeRegex = new LazyRegex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
         
-        [ScriptAlias("Include")]
-        [Description(CommonDescriptions.IncludeMask)]
-        [DefaultValue("**\\AssemblyInfo.cs")]
-        public IEnumerable<string> Includes { get; set; }
-        [ScriptAlias("Exclude")]
-        [Description(CommonDescriptions.ExcludeMask)]
-        public IEnumerable<string> Excludes { get; set; }
         [ScriptAlias("Version")]
-        [DefaultValue("$ReleaseNumber.$BuildNumber")]
+        [DefaultValue("$ReleaseNumber.$PackageNumber")]
         public string Version { get; set; }
         [ScriptAlias("FromDirectory")]
         [DisplayName("From directory")]
         [PlaceholderText("$WorkingDirectory")]
         public string SourceDirectory { get; set; }
+
+        [Category("Advanced")]
+        [ScriptAlias("Include")]
+        [Description(CommonDescriptions.MaskingHelp)]
+        [DefaultValue("**\\AssemblyInfo.cs")]
+        public IEnumerable<string> Includes { get; set; }
+        [Category("Advanced")]
+        [ScriptAlias("Exclude")]
+        public IEnumerable<string> Excludes { get; set; }
 
         public override async Task ExecuteAsync(IOperationExecutionContext context)
         {

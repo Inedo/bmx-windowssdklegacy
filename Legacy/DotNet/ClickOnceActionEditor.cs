@@ -15,7 +15,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     {
         private ValidatingTextBox txtApplicationName;
         private ValidatingTextBox txtProviderUrl;
-        private SourceControlFileFolderPicker txtCertificatePath;
+        private FileBrowserTextBox txtCertificatePath;
         private PasswordTextBox txtCertificatePassword;
         private ValidatingTextBox txtCertificateHash;
         private ValidatingTextBox txtVersion;
@@ -46,7 +46,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
         {
             this.txtApplicationName = new ValidatingTextBox { Required = true };
             this.txtProviderUrl = new ValidatingTextBox { Required = true };
-            this.txtCertificatePath = new SourceControlFileFolderPicker();
+            this.txtCertificatePath = new FileBrowserTextBox();
             this.txtCertificatePassword = new PasswordTextBox();
             this.txtCertificateHash = new ValidatingTextBox();
             this.txtVersion = new ValidatingTextBox { Required = true };

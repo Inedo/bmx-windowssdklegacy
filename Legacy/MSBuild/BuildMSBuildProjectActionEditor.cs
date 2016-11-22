@@ -12,13 +12,13 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     internal sealed class BuildMSBuildProjectActionEditor : ActionEditorBase
     {
         private ValidatingTextBox txtProjectBuildConfiguration;
-        private SourceControlFileFolderPicker txtProjectPath;
+        private FileBrowserTextBox txtProjectPath;
         private CheckBox chkWebProject;
         private Div divWebProject;
         private DropDownList ddlBuildOutputDir;
         private ValidatingTextBox txtProjectBuildTargetPlatform;
         private TextBox txtAdditionalProperties;
-        private SourceControlFileFolderPicker txtTargetDir;
+        private FileBrowserTextBox txtTargetDir;
         private ValidatingTextBox txtAdditionalArguments;
 
         protected override void CreateChildControls()
@@ -38,10 +38,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 DefaultText = "(default)"
             };
 
-            this.txtProjectPath = new SourceControlFileFolderPicker
+            this.txtProjectPath = new FileBrowserTextBox
             {
                 ID = "txtProjectPath",
-                DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles
+                IncludeFiles = true
             };
 
             this.chkWebProject = new CheckBox
@@ -60,7 +60,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                 }
             };
 
-            this.txtTargetDir = new SourceControlFileFolderPicker
+            this.txtTargetDir = new FileBrowserTextBox
             {
                 DefaultText = "$CurrentDirectory"
             };

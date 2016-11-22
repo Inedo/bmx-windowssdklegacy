@@ -10,7 +10,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
 {
     internal sealed class PublishAzureWebsiteActionEditor : ActionEditorBase
     {
-        private SourceControlFileFolderPicker txtProjectPath;
+        private FileBrowserTextBox txtProjectPath;
         private ValidatingTextBox txtProjectPublishProfileName;
         private ValidatingTextBox txtProjectPublishProfileXml;
         private ValidatingTextBox txtProjectBuildConfiguration;
@@ -55,7 +55,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
             this.chkUseCustomProfileXml = new CheckBox() { Text = "Use custom publish settings..." };
             var ctlProjectPublishProfileXmlContainer = new Div() { ID = "ctlProjectPublishProfileXmlContainer" };
 
-            this.txtProjectPath = new SourceControlFileFolderPicker();
+            this.txtProjectPath = new FileBrowserTextBox();
             this.txtProjectPublishProfileName = new ValidatingTextBox();
             this.txtProjectPublishProfileXml = new ValidatingTextBox() { TextMode = TextBoxMode.MultiLine, Rows = 7 };
             ctlProjectPublishProfileXmlContainer.Controls.Add(new Div("Enter custom publish profile XML:"), this.txtProjectPublishProfileXml);

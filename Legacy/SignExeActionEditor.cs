@@ -13,7 +13,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
         private ValidatingTextBox txtTimestampServer;
         private ValidatingTextBox txtContentDescription;
         private ValidatingTextBox txtContentUrl;
-        private SourceControlFileFolderPicker ctlSignExe;
+        private FileBrowserTextBox ctlSignExe;
 
         public override void BindToForm(ActionBase extension)
         {
@@ -46,7 +46,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
             this.txtTimestampServer = new ValidatingTextBox { DefaultText = "(none)" };
             this.txtContentDescription = new ValidatingTextBox { DefaultText = "(none)", };
             this.txtContentUrl = new ValidatingTextBox { DefaultText = "(none)" };
-            this.ctlSignExe = new SourceControlFileFolderPicker { DisplayMode = SourceControlBrowser.DisplayModes.FoldersAndFiles };
+            this.ctlSignExe = new FileBrowserTextBox { IncludeFiles = true };
 
             this.Controls.Add(
                 new SlimFormField("File to sign:", this.ctlSignExe),
