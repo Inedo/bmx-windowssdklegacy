@@ -24,8 +24,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
     public sealed class WriteAssemblyInfoVersionsOperation : ExecuteOperation
     {
         internal static readonly LazyRegex AttributeRegex = new LazyRegex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-        [Required]
+        
         [ScriptAlias("Include")]
         [Description(CommonDescriptions.IncludeMask)]
         [DefaultValue("**\\AssemblyInfo.cs")]
@@ -33,16 +32,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
         [ScriptAlias("Exclude")]
         [Description(CommonDescriptions.ExcludeMask)]
         public IEnumerable<string> Excludes { get; set; }
-        [Required]
         [ScriptAlias("Version")]
         [DefaultValue("$ReleaseNumber.$BuildNumber")]
         public string Version { get; set; }
-        [DisplayName("Directory")]
         [ScriptAlias("FromDirectory")]
-        [Description(CommonDescriptions.SourceDirectory)]
+        [DisplayName("From directory")]
+        [PlaceholderText("$WorkingDirectory")]
         public string SourceDirectory { get; set; }
 
-        public override Task ExecuteAsync(IOperationExecutionContext context)
+        public override async Task ExecuteAsync(IOperationExecutionContext context)
         {
             try
             {
@@ -51,20 +49,20 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
             catch
             {
                 this.LogError("The specified version ({0}) is not a valid .NET assembly version.", this.Version);
-                return Complete;
+                return;
             }
 
             this.LogInformation("Setting assembly version attributes to {0}...", this.Version);
 
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
-            var matches = fileOps.GetFileSystemInfos(context.ResolvePath(this.SourceDirectory), new MaskingContext(this.Includes, this.Excludes))
+            var matches = (await fileOps.GetFileSystemInfosAsync(context.ResolvePath(this.SourceDirectory), new MaskingContext(this.Includes, this.Excludes)).ConfigureAwait(false))
                 .OfType<SlimFileInfo>()
                 .ToList();
 
             if (matches.Count == 0)
             {
                 this.LogWarning("No matching files found.");
-                return Complete;
+                return;
             }
 
             var replacementText = "${1}" + this.Version + "${2}";
@@ -75,10 +73,10 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
                 string text;
                 Encoding encoding;
 
-                using (var stream = fileOps.OpenFile(match.FullName, FileMode.Open, FileAccess.Read))
+                using (var stream = await fileOps.OpenFileAsync(match.FullName, FileMode.Open, FileAccess.Read).ConfigureAwait(false))
                 using (var reader = new StreamReader(stream, true))
                 {
-                    text = reader.ReadToEnd();
+                    text = await reader.ReadToEndAsync().ConfigureAwait(false);
                     encoding = reader.CurrentEncoding;
                 }
 
@@ -88,17 +86,15 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
 
                     var attr = match.Attributes;
                     if ((attr & FileAttributes.ReadOnly) != 0)
-                        FileOperationsExecuter.SetAttributes(fileOps, match.FullName, attr & ~FileAttributes.ReadOnly);
+                        await fileOps.SetAttributesAsync(match.FullName, attr & ~FileAttributes.ReadOnly).ConfigureAwait(false);
 
-                    using (var stream = fileOps.OpenFile(match.FullName, FileMode.Create, FileAccess.Write))
+                    using (var stream = await fileOps.OpenFileAsync(match.FullName, FileMode.Create, FileAccess.Write).ConfigureAwait(false))
                     using (var writer = new StreamWriter(stream, encoding))
                     {
-                        writer.Write(text);
+                        await writer.WriteAsync(text).ConfigureAwait(false);
                     }
                 }
             }
-
-            return Complete;
         }
 
         protected override ExtendedRichDescription GetDescription(IOperationConfiguration config)
