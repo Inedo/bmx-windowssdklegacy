@@ -13,7 +13,7 @@ namespace Inedo.BmBuildLogger
 
         public void Initialize(IEventSource eventSource)
         {
-            eventSource.MessageRaised += HandleMessageRaised;
+            if (Verbosity > LoggerVerbosity.Quiet) eventSource.MessageRaised += HandleMessageRaised;
 
             eventSource.ProjectStarted += HandleProjectStarted;
             eventSource.ProjectFinished += HandleProjectFinished;
