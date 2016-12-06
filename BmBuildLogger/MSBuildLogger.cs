@@ -26,7 +26,7 @@ namespace Inedo.BmBuildLogger
 
         private static void HandleMessageRaised(object sender, BuildMessageEventArgs e)
         {
-           if (e.Importance <= MessageImportance.Normal)
+            if (e.Importance <= MessageImportance.Normal)
                 LogMessage(0, e.SenderName + ": " + e.Message);
         }
         private static void HandleProjectStarted(object sender, ProjectStartedEventArgs e) => LogMessage(10, "Building " + e.Message);
