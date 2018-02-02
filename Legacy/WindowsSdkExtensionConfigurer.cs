@@ -6,11 +6,12 @@ using System.Text.RegularExpressions;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
 using Inedo.BuildMaster.Web;
 using Inedo.Serialization;
+using Inedo.Web;
 using Microsoft.Win32;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
-    [CustomEditor(typeof(WindowsSdkExtensionConfigurerEditor))]
+    [Inedo.Web.CustomEditor(typeof(WindowsSdkExtensionConfigurerEditor))]
     public sealed class WindowsSdkExtensionConfigurer : ExtensionConfigurerBase
     {
         private static readonly Regex VersionMatch = new Regex(@"\d+\.\d+", RegexOptions.Compiled | RegexOptions.Singleline);

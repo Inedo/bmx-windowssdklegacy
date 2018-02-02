@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Inedo.BuildMasterExtensions.WindowsSdk</RootNamespace>
     <AssemblyName>WindowsSdk</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -33,28 +33,33 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildMaster.Web.Controls, Version=5.6.0.16, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <HintPath>packages\Inedo.BuildMaster.SDK.5.6.0\lib\net45\BuildMaster.Web.Controls.dll</HintPath>
+    <Reference Include="BuildMaster.Web.Controls, Version=6.0.0.11, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.BuildMaster.SDK.6.0.0\lib\net452\BuildMaster.Web.Controls.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BuildMasterCore, Version=5.6.0.16, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <HintPath>packages\Inedo.BuildMaster.SDK.5.6.0\lib\net45\BuildMasterCore.dll</HintPath>
+    <Reference Include="BuildMasterCore, Version=6.0.0.11, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.BuildMaster.SDK.6.0.0\lib\net452\BuildMasterCore.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Inedo.Agents.Client, Version=471.1.0.0, Culture=neutral, PublicKeyToken=9de986a2f8db80fc, processorArchitecture=MSIL">
-      <HintPath>packages\Inedo.BuildMaster.SDK.5.6.0\lib\net45\Inedo.Agents.Client.dll</HintPath>
+    <Reference Include="Inedo.Agents.Client, Version=525.0.0.0, Culture=neutral, PublicKeyToken=9de986a2f8db80fc, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4-pre0009\lib\net452\Inedo.Agents.Client.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Inedo.ExecutionEngine, Version=48.1.0.0, Culture=neutral, PublicKeyToken=68703f0e52007e75, processorArchitecture=MSIL">
-      <HintPath>packages\Inedo.BuildMaster.SDK.5.6.0\lib\net45\Inedo.ExecutionEngine.dll</HintPath>
+    <Reference Include="Inedo.ExecutionEngine, Version=63.2.0.0, Culture=neutral, PublicKeyToken=68703f0e52007e75, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4-pre0009\lib\net452\Inedo.ExecutionEngine.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="InedoLib, Version=471.1.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <HintPath>packages\Inedo.BuildMaster.SDK.5.6.0\lib\net45\InedoLib.dll</HintPath>
+    <Reference Include="Inedo.SDK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=29fae5dec3001603, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4-pre0009\lib\net452\Inedo.SDK.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="InedoLib, Version=525.0.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4-pre0009\lib\net452\InedoLib.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
@@ -180,6 +185,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

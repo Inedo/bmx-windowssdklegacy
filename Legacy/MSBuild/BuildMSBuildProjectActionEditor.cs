@@ -2,8 +2,8 @@
 using System.Web.UI.WebControls;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
+using Inedo.Web;
 using Inedo.Web.Controls;
 using Inedo.Web.Controls.SimpleHtml;
 

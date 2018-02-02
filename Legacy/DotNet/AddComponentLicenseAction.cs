@@ -14,7 +14,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [DisplayName("Add Component License")]
     [Description("Generates a licenses.licx file and adds it to project files.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(AddComponentLicenseActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(AddComponentLicenseActionEditor))]
     public sealed class AddComponentLicenseAction : RemoteActionBase
     {
         private const string NamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";

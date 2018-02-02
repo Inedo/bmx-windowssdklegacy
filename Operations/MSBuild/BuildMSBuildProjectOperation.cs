@@ -6,14 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Inedo.Agents;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.Operations;
-using Inedo.BuildMaster.Web;
-using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMasterExtensions.WindowsSdk.SuggestionProviders;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
+using Inedo.Extensibility;
+using Inedo.Extensibility.Operations;
 using Inedo.IO;
+using Inedo.Web;
 using Microsoft.Win32;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
@@ -36,12 +35,12 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.MSBuild
         [ScriptAlias("Configuration")]
         [DefaultValue("Release")]
         [DisplayName("Configuration")]
-        [SuggestibleValue(typeof(BuildConfigurationSuggestionProvider))]
+        [SuggestableValue(typeof(BuildConfigurationSuggestionProvider))]
         public string BuildConfiguration { get; set; }
 
         [ScriptAlias("Platform")]
         [DisplayName("Target platform")]
-        [SuggestibleValue(typeof(TargetPlatformSuggestionProvider))]
+        [SuggestableValue(typeof(TargetPlatformSuggestionProvider))]
         public string TargetPlatform { get; set; }
 
         [Category("Advanced")]

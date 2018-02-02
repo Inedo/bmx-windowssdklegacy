@@ -12,13 +12,14 @@ using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("Write Assembly Versions")]
     [Description("Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
     [ConvertibleToOperation(typeof(WriteAssemblyVersionsImporter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase
     {

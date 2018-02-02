@@ -17,7 +17,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [DisplayName("Convert Project References")]
     [Description("Converts project references in .NET projects to file references.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
     public sealed class ConvertProjectReferencesAction : RemoteActionBase
     {
         private const string NamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";

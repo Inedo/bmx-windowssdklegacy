@@ -14,7 +14,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [DisplayName("Precompile ASP.NET Site")]
     [Description("Precompiles an ASP.NET (2.0 or later) site.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(PrecompileAspNetSiteActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(PrecompileAspNetSiteActionEditor))]
     public sealed class PrecompileAspNetSiteAction : MSBuildActionBase
     {
         [Persistent]

@@ -4,11 +4,11 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
 {
@@ -16,7 +16,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
     [Description("Builds and publishes a Windows Azure website.")]
     [Tag(Tags.DotNet)]
     [Tag("azure")]
-    [CustomEditor(typeof(PublishAzureWebsiteActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(PublishAzureWebsiteActionEditor))]
     public sealed class PublishAzureWebsiteAction : MSBuildActionBase
     {
         [Persistent]

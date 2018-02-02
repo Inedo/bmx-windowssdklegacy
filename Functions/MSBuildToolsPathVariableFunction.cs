@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
-using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.VariableFunctions;
+using Inedo.Extensibility;
+using Inedo.Extensibility.VariableFunctions;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Functions
 {
@@ -10,6 +10,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Functions
     [ExtensionConfigurationVariable(Required = false)]
     public sealed class MSBuildToolsPathVariableFunction : ScalarVariableFunction
     {
-        protected override object EvaluateScalar(IGenericBuildMasterContext context) => string.Empty;
+        protected override object EvaluateScalar(IVariableFunctionContext context) => string.Empty;
     }
 }

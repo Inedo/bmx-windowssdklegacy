@@ -15,7 +15,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [DisplayName("Build MSBuild Project")]
     [Description("Builds a project or solution using MSBuild.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
     [ConvertibleToOperation(typeof(BuildProjectImporter))]
     public sealed class BuildMSBuildProjectAction : MSBuildActionBase
     {

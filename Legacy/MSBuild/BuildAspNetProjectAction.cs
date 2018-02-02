@@ -13,7 +13,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [DisplayName("Build ASP.NET Web or MVC Project")]
     [Description("Builds an ASP.NET Web Application or ASP.NET MVC project and applies .config transforms.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(BuildAspNetProjectActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(BuildAspNetProjectActionEditor))]
     public sealed class BuildAspNetProjectAction : MSBuildActionBase
     {
         [Persistent]

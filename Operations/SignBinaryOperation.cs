@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Inedo.Agents;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility;
-using Inedo.BuildMaster.Extensibility.Agents;
-using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.Diagnostics;
 using Inedo.Documentation;
+using Inedo.Extensibility;
+using Inedo.Extensibility.Agents;
+using Inedo.Extensibility.Operations;
 using Inedo.IO;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
@@ -129,7 +129,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations
             );
         }
 
-        private string GetSignToolPath(BuildMasterAgent agent)
+        private string GetSignToolPath(Agent agent)
         {
             if (!string.IsNullOrWhiteSpace(this.SignToolPath))
             {

@@ -5,13 +5,14 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     [DisplayName("Execute MSBuild Script")]
     [Description("Executes an .msbuild script file.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
     public sealed class ExecuteMSBuildScriptAction : MSBuildActionBase
     {
         public ExecuteMSBuildScriptAction()

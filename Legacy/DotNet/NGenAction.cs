@@ -12,7 +12,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [DisplayName("NGen")]
     [Description("Installs/uninstalls native images from a .NET assembly and its dependencies.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(NGenActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(NGenActionEditor))]
     public sealed class NGenAction : MSBuildActionBase
     {
         [Persistent]

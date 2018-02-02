@@ -10,7 +10,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [DisplayName("Install Assemblies into the GAC")]
     [Description("Installs .NET assemblies into the Global Assembly Cache.")]
     [Tag(Tags.DotNet)]
-    [CustomEditor(typeof(GacInstallActionEditor))]
+    [Inedo.Web.CustomEditor(typeof(GacInstallActionEditor))]
     public sealed class GacInstallAction : RemoteActionBase
     {
         [Persistent]
