@@ -56,11 +56,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             }
             catch
             {
-                this.LogError("The specified version ({0}) is not a valid .NET assembly version.", this.Version);
+                this.LogError($"The specified version ({this.Version}) is not a valid .NET assembly version.");
                 return;
             }
 
-            this.LogInformation("Setting Assembly Version Attributes to {0}...", this.Version);
+            this.LogInformation($"Setting Assembly Version Attributes to {this.Version}...");
 
             var fileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
             var entry = fileOps.GetDirectoryEntry(
@@ -88,7 +88,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 
             foreach (var match in matches)
             {
-                this.LogInformation("Writing assembly versions attributes to {0}...", match.Path);
+                this.LogInformation($"Writing assembly versions attributes to {match.Path}...");
                 string text;
                 Encoding encoding;
 

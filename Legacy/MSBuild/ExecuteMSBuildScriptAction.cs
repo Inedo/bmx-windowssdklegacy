@@ -50,7 +50,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void Execute()
         {
-            this.LogInformation("Executing {0}...", this.MSBuildPath);
+            this.LogInformation($"Executing {this.MSBuildPath}...");
             this.ExecuteRemoteCommand(null);
         }
 
@@ -77,7 +77,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             );
 
             if (result != 0)
-                this.LogError("MSBuild failed with code {0}.", result);
+                this.LogError($"MSBuild failed with code {result}.");
 
             return result.ToString();
         }

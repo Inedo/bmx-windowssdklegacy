@@ -87,7 +87,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
         protected override void Execute()
         {
-            this.LogInformation("Building {0}...", this.ProjectPath);
+            this.LogInformation($"Building {this.ProjectPath}...");
             this.ExecuteRemoteCommand(null);
         }
 
@@ -112,7 +112,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             {
             }
 
-            this.LogDebug("Building {0}...", projectFullPath);
+            this.LogDebug($"Building {projectFullPath}...");
 
             int result = this.RunMSBuild(
                 " \"{0}\" \"/p:{1}\"" + (this.IsWebProject || this.BuildToProjectConfigSubdirectories ? string.Empty : "  \"/p:OutDir={2}\\\""),
@@ -125,7 +125,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
             if (result != 0)
             {
-                this.LogError("Build failed (msbuild returned {0}).", result);
+                this.LogError($"Build failed (msbuild returned {result}).");
             }
             else if (this.IsWebProject)
             {
@@ -140,7 +140,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 
                 if (result != 0)
                 {
-                    this.LogError("CopyWebApplication failed (msbuild returned {0}).", result);
+                    this.LogError($"CopyWebApplication failed (msbuild returned {result}).");
                 }
                 else
                 {
@@ -151,7 +151,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
                     );
 
                     if (result != 0)
-                        this.LogError("ResolveReferences failed (msbuild returned {0}).", result);
+                        this.LogError($"ResolveReferences failed (msbuild returned {result}).");
                 }
             }
 

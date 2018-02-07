@@ -50,11 +50,11 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
             }
             catch
             {
-                this.LogError("The specified version ({0}) is not a valid .NET assembly version.", this.Version);
+                this.LogError($"The specified version ({this.Version}) is not a valid .NET assembly version.");
                 return;
             }
 
-            this.LogInformation("Setting assembly version attributes to {0}...", this.Version);
+            this.LogInformation($"Setting assembly version attributes to {this.Version}...");
 
             var fileOps = context.Agent.GetService<IFileOperationsExecuter>();
             var matches = (await fileOps.GetFileSystemInfosAsync(context.ResolvePath(this.SourceDirectory), new MaskingContext(this.Includes, this.Excludes)).ConfigureAwait(false))
@@ -71,7 +71,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Operations.DotNet
 
             foreach (var match in matches)
             {
-                this.LogInformation("Writing assembly versions attributes to {0}...", match.FullName);
+                this.LogInformation($"Writing assembly versions attributes to {match.FullName}...");
                 string text;
                 Encoding encoding;
 

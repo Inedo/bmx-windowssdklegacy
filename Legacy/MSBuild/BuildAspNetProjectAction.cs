@@ -65,7 +65,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
             if (!Directory.Exists(outputPath))
                 throw new InvalidOperationException("There are no files in the expected output directory: " + outputPath);
 
-            this.LogDebug("Moving files from {0} to target directory: {1} ", outputPath, this.Context.TargetDirectory);
+            this.LogDebug($"Moving files from {outputPath} to target directory: {this.Context.TargetDirectory} ");
             foreach (var item in new DirectoryInfo(outputPath).EnumerateFileSystemInfos())
             {
                 var relativePath = item.FullName.Substring(outputPath.Length).TrimStart('\\', '/');

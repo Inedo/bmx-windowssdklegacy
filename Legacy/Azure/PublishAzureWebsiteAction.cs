@@ -46,7 +46,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
 
         protected override string ProcessRemoteCommand(string name, string[] args)
         {
-            this.LogInformation("Publishing to Windows Azure using profile \"{0}\"...", this.ProjectPublishProfileName);
+            this.LogInformation($"Publishing to Windows Azure using profile \"{this.ProjectPublishProfileName}\"...");
 
             this.InvokeMSBuild(
                 this.BuildArguments(),

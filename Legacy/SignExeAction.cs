@@ -65,7 +65,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
 
             int result = this.ExecuteCommandLine(signExePath, args.ToString());
             if (result != 0)
-                this.LogError("Signtool.exe returned error code {0}", result);
+                this.LogError("Signtool.exe returned error code " + result);
         }
     }
 }

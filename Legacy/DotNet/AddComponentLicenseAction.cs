@@ -81,7 +81,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                 if (!(match is FileEntryInfo))
                     continue;
 
-                LogInformation(string.Format("Adding licenses to {0}...", match.Path));
+                LogInformation($"Adding licenses to {match.Path}...");
                 AddToProject(match.Path);
             }
 
@@ -104,7 +104,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             {
                 var projectNode = xmlDoc.SelectSingleNode("/d:Project", nsManager) as XmlElement;
                 if (projectNode == null)
-                    throw new InvalidDataException(string.Format("{0} is not a valid project file.", projectFile));
+                    throw new InvalidDataException($"{projectFile} is not a valid project file.");
 
                 var itemGroup = xmlDoc.CreateElement("ItemGroup", NamespaceUri);
                 var embeddedResource = xmlDoc.CreateElement("EmbeddedResource", NamespaceUri);

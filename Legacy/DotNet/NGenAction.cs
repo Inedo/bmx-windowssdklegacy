@@ -63,7 +63,7 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
             var ngenPath = Path.Combine(this.GetFrameworkPath(), "ngen.exe");
             if (!File.Exists(ngenPath))
             {
-                this.LogError("ngen.exe not found at {0}", ngenPath);
+                this.LogError($"ngen.exe not found at {ngenPath}");
                 return string.Empty;
             }
 
@@ -75,16 +75,16 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
                     if (string.IsNullOrEmpty(this.TargetAssembly))
                         throw new InvalidOperationException("Target assembly not specified.");
 
-                    this.LogInformation(string.Format("Installing {0} to the native image cache...", this.TargetAssembly));
-                    ngenArgs = string.Format("install \"{0}\" {1}", this.TargetAssembly, this.UseQueue ? "/queue" : string.Empty);
+                    this.LogInformation($"Installing {this.TargetAssembly} to the native image cache...");
+                    ngenArgs = $"install \"{this.TargetAssembly}\" {(this.UseQueue ? "/queue" : string.Empty)}";
                     break;
 
                 case NGenMode.Uninstall:
                     if (string.IsNullOrEmpty(this.TargetAssembly))
                         throw new InvalidOperationException("Target assembly not specified.");
                     
-                    this.LogInformation(string.Format("Uninstalling {0} from the native image cache...", this.TargetAssembly));
-                    ngenArgs = string.Format("uninstall \"{0}\"", this.TargetAssembly);
+                    this.LogInformation($"Uninstalling {this.TargetAssembly} from the native image cache...");
+                    ngenArgs = $"uninstall \"{this.TargetAssembly}\"";
                     break;
                     
                 case NGenMode.Update:
