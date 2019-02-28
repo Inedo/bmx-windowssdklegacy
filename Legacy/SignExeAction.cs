@@ -3,7 +3,6 @@ using System.Text;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web;
-using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
@@ -15,7 +14,6 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
     [Description("Signs an executable file with a certificate.")]
     [Tag(Tags.Windows)]
     [Inedo.Web.CustomEditor(typeof(SignExeActionEditor))]
-    [ConvertibleToOperation(typeof(SignExeImporter))]
     public sealed class SignExeAction : AgentBasedActionBase
     {
         [Persistent]

@@ -3,13 +3,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
-using Inedo.BuildMasterExtensions.WindowsSdk.ActionImporters;
 using Inedo.Documentation;
 using Inedo.Serialization;
 using Inedo.Web;
@@ -20,10 +20,9 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
     [Description("Updates AssemblyVersion, AssemblyFileVersion, and AssemblyInformationalVersion Attributes (in AssemblyInfo source files).")]
     [Tag(Tags.DotNet)]
     [Inedo.Web.CustomEditor(typeof(WriteAssemblyInfoVersionsActionEditor))]
-    [ConvertibleToOperation(typeof(WriteAssemblyVersionsImporter))]
     public sealed class WriteAssemblyInfoVersionsAction : AgentBasedActionBase
     {
-        private static readonly LazyRegex AttributeRegex = Operations.DotNet.WriteAssemblyInfoVersionsOperation.AttributeRegex;
+        private static readonly LazyRegex AttributeRegex = new LazyRegex(@"(?<1>(System\.Reflection\.)?Assembly(File|Informational)?Version(Attribute)?\s*\(\s*"")[^""]*(?<2>""\s*\))", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         [Persistent]
         public string[] FileMasks { get; set; }

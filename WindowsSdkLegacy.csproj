@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B4EE9927-63B2-4CB3-9718-F5D7A632F589}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Inedo.BuildMasterExtensions.WindowsSdk</RootNamespace>
+    <AssemblyName>WindowsSdkLegacy</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BuildMaster.Web.Controls, Version=6.0.2.1, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.BuildMaster.SDK.6.0.0\lib\net452\BuildMaster.Web.Controls.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BuildMasterCore, Version=6.0.2.1, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.BuildMaster.SDK.6.0.0\lib\net452\BuildMasterCore.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Inedo.Agents.Client, Version=1000.0.0.0, Culture=neutral, PublicKeyToken=9de986a2f8db80fc, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4\lib\net452\Inedo.Agents.Client.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Inedo.ExecutionEngine, Version=64.0.0.0, Culture=neutral, PublicKeyToken=68703f0e52007e75, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4\lib\net452\Inedo.ExecutionEngine.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Inedo.SDK, Version=1.0.4.0, Culture=neutral, PublicKeyToken=29fae5dec3001603, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4\lib\net452\Inedo.SDK.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="InedoLib, Version=1000.0.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4\lib\net452\InedoLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Inedo.SDK.1.0.4\lib\net452\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Legacy\Azure\PublishAzureWebsiteAction.cs" />
+    <Compile Include="Legacy\Azure\PublishAzureWebsiteActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\MSBuild\BuildAspNetProjectAction.cs" />
+    <Compile Include="Legacy\MSBuild\BuildAspNetProjectActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\AddComponentLicenseAction.cs" />
+    <Compile Include="Legacy\DotNet\AddComponentLicenseActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\ClickOnceAction.cs" />
+    <Compile Include="Legacy\DotNet\ClickOnceActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\ConvertProjectReferencesAction.cs" />
+    <Compile Include="Legacy\DotNet\ConvertProjectReferencesActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\DotNetHelper.cs" />
+    <Compile Include="Legacy\DotNet\GacHelper.cs" />
+    <Compile Include="Legacy\DotNet\GacInstallAction.cs" />
+    <Compile Include="Legacy\DotNet\GacInstallActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\NGenAction.cs" />
+    <Compile Include="Legacy\DotNet\NGenActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\PrecompileAspNetSiteAction.cs" />
+    <Compile Include="Legacy\DotNet\PrecompileAspNetSiteActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\DotNet\WriteAssemblyInfoVersionsAction.cs" />
+    <Compile Include="Legacy\DotNet\WriteAssemblyInfoVersionsActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\MSBuild\MSBuildActionBase.cs" />
+    <Compile Include="Legacy\MSBuild\BuildMSBuildProjectAction.cs" />
+    <Compile Include="Legacy\MSBuild\BuildMSBuildProjectActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\MSBuild\ExecuteMSBuildScriptAction.cs" />
+    <Compile Include="Legacy\MSBuild\ExecuteMSBuildScriptActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Legacy\SignExeAction.cs" />
+    <Compile Include="Legacy\SignExeActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\WindowsSdkExtensionConfigurer.cs" />
+    <Compile Include="Legacy\WindowsSdkExtensionConfigurerEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legacy\XdtTransformAction.cs" />
+    <Compile Include="Legacy\XdtTransformActionEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Targets\Microsoft.ReportingServices.targets" />
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication.targets" />
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication35.targets" />
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication40.targets" />
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="BmBuildLogger\BmBuildLogger.csproj">
+      <Project>{888f489a-f599-4cc9-854b-59fc8d9ecd0d}</Project>
+      <Name>BmBuildLogger</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication40.Build.Tasks.Dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Targets\Microsoft.WebApplication.VS11.Build.Tasks.Dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Legacy\MSBuild\ExecuteMSBuildScriptActionEditor.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ctt.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsSdk", "WindowsSdk.csproj", "{B4EE9927-63B2-4CB3-9718-F5D7A632F589}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsSdkLegacy", "WindowsSdkLegacy.csproj", "{B4EE9927-63B2-4CB3-9718-F5D7A632F589}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BmBuildLogger", "BmBuildLogger\BmBuildLogger.csproj", "{888F489A-F599-4CC9-854B-59FC8D9ECD0D}"
 EndProject
@@ -22,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {117A8002-AA06-4D9D-BB96-777917C5EAF2}
 	EndGlobalSection
 EndGlobal
