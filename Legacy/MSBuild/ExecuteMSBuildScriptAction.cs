@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.Serialization;
 using Inedo.Web;
@@ -12,7 +11,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
     [DisplayName("Execute MSBuild Script")]
     [Description("Executes an .msbuild script file.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
+    [CustomEditor(typeof(ExecuteMSBuildScriptActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.MSBuild.ExecuteMSBuildScriptAction,WindowsSdk")]
     public sealed class ExecuteMSBuildScriptAction : MSBuildActionBase
     {
         public ExecuteMSBuildScriptAction()

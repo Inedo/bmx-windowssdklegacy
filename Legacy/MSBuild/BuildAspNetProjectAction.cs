@@ -3,17 +3,18 @@ using System.ComponentModel;
 using System.IO;
 using System.Web;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     [DisplayName("Build ASP.NET Web or MVC Project")]
     [Description("Builds an ASP.NET Web Application or ASP.NET MVC project and applies .config transforms.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(BuildAspNetProjectActionEditor))]
+    [CustomEditor(typeof(BuildAspNetProjectActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.MSBuild.BuildAspNetProjectAction,WindowsSdk")]
     public sealed class BuildAspNetProjectAction : MSBuildActionBase
     {
         [Persistent]

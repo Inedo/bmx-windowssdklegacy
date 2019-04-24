@@ -2,19 +2,19 @@
 using System.ComponentModel;
 using System.IO;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.DotNet;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.MSBuild
 {
     [DisplayName("Build MSBuild Project")]
     [Description("Builds a project or solution using MSBuild.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
+    [CustomEditor(typeof(BuildMSBuildProjectActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.MSBuild.BuildMSBuildProjectAction,WindowsSdk")]
     public sealed class BuildMSBuildProjectAction : MSBuildActionBase
     {
         [Persistent]

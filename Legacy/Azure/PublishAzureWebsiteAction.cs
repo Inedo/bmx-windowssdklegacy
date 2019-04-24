@@ -16,7 +16,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk.Azure
     [Description("Builds and publishes a Windows Azure website.")]
     [Tag(Tags.DotNet)]
     [Tag("azure")]
-    [Inedo.Web.CustomEditor(typeof(PublishAzureWebsiteActionEditor))]
+    [CustomEditor(typeof(PublishAzureWebsiteActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.Azure.PublishAzureWebsiteAction,WindowsSdk")]
     public sealed class PublishAzureWebsiteAction : MSBuildActionBase
     {
         [Persistent]

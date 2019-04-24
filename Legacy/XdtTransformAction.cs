@@ -4,7 +4,6 @@ using System.Text;
 using Inedo.Agents;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
@@ -16,7 +15,8 @@ namespace Inedo.BuildMasterExtensions.WindowsSdk
     [Description("Performs an XDT transform on a configuration file.")]
     [Tag(Tags.ConfigurationFiles)]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(XdtTransformActionEditor))]
+    [CustomEditor(typeof(XdtTransformActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.XdtTransformAction,WindowsSdk")]
     public sealed class XdtTransformAction : AgentBasedActionBase
     {
         [Persistent]

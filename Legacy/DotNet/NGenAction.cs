@@ -6,13 +6,15 @@ using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("NGen")]
     [Description("Installs/uninstalls native images from a .NET assembly and its dependencies.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(NGenActionEditor))]
+    [CustomEditor(typeof(NGenActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.DotNet.NGenAction,WindowsSdk")]
     public sealed class NGenAction : MSBuildActionBase
     {
         [Persistent]

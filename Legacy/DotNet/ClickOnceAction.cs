@@ -8,16 +8,17 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
-using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("Prepare ClickOnce Application")]
     [Description("Prepares a ClickOnce application for deployment.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(ClickOnceActionEditor))]
+    [CustomEditor(typeof(ClickOnceActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.DotNet.ClickOnceAction,WindowsSdk")]
     public sealed class ClickOnceAction : RemoteActionBase
     {
         [Serializable]

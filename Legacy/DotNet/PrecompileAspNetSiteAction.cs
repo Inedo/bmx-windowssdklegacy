@@ -4,17 +4,18 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Inedo.BuildMaster;
-using Inedo.BuildMaster.Web;
 using Inedo.BuildMasterExtensions.WindowsSdk.MSBuild;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("Precompile ASP.NET Site")]
     [Description("Precompiles an ASP.NET (2.0 or later) site.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(PrecompileAspNetSiteActionEditor))]
+    [CustomEditor(typeof(PrecompileAspNetSiteActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.DotNet.PrecompileAspNetSiteAction,WindowsSdk")]
     public sealed class PrecompileAspNetSiteAction : MSBuildActionBase
     {
         [Persistent]

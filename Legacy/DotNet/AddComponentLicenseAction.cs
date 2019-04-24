@@ -8,13 +8,15 @@ using Inedo.BuildMaster.Files;
 using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("Add Component License")]
     [Description("Generates a licenses.licx file and adds it to project files.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(AddComponentLicenseActionEditor))]
+    [CustomEditor(typeof(AddComponentLicenseActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.DotNet.AddComponentLicenseAction,WindowsSdk")]
     public sealed class AddComponentLicenseAction : RemoteActionBase
     {
         private const string NamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";

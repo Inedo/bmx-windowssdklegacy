@@ -7,17 +7,18 @@ using System.Xml;
 using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Files;
-using Inedo.BuildMaster.Web;
 using Inedo.Documentation;
 using Inedo.IO;
 using Inedo.Serialization;
+using Inedo.Web;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk.DotNet
 {
     [DisplayName("Convert Project References")]
     [Description("Converts project references in .NET projects to file references.")]
     [Tag(Tags.DotNet)]
-    [Inedo.Web.CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
+    [CustomEditor(typeof(ConvertProjectReferencesActionEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.DotNet.ConvertProjectReferencesAction,WindowsSdk")]
     public sealed class ConvertProjectReferencesAction : RemoteActionBase
     {
         private const string NamespaceUri = "http://schemas.microsoft.com/developer/msbuild/2003";

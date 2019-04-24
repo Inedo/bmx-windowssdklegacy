@@ -4,14 +4,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
-using Inedo.BuildMaster.Web;
 using Inedo.Serialization;
 using Inedo.Web;
 using Microsoft.Win32;
 
 namespace Inedo.BuildMasterExtensions.WindowsSdk
 {
-    [Inedo.Web.CustomEditor(typeof(WindowsSdkExtensionConfigurerEditor))]
+    [CustomEditor(typeof(WindowsSdkExtensionConfigurerEditor))]
+    [PersistFrom("Inedo.BuildMasterExtensions.WindowsSdk.WindowsSdkExtensionConfigurer,WindowsSdk")]
     public sealed class WindowsSdkExtensionConfigurer : ExtensionConfigurerBase
     {
         private static readonly Regex VersionMatch = new Regex(@"\d+\.\d+", RegexOptions.Compiled | RegexOptions.Singleline);
